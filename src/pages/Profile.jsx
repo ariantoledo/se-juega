@@ -101,7 +101,7 @@ export default function Profile() {
                 />
               ) : (
                 <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center">
-                  <User className="w-8 h-8 text-primary" />
+                  <UserIcon className="w-8 h-8 text-primary" />
                 </div>
               )}
               <label className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-primary flex items-center justify-center cursor-pointer shadow-md hover:bg-primary/90 transition-colors">
