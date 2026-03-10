@@ -2,12 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
-import { Home, PlusCircle, CalendarDays, User, Menu, X, Sun, Moon } from "lucide-react";
+import { Home, PlusCircle, CalendarDays, User, Menu, X, Sun, Moon, MapPin } from "lucide-react";
 
 const navItems = [
   { name: "Partidos", page: "Home", icon: Home },
   { name: "Crear Partido", page: "CreateMatch", icon: PlusCircle },
   { name: "Mis Partidos", page: "MyMatches", icon: CalendarDays },
+  { name: "Canchas", page: "Fields", icon: MapPin },
   { name: "Perfil", page: "Profile", icon: User },
 ];
 
