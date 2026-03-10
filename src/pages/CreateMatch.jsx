@@ -67,6 +67,32 @@ export default function CreateMatch() {
       position: form.missing_positions[0] || "Sin definir",
     });
 
+    // If reserving a field, create reservation linked to the match
+    if (reserveField && selectedFieldId && form.date) {
+      const field = fields.find((f) => f.id === selectedFieldId);
+      const matchDate = new Date(form.date);
+      const dateStr = matchDate.toISOString().split("T")[0];
+      const startHour = matchDate.getHours().toString().padStart(2, "0");
+      const startMin = matchDate.getMinutes().toString().padStart(2, "0");
+      const endDate = new Date(matchDate.getTime() + 2 * 60 * 60 * 1000);
+      const endHour = endDate.getHours().toString().padStart(2, "0");
+      const endMin = endDate.getMinutes().toString().padStart(2, "0");
+
+      await base44.entities.FieldReservation.create({
+        user_email: user?.email,
+        user_name: user?.full_name,
+        field_id: selectedFieldId,
+        field_name: field?.name || "",
+        date: dateStr,
+        start_time: `${startHour}:${startMin}`,
+        end_time: `${endHour}:${endMin}`,
+        total_price: (field?.price_per_hour || 0) * 2,
+        reservation_status: "pending",
+        payment_status: "unpaid",
+        match_id: created.id,
+      });
+    }
+
     navigate(createPageUrl("MatchDetail") + `?id=${created.id}`);
   };
 
