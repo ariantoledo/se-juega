@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import {
-  User, Phone, Mail, Shield, Trophy, CalendarDays,
+  User as UserIcon, Phone, Mail, Shield, Trophy, CalendarDays,
   CheckCircle2, XCircle, Loader2, LogOut, Save, Camera
 } from "lucide-react";
 import PositionSelector from "../components/matches/PositionSelector";
