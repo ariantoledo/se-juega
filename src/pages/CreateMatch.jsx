@@ -199,6 +199,40 @@ export default function CreateMatch() {
               label="Posiciones que necesitás"
             />
 
+            {/* Reserve field toggle */}
+            <div className="border border-border rounded-xl p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Building2 className="w-4 h-4 text-primary" />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Reservar cancha</p>
+                    <p className="text-xs text-muted-foreground">Vincular una reserva a este partido</p>
+                  </div>
+                </div>
+                <Switch checked={reserveField} onCheckedChange={setReserveField} />
+              </div>
+              {reserveField && (
+                <div className="space-y-2">
+                  <Label>Seleccioná la cancha</Label>
+                  <Select value={selectedFieldId} onValueChange={setSelectedFieldId}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Elegir cancha..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {fields.map((f) => (
+                        <SelectItem key={f.id} value={f.id}>
+                          {f.name} — {f.address}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {fields.length === 0 && (
+                    <p className="text-xs text-muted-foreground">No hay canchas registradas aún.</p>
+                  )}
+                </div>
+              )}
+            </div>
+
             <Button type="submit" className="w-full bg-primary hover:bg-primary/90 h-12 text-base" disabled={saving}>
               {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
               Crear Partido
