@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import {
   User, Phone, Mail, Shield, Trophy, CalendarDays,
-  CheckCircle2, XCircle, Loader2, LogOut, Save
+  CheckCircle2, XCircle, Loader2, LogOut, Save, Camera
 } from "lucide-react";
 import PositionSelector from "../components/matches/PositionSelector";
 
@@ -19,16 +19,18 @@ export default function Profile() {
   const [saving, setSaving] = useState(false);
   const [phone, setPhone] = useState("");
   const [positions, setPositions] = useState([]);
+  const [avatarUrl, setAvatarUrl] = useState("");
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   useEffect(() => {
     base44.auth.me().then((u) => {
       setUser(u);
       setPhone(u.phone || "");
       setPositions(u.positions || []);
+      setAvatarUrl(u.avatar_url || "");
     });
   }, []);
 
-  // Compute stats from match players
   const { data: myPlayers = [] } = useQuery({
     queryKey: ["profile_players", user?.email],
     queryFn: () => base44.entities.MatchPlayer.filter({ player_email: user?.email }),
@@ -51,10 +53,23 @@ export default function Profile() {
     ? Math.round((matchesPlayed / confirmedMatches) * 100)
     : 100;
 
+  const handleAvatarUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploadingAvatar(true);
+    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+    setAvatarUrl(file_url);
+    await base44.auth.updateMe({ avatar_url: file_url });
+    setUser((prev) => ({ ...prev, avatar_url: file_url }));
+    setUploadingAvatar(false);
+    toast.success("Foto de perfil actualizada");
+    e.target.value = "";
+  };
+
   const handleSave = async () => {
     setSaving(true);
-    await base44.auth.updateMe({ phone, positions });
-    setUser((prev) => ({ ...prev, phone, positions }));
+    await base44.auth.updateMe({ phone, positions, avatar_url: avatarUrl });
+    setUser((prev) => ({ ...prev, phone, positions, avatar_url: avatarUrl }));
     setEditing(false);
     setSaving(false);
     toast.success("Perfil actualizado");
@@ -70,17 +85,38 @@ export default function Profile() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6 pb-24 md:pb-6">
-      <h1 className="text-3xl font-bold text-foreground tracking-tight mb-6">
-        Mi Perfil
-      </h1>
+      <h1 className="text-3xl font-bold text-foreground tracking-tight mb-6">Mi Perfil</h1>
 
       {/* Profile card */}
       <Card className="border-border/50 mb-6">
         <CardContent className="pt-6">
           <div className="flex items-center gap-4 mb-6">
-            <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center">
-              <User className="w-8 h-8 text-primary" />
+            {/* Avatar */}
+            <div className="relative flex-shrink-0">
+              {avatarUrl ? (
+                <img
+                  src={avatarUrl}
+                  alt={user.full_name}
+                  className="w-16 h-16 rounded-2xl object-cover"
+                />
+              ) : (
+                <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center">
+                  <User className="w-8 h-8 text-primary" />
+                </div>
+              )}
+              <label className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-primary flex items-center justify-center cursor-pointer shadow-md hover:bg-primary/90 transition-colors">
+                {uploadingAvatar
+                  ? <Loader2 className="w-3 h-3 text-white animate-spin" />
+                  : <Camera className="w-3 h-3 text-white" />}
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleAvatarUpload}
+                />
+              </label>
             </div>
+
             <div>
               <h2 className="text-xl font-bold text-foreground">{user.full_name}</h2>
               <p className="text-muted-foreground text-sm flex items-center gap-1">
@@ -107,18 +143,10 @@ export default function Profile() {
                 label="Posiciones en las que jugás"
               />
               <div className="flex gap-3">
-                <Button
-                  variant="outline"
-                  onClick={() => setEditing(false)}
-                  className="flex-1"
-                >
+                <Button variant="outline" onClick={() => setEditing(false)} className="flex-1">
                   Cancelar
                 </Button>
-                <Button
-                  onClick={handleSave}
-                  disabled={saving}
-                  className="flex-1 bg-primary hover:bg-primary/90"
-                >
+                <Button onClick={handleSave} disabled={saving} className="flex-1 bg-primary hover:bg-primary/90">
                   {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
                   Guardar
                 </Button>
@@ -126,15 +154,15 @@ export default function Profile() {
             </div>
           ) : (
             <div className="space-y-3">
-              {(user.phone || phone) && (
+              {phone && (
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Phone className="w-4 h-4" />
-                  {user.phone || phone}
+                  {phone}
                 </div>
               )}
-              {(user.positions || positions)?.length > 0 && (
+              {positions?.length > 0 && (
                 <div className="flex flex-wrap gap-2">
-                  {(user.positions || positions).map((p) => (
+                  {positions.map((p) => (
                     <Badge key={p} className="bg-primary/10 text-primary border-0">{p}</Badge>
                   ))}
                 </div>
