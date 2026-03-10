@@ -65,13 +65,30 @@ export default function Layout({ children, currentPageName }) {
             })}
           </nav>
 
-          {/* Mobile menu button */}
+          {/* Dark mode toggle (desktop) */}
           <button
-            className="md:hidden p-2 rounded-lg hover:bg-secondary"
-            onClick={() => setMenuOpen(!menuOpen)}
+            onClick={() => setDark(!dark)}
+            className="hidden md:flex items-center justify-center w-9 h-9 rounded-lg hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+            title={dark ? "Modo claro" : "Modo oscuro"}
           >
-            {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
+
+          {/* Mobile menu button */}
+          <div className="md:hidden flex items-center gap-2">
+            <button
+              onClick={() => setDark(!dark)}
+              className="p-2 rounded-lg hover:bg-secondary transition-colors text-muted-foreground"
+            >
+              {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
+            <button
+              className="p-2 rounded-lg hover:bg-secondary"
+              onClick={() => setMenuOpen(!menuOpen)}
+            >
+              {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile nav */}
