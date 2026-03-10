@@ -16,6 +16,8 @@ export default function CreateMatch() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [reserveField, setReserveField] = useState(false);
+  const [selectedFieldId, setSelectedFieldId] = useState("");
 
   const [form, setForm] = useState({
     football_type: "5",
@@ -26,6 +28,11 @@ export default function CreateMatch() {
     players_needed: 10,
     match_type: "hombres",
     missing_positions: [],
+  });
+
+  const { data: fields = [] } = useQuery({
+    queryKey: ["fields"],
+    queryFn: () => base44.entities.Field.list(),
   });
 
   useEffect(() => {
