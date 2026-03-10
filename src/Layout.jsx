@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
-import { Home, PlusCircle, CalendarDays, User, Menu, X } from "lucide-react";
+import { Home, PlusCircle, CalendarDays, User, Menu, X, Sun, Moon } from "lucide-react";
 
 const navItems = [
   { name: "Partidos", page: "Home", icon: Home },
