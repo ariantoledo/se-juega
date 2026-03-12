@@ -62,12 +62,19 @@ export default function MisCanchas() {
             <h1 className="text-3xl font-bold">Mis Canchas</h1>
             <p className="text-muted-foreground">Gestiona tus establecimientos y canchas</p>
           </div>
-          <Button asChild>
-            <a href={createPageUrl("RegistrarEstablecimiento")}>
-              <PlusCircle className="w-4 h-4 mr-2" />
-              Nuevo Establecimiento
-            </a>
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" asChild>
+              <a href={createPageUrl("ConfigurarStripe")}>
+                Configurar pagos
+              </a>
+            </Button>
+            <Button asChild>
+              <a href={createPageUrl("RegistrarEstablecimiento")}>
+                <PlusCircle className="w-4 h-4 mr-2" />
+                Nuevo Establecimiento
+              </a>
+            </Button>
+          </div>
         </div>
 
         {/* Stats */}

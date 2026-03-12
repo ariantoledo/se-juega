@@ -96,12 +96,28 @@ export default function GestionarCancha() {
 
   const confirmReservationMutation = useMutation({
     mutationFn: async (reservationId) => {
+      const reservation = reservations.find(r => r.id === reservationId);
+      
       await base44.entities.FieldNewReservation.update(reservationId, {
         reservation_status: "confirmed"
       });
+
+      // Send confirmation email to user
+      await base44.integrations.Core.SendEmail({
+        to: reservation.user_email,
+        subject: `Reserva confirmada en ${reservation.field_name}`,
+        body: `¡Tu reserva ha sido confirmada!
+
+Cancha: ${reservation.field_name}
+Fecha: ${reservation.date}
+Horario: ${reservation.start_time} - ${reservation.end_time}
+Monto pagado: $${reservation.amount_paid.toLocaleString()}
+
+¡Nos vemos en la cancha!`
+      });
     },
     onSuccess: () => {
-      toast.success("Reserva confirmada");
+      toast.success("Reserva confirmada y notificación enviada");
       queryClient.invalidateQueries(["field-reservations"]);
     }
   });
@@ -109,15 +125,30 @@ export default function GestionarCancha() {
   const cancelReservationMutation = useMutation({
     mutationFn: async (reservationId) => {
       const reservation = reservations.find(r => r.id === reservationId);
+      
       await base44.entities.FieldNewReservation.update(reservationId, {
         reservation_status: "cancelled"
       });
+      
       await base44.entities.FieldNewTimeSlot.update(reservation.timeslot_id, {
         status: "available"
       });
+
+      // Send cancellation email to user
+      await base44.integrations.Core.SendEmail({
+        to: reservation.user_email,
+        subject: `Reserva cancelada en ${reservation.field_name}`,
+        body: `Tu reserva ha sido cancelada.
+
+Cancha: ${reservation.field_name}
+Fecha: ${reservation.date}
+Horario: ${reservation.start_time} - ${reservation.end_time}
+
+Si pagaste, el reembolso será procesado en los próximos días.`
+      });
     },
     onSuccess: () => {
-      toast.success("Reserva cancelada");
+      toast.success("Reserva cancelada y notificación enviada");
       queryClient.invalidateQueries(["field-reservations"]);
       queryClient.invalidateQueries(["field-slots"]);
     }

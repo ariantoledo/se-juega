@@ -64,7 +64,7 @@ export default function CanchaDetail() {
       const commissionAmount = field.precio_total * 0.10;
       const ownerAmount = field.precio_total * 0.90;
 
-      await base44.entities.FieldNewReservation.create({
+      const reservation = await base44.entities.FieldNewReservation.create({
         user_email: user.email,
         user_name: user.full_name,
         field_new_id: fieldId,
@@ -86,9 +86,26 @@ export default function CanchaDetail() {
       await base44.entities.FieldNewTimeSlot.update(selectedSlot.id, {
         status: "reserved"
       });
+
+      // Send notification to owner
+      if (establishment?.owner_email) {
+        await base44.integrations.Core.SendEmail({
+          to: establishment.owner_email,
+          subject: `Nueva reserva en ${field.name}`,
+          body: `Tienes una nueva reserva pendiente:
+          
+Cancha: ${field.name}
+Cliente: ${user.full_name} (${user.email})
+Fecha: ${selectedSlot.date}
+Horario: ${selectedSlot.start_time} - ${selectedSlot.end_time}
+Monto: $${amount.toLocaleString()} (${paymentType === "sena" ? "Seña" : "Total"})
+
+Ingresa a la aplicación para confirmar o rechazar la reserva.`
+        });
+      }
     },
     onSuccess: () => {
-      toast.success("¡Reserva creada exitosamente!");
+      toast.success("¡Reserva creada exitosamente! El dueño recibirá una notificación.");
       queryClient.invalidateQueries(["fieldnew-slots"]);
       setShowConfirmDialog(false);
       setSelectedSlot(null);
