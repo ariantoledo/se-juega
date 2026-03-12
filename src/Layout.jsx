@@ -110,7 +110,7 @@ export default function Layout({ children, currentPageName }) {
                 >
                   <Icon className="w-4 h-4" />
                   {item.name}
-                </Link>
+                </a>
               );
             })}
           </nav>
