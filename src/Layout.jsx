@@ -49,9 +49,9 @@ export default function Layout({ children, currentPageName }) {
               const Icon = item.icon;
               const isActive = currentPageName === item.page;
               return (
-                <Link
+                <a
                   key={item.page}
-                  to={createPageUrl(item.page)}
+                  href={createPageUrl(item.page)}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                     isActive
                       ? "bg-primary text-primary-foreground"
@@ -60,7 +60,7 @@ export default function Layout({ children, currentPageName }) {
                 >
                   <Icon className="w-4 h-4" />
                   {item.name}
-                </Link>
+                </a>
               );
             })}
           </nav>
