@@ -57,7 +57,7 @@ export default function MisCanchas() {
     <div className="min-h-screen bg-background p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
           <div>
             <h1 className="text-3xl font-bold">Mis Canchas</h1>
             <p className="text-muted-foreground">Gestiona tus establecimientos y canchas</p>
@@ -144,31 +144,58 @@ export default function MisCanchas() {
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {myFields.map(field => (
-                  <Card key={field.id}>
-                    <CardHeader>
-                      <CardTitle className="text-lg">{field.name}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2 text-sm mb-4">
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Tipo</span>
-                          <span className="font-medium">{field.field_type}</span>
+              <div className="space-y-4">
+                {myEstablishments.map(est => {
+                  const estFields = myFields.filter(f => f.establishment_id === est.id);
+                  return (
+                    <Card key={est.id}>
+                      <CardHeader>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <CardTitle>{est.name}</CardTitle>
+                            <p className="text-sm text-muted-foreground mt-1">{est.address}</p>
+                          </div>
+                          <Button size="sm" asChild>
+                            <a href={createPageUrl(`RegistrarCancha?establishment_id=${est.id}`)}>
+                              <PlusCircle className="w-4 h-4 mr-1" />
+                              Agregar cancha
+                            </a>
+                          </Button>
                         </div>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Precio</span>
-                          <span className="font-medium">${field.precio_total.toLocaleString()}</span>
-                        </div>
-                      </div>
-                      <Button variant="outline" size="sm" className="w-full" asChild>
-                        <a href={createPageUrl(`GestionarCancha?id=${field.id}`)}>
-                          Ver detalles
-                        </a>
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ))}
+                      </CardHeader>
+                      <CardContent>
+                        {estFields.length === 0 ? (
+                          <p className="text-sm text-muted-foreground text-center py-4">
+                            No hay canchas en este establecimiento
+                          </p>
+                        ) : (
+                          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
+                            {estFields.map(field => (
+                              <div key={field.id} className="p-3 bg-secondary rounded-lg">
+                                <p className="font-medium mb-2">{field.name}</p>
+                                <div className="space-y-1 text-xs mb-3">
+                                  <div className="flex justify-between">
+                                    <span className="text-muted-foreground">Tipo</span>
+                                    <span>{field.field_type}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span className="text-muted-foreground">Precio</span>
+                                    <span>${field.precio_total.toLocaleString()}</span>
+                                  </div>
+                                </div>
+                                <Button variant="outline" size="sm" className="w-full" asChild>
+                                  <a href={createPageUrl(`GestionarCancha?id=${field.id}`)}>
+                                    Gestionar
+                                  </a>
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
             )}
           </TabsContent>

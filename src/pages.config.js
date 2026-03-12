@@ -61,6 +61,7 @@ import MisCanchas from './pages/MisCanchas';
 import RegistrarEstablecimiento from './pages/RegistrarEstablecimiento';
 import RegistrarCancha from './pages/RegistrarCancha';
 import GestionarCancha from './pages/GestionarCancha';
+import ConfigurarStripe from './pages/ConfigurarStripe';
 import __Layout from './Layout.jsx';
 
 
@@ -79,6 +80,7 @@ export const PAGES = {
     "RegistrarEstablecimiento": RegistrarEstablecimiento,
     "RegistrarCancha": RegistrarCancha,
     "GestionarCancha": GestionarCancha,
+    "ConfigurarStripe": ConfigurarStripe,
 }
 
 export const pagesConfig = {

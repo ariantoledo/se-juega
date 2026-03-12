@@ -31,8 +31,8 @@ export default function CreateMatch() {
   });
 
   const { data: fields = [] } = useQuery({
-    queryKey: ["fields"],
-    queryFn: () => base44.entities.Field.list(),
+    queryKey: ["fieldsnew"],
+    queryFn: () => base44.entities.FieldNew.list(),
   });
 
   useEffect(() => {
@@ -78,17 +78,25 @@ export default function CreateMatch() {
       const endHour = endDate.getHours().toString().padStart(2, "0");
       const endMin = endDate.getMinutes().toString().padStart(2, "0");
 
-      await base44.entities.FieldReservation.create({
+      const commissionAmount = field.precio_total * 0.10;
+      const ownerAmount = field.precio_total * 0.90;
+
+      await base44.entities.FieldNewReservation.create({
         user_email: user?.email,
         user_name: user?.full_name,
-        field_id: selectedFieldId,
+        field_new_id: selectedFieldId,
         field_name: field?.name || "",
+        establishment_id: field?.establishment_id,
         date: dateStr,
         start_time: `${startHour}:${startMin}`,
         end_time: `${endHour}:${endMin}`,
-        total_price: (field?.price_per_hour || 0) * 2,
+        payment_type: "total",
+        amount_paid: field.precio_total,
+        precio_total: field.precio_total,
+        commission_amount: commissionAmount,
+        owner_amount: ownerAmount,
         reservation_status: "pending",
-        payment_status: "unpaid",
+        payment_status: "pending",
         match_id: created.id,
       });
     }
