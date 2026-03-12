@@ -48,25 +48,25 @@
  * The mainPage value must match a key in the PAGES object exactly.
  */
 import CreateMatch from './pages/CreateMatch';
+import FieldDetail from './pages/FieldDetail';
+import FieldOwnerDashboard from './pages/FieldOwnerDashboard';
+import Fields from './pages/Fields';
 import Home from './pages/Home';
 import MatchDetail from './pages/MatchDetail';
 import MyMatches from './pages/MyMatches';
 import Profile from './pages/Profile';
-import Fields from './pages/Fields';
-import FieldDetail from './pages/FieldDetail';
-import FieldOwnerDashboard from './pages/FieldOwnerDashboard';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "CreateMatch": CreateMatch,
+    "FieldDetail": FieldDetail,
+    "FieldOwnerDashboard": FieldOwnerDashboard,
+    "Fields": Fields,
     "Home": Home,
     "MatchDetail": MatchDetail,
     "MyMatches": MyMatches,
     "Profile": Profile,
-    "Fields": Fields,
-    "FieldDetail": FieldDetail,
-    "FieldOwnerDashboard": FieldOwnerDashboard,
 }
 
 export const pagesConfig = {

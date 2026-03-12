@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
 import { Home, PlusCircle, CalendarDays, User, Menu, X, Sun, Moon, MapPin } from "lucide-react";
@@ -37,12 +36,12 @@ export default function Layout({ children, currentPageName }) {
       {/* Header */}
       <header className="sticky top-0 z-50 bg-card/80 backdrop-blur-xl border-b border-border">
         <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link to={createPageUrl("Home")} className="flex items-center gap-2">
+          <a href={createPageUrl("Home")} className="flex items-center gap-2">
             <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center">
               <span className="text-primary-foreground font-bold text-lg">⚽</span>
             </div>
             <span className="font-bold text-xl text-foreground tracking-tight">Hay Equipo</span>
-          </Link>
+          </a>
 
           {/* Desktop nav */}
           <nav className="hidden md:flex items-center gap-1">
@@ -99,9 +98,9 @@ export default function Layout({ children, currentPageName }) {
               const Icon = item.icon;
               const isActive = currentPageName === item.page;
               return (
-                <Link
+                <a
                   key={item.page}
-                  to={createPageUrl(item.page)}
+                  href={createPageUrl(item.page)}
                   onClick={() => setMenuOpen(false)}
                   className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${
                     isActive
@@ -130,16 +129,16 @@ export default function Layout({ children, currentPageName }) {
             const Icon = item.icon;
             const isActive = currentPageName === item.page;
             return (
-              <Link
+              <a
                 key={item.page}
-                to={createPageUrl(item.page)}
+                href={createPageUrl(item.page)}
                 className={`flex flex-col items-center gap-1 px-3 py-1 ${
                   isActive ? "text-primary" : "text-muted-foreground"
                 }`}
               >
                 <Icon className="w-5 h-5" />
                 <span className="text-[10px] font-medium">{item.name}</span>
-              </Link>
+              </a>
             );
           })}
         </div>
