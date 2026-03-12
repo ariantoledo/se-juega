@@ -55,6 +55,10 @@ import Home from './pages/Home';
 import MatchDetail from './pages/MatchDetail';
 import MyMatches from './pages/MyMatches';
 import Profile from './pages/Profile';
+import Canchas from './pages/Canchas';
+import CanchaDetail from './pages/CanchaDetail';
+import MisCanchas from './pages/MisCanchas';
+import RegistrarEstablecimiento from './pages/RegistrarEstablecimiento';
 import __Layout from './Layout.jsx';
 
 
@@ -67,6 +71,10 @@ export const PAGES = {
     "MatchDetail": MatchDetail,
     "MyMatches": MyMatches,
     "Profile": Profile,
+    "Canchas": Canchas,
+    "CanchaDetail": CanchaDetail,
+    "MisCanchas": MisCanchas,
+    "RegistrarEstablecimiento": RegistrarEstablecimiento,
 }
 
 export const pagesConfig = {

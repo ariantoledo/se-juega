@@ -7,7 +7,7 @@ const navItems = [
   { name: "Partidos", page: "Home", icon: Home },
   { name: "Crear Partido", page: "CreateMatch", icon: PlusCircle },
   { name: "Mis Partidos", page: "MyMatches", icon: CalendarDays },
-  { name: "Canchas", page: "Fields", icon: MapPin },
+  { name: "Canchas", page: "Canchas", icon: MapPin },
   { name: "Perfil", page: "Profile", icon: User },
 ];
 
