@@ -59,6 +59,8 @@ import Canchas from './pages/Canchas';
 import CanchaDetail from './pages/CanchaDetail';
 import MisCanchas from './pages/MisCanchas';
 import RegistrarEstablecimiento from './pages/RegistrarEstablecimiento';
+import RegistrarCancha from './pages/RegistrarCancha';
+import GestionarCancha from './pages/GestionarCancha';
 import __Layout from './Layout.jsx';
 
 
@@ -75,6 +77,8 @@ export const PAGES = {
     "CanchaDetail": CanchaDetail,
     "MisCanchas": MisCanchas,
     "RegistrarEstablecimiento": RegistrarEstablecimiento,
+    "RegistrarCancha": RegistrarCancha,
+    "GestionarCancha": GestionarCancha,
 }
 
 export const pagesConfig = {
