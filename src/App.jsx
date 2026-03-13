@@ -6,6 +6,9 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
+import RegistrarCancha from './pages/RegistrarCancha';
+import GestionarCancha from './pages/GestionarCancha';
+import ConfigurarStripe from './pages/ConfigurarStripe';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -57,6 +60,21 @@ const AuthenticatedApp = () => {
           }
         />
       ))}
+      <Route path="/RegistrarCancha" element={
+        <LayoutWrapper currentPageName="RegistrarCancha">
+          <RegistrarCancha />
+        </LayoutWrapper>
+      } />
+      <Route path="/GestionarCancha" element={
+        <LayoutWrapper currentPageName="GestionarCancha">
+          <GestionarCancha />
+        </LayoutWrapper>
+      } />
+      <Route path="/ConfigurarStripe" element={
+        <LayoutWrapper currentPageName="ConfigurarStripe">
+          <ConfigurarStripe />
+        </LayoutWrapper>
+      } />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
