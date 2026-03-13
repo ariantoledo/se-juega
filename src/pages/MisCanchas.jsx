@@ -137,17 +137,26 @@ export default function MisCanchas() {
           </TabsList>
 
           <TabsContent value="canchas">
-            {myFields.length === 0 ? (
+            {myEstablishments.length === 0 ? (
               <Card>
                 <CardContent className="py-12 text-center">
                   <MapPin className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">No tienes canchas registradas</h3>
-                  <p className="text-muted-foreground mb-4">Crea un establecimiento para empezar</p>
+                  <h3 className="text-lg font-semibold mb-2">Primero registra un establecimiento</h3>
+                  <p className="text-muted-foreground mb-4">Luego podrás agregar canchas dentro de cada establecimiento</p>
                   <Button asChild>
                     <a href={createPageUrl("RegistrarEstablecimiento")}>
-                      Registrar establecimiento
+                      <PlusCircle className="w-4 h-4 mr-2" />
+                      Registrar mi primer establecimiento
                     </a>
                   </Button>
+                </CardContent>
+              </Card>
+            ) : myFields.length === 0 ? (
+              <Card>
+                <CardContent className="py-12 text-center">
+                  <MapPin className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">Ahora agrega tus canchas</h3>
+                  <p className="text-muted-foreground mb-4">Ve abajo y haz clic en "Agregar cancha" en tu establecimiento</p>
                 </CardContent>
               </Card>
             ) : (
