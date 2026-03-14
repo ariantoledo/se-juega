@@ -26,15 +26,16 @@ export default function RegistrarEstablecimiento() {
 
   const createEstablishmentMutation = useMutation({
     mutationFn: async () => {
-      await base44.entities.Establishment.create({
+      const created = await base44.entities.Establishment.create({
         ...formData,
         owner_email: user.email,
         is_active: true
       });
+      return created;
     },
-    onSuccess: () => {
+    onSuccess: (created) => {
       toast.success("Establecimiento creado exitosamente");
-      window.location.href = createPageUrl("MisCanchas");
+      window.location.href = createPageUrl(`RegistrarCancha?establishment_id=${created.id}`);
     }
   });
 
@@ -114,8 +115,11 @@ export default function RegistrarEstablecimiento() {
             <CardTitle>Próximo paso</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground">
-              Una vez creado el establecimiento, podrás agregar canchas y configurar horarios de disponibilidad.
+            <p className="text-sm text-muted-foreground mb-4">
+              Una vez creado el establecimiento, te redirigiremos automáticamente para agregar tu primera cancha.
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Los pagos se procesarán mediante Mercado Pago en pesos argentinos.
             </p>
           </CardContent>
         </Card>

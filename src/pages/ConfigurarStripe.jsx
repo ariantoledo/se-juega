@@ -10,7 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CheckCircle2, AlertCircle, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 
-export default function ConfigurarStripe() {
+export default function ConfigurarMercadoPago() {
   const [user, setUser] = useState(null);
   const [mercadopagoAccountId, setMercadopagoAccountId] = useState("");
   const queryClient = useQueryClient();
@@ -46,7 +46,7 @@ export default function ConfigurarStripe() {
   return (
     <div className="min-h-screen bg-background p-4 md:p-6">
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6">Configuración de Pagos</h1>
+        <h1 className="text-3xl font-bold mb-6">Configuración de Mercado Pago</h1>
 
         <Alert className="mb-6">
           <AlertCircle className="w-4 h-4" />

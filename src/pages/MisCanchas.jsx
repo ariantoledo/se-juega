@@ -54,21 +54,21 @@ export default function MisCanchas() {
     .reduce((sum, r) => sum + (r.owner_amount || 0), 0);
 
   return (
-    <div className="min-h-screen bg-background p-4 md:p-6">
+    <div className="min-h-screen bg-background p-3 md:p-6 pb-20 md:pb-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
+        <div className="flex flex-col gap-3 mb-4 md:mb-6">
           <div>
-            <h1 className="text-3xl font-bold">Mis Canchas</h1>
-            <p className="text-muted-foreground">Gestiona tus establecimientos y canchas</p>
+            <h1 className="text-2xl md:text-3xl font-bold">Mis Canchas</h1>
+            <p className="text-sm md:text-base text-muted-foreground">Gestiona tus establecimientos y canchas</p>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" asChild>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <Button variant="outline" size="sm" className="w-full sm:w-auto" asChild>
               <a href={createPageUrl("ConfigurarStripe")}>
-                Configurar pagos
+                Configurar Mercado Pago
               </a>
             </Button>
-            <Button asChild>
+            <Button size="sm" className="w-full sm:w-auto" asChild>
               <a href={createPageUrl("RegistrarEstablecimiento")}>
                 <PlusCircle className="w-4 h-4 mr-2" />
                 Nuevo Establecimiento
@@ -78,51 +78,51 @@ export default function MisCanchas() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 mb-4 md:mb-6">
           <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
+            <CardContent className="pt-4 md:pt-6 pb-3 md:pb-6">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                 <div>
-                  <p className="text-sm text-muted-foreground">Reservas del mes</p>
-                  <p className="text-2xl font-bold">{monthReservations.length}</p>
+                  <p className="text-xs md:text-sm text-muted-foreground leading-tight">Reservas mes</p>
+                  <p className="text-xl md:text-2xl font-bold">{monthReservations.length}</p>
                 </div>
-                <Calendar className="w-8 h-8 text-primary" />
+                <Calendar className="w-6 h-6 md:w-8 md:h-8 text-primary" />
               </div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
+            <CardContent className="pt-4 md:pt-6 pb-3 md:pb-6">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                 <div>
-                  <p className="text-sm text-muted-foreground">Ingresos del mes</p>
-                  <p className="text-2xl font-bold">${monthIncome.toLocaleString()}</p>
+                  <p className="text-xs md:text-sm text-muted-foreground leading-tight">Ingresos</p>
+                  <p className="text-lg md:text-2xl font-bold">${monthIncome.toLocaleString()}</p>
                 </div>
-                <DollarSign className="w-8 h-8 text-primary" />
+                <DollarSign className="w-6 h-6 md:w-8 md:h-8 text-primary" />
               </div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
+            <CardContent className="pt-4 md:pt-6 pb-3 md:pb-6">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                 <div>
-                  <p className="text-sm text-muted-foreground">Establecimientos</p>
-                  <p className="text-2xl font-bold">{myEstablishments.length}</p>
+                  <p className="text-xs md:text-sm text-muted-foreground leading-tight">Establecimientos</p>
+                  <p className="text-xl md:text-2xl font-bold">{myEstablishments.length}</p>
                 </div>
-                <MapPin className="w-8 h-8 text-primary" />
+                <MapPin className="w-6 h-6 md:w-8 md:h-8 text-primary" />
               </div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
+            <CardContent className="pt-4 md:pt-6 pb-3 md:pb-6">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                 <div>
-                  <p className="text-sm text-muted-foreground">Total canchas</p>
-                  <p className="text-2xl font-bold">{myFields.length}</p>
+                  <p className="text-xs md:text-sm text-muted-foreground leading-tight">Total canchas</p>
+                  <p className="text-xl md:text-2xl font-bold">{myFields.length}</p>
                 </div>
-                <TrendingUp className="w-8 h-8 text-primary" />
+                <TrendingUp className="w-6 h-6 md:w-8 md:h-8 text-primary" />
               </div>
             </CardContent>
           </Card>
@@ -139,75 +139,67 @@ export default function MisCanchas() {
           <TabsContent value="canchas">
             {myEstablishments.length === 0 ? (
               <Card>
-                <CardContent className="py-12 text-center">
-                  <MapPin className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Primero registra un establecimiento</h3>
-                  <p className="text-muted-foreground mb-4">Luego podrás agregar canchas dentro de cada establecimiento</p>
-                  <Button asChild>
+                <CardContent className="py-8 md:py-12 px-4 text-center">
+                  <MapPin className="w-10 h-10 md:w-12 md:h-12 mx-auto text-muted-foreground mb-3 md:mb-4" />
+                  <h3 className="text-base md:text-lg font-semibold mb-2">Primero registra un establecimiento</h3>
+                  <p className="text-sm md:text-base text-muted-foreground mb-4">Luego podrás agregar canchas dentro de cada establecimiento</p>
+                  <Button size="sm" className="w-full sm:w-auto" asChild>
                     <a href={createPageUrl("RegistrarEstablecimiento")}>
                       <PlusCircle className="w-4 h-4 mr-2" />
-                      Registrar mi primer establecimiento
+                      Registrar establecimiento
                     </a>
                   </Button>
                 </CardContent>
               </Card>
             ) : myFields.length === 0 ? (
               <Card>
-                <CardContent className="py-12 text-center">
-                  <MapPin className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Ahora agrega tus canchas</h3>
-                  <p className="text-muted-foreground mb-4">Ve abajo y haz clic en "Agregar cancha" en tu establecimiento</p>
+                <CardContent className="py-8 md:py-12 px-4 text-center">
+                  <MapPin className="w-10 h-10 md:w-12 md:h-12 mx-auto text-muted-foreground mb-3 md:mb-4" />
+                  <h3 className="text-base md:text-lg font-semibold mb-2">Ahora agrega tus canchas</h3>
+                  <p className="text-sm md:text-base text-muted-foreground mb-4">Haz clic en "Agregar Cancha" en tu establecimiento abajo</p>
                 </CardContent>
               </Card>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3 md:space-y-4">
                 {myEstablishments.map(est => {
                   const estFields = myFields.filter(f => f.establishment_id === est.id);
                   return (
                     <Card key={est.id}>
-                      <CardHeader>
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <CardTitle>{est.name}</CardTitle>
-                            <p className="text-sm text-muted-foreground mt-1">{est.address}</p>
+                      <CardHeader className="pb-3 md:pb-6">
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                          <div className="flex-1 min-w-0">
+                            <CardTitle className="text-lg md:text-xl truncate">{est.name}</CardTitle>
+                            <p className="text-xs md:text-sm text-muted-foreground mt-1 line-clamp-1">{est.address}</p>
                           </div>
-                          <Button size="sm" asChild>
-                            <a href={createPageUrl(`RegistrarCancha?establishment_id=${est.id}`)}>
-                              <PlusCircle className="w-4 h-4 mr-1" />
-                              Agregar cancha
-                            </a>
-                          </Button>
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="flex justify-end mb-3">
-                          <Button size="sm" variant="outline" asChild>
+                          <Button size="sm" className="w-full sm:w-auto shrink-0" asChild>
                             <a href={createPageUrl(`RegistrarCancha?establishment_id=${est.id}`)}>
                               <PlusCircle className="w-4 h-4 mr-1" />
                               Agregar Cancha
                             </a>
                           </Button>
                         </div>
+                      </CardHeader>
+                      <CardContent className="pt-0">
                         {estFields.length === 0 ? (
-                          <p className="text-sm text-muted-foreground text-center py-4">
+                          <p className="text-xs md:text-sm text-muted-foreground text-center py-4">
                             No hay canchas en este establecimiento
                           </p>
                         ) : (
-                          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-3">
                             {estFields.map(field => (
                               <div key={field.id} className="p-3 bg-secondary rounded-lg">
-                                <p className="font-medium mb-2">{field.name}</p>
+                                <p className="font-medium mb-2 text-sm md:text-base truncate">{field.name}</p>
                                 <div className="space-y-1 text-xs mb-3">
-                                  <div className="flex justify-between">
-                                    <span className="text-muted-foreground">Tipo</span>
-                                    <span>{field.field_type}</span>
+                                  <div className="flex justify-between gap-2">
+                                    <span className="text-muted-foreground shrink-0">Tipo</span>
+                                    <span className="truncate">{field.field_type}</span>
                                   </div>
-                                  <div className="flex justify-between">
-                                    <span className="text-muted-foreground">Precio</span>
-                                    <span>ARS ${field.precio_total.toLocaleString()}</span>
+                                  <div className="flex justify-between gap-2">
+                                    <span className="text-muted-foreground shrink-0">Precio</span>
+                                    <span className="truncate">ARS ${field.precio_total.toLocaleString()}</span>
                                   </div>
                                 </div>
-                                <Button variant="outline" size="sm" className="w-full" asChild>
+                                <Button variant="outline" size="sm" className="w-full text-xs" asChild>
                                   <a href={createPageUrl(`GestionarCancha?id=${field.id}`)}>
                                     Gestionar
                                   </a>
@@ -227,23 +219,23 @@ export default function MisCanchas() {
           <TabsContent value="reservas">
             <Card>
               <CardHeader>
-                <CardTitle>Reservas recientes</CardTitle>
+                <CardTitle className="text-lg md:text-xl">Reservas recientes</CardTitle>
               </CardHeader>
               <CardContent>
                 {allReservations.length === 0 ? (
-                  <p className="text-center text-muted-foreground py-8">No hay reservas aún</p>
+                  <p className="text-center text-sm text-muted-foreground py-8">No hay reservas aún</p>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="space-y-2 md:space-y-3">
                     {allReservations.slice(0, 10).map(res => (
-                      <div key={res.id} className="flex items-center justify-between p-3 bg-secondary rounded-lg">
-                        <div>
-                          <p className="font-medium">{res.field_name}</p>
-                          <p className="text-sm text-muted-foreground">
+                      <div key={res.id} className="flex items-start sm:items-center justify-between gap-3 p-3 bg-secondary rounded-lg">
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-sm md:text-base truncate">{res.field_name}</p>
+                          <p className="text-xs md:text-sm text-muted-foreground line-clamp-1">
                             {res.user_name} • {res.date} {res.start_time}
                           </p>
                         </div>
-                        <div className="text-right">
-                          <p className="font-semibold">${res.amount_paid.toLocaleString()}</p>
+                        <div className="text-right shrink-0">
+                          <p className="font-semibold text-sm md:text-base">ARS ${res.amount_paid.toLocaleString()}</p>
                           <p className="text-xs text-muted-foreground">{res.reservation_status}</p>
                         </div>
                       </div>
@@ -257,9 +249,9 @@ export default function MisCanchas() {
           <TabsContent value="establecimientos">
             {myEstablishments.length === 0 ? (
               <Card>
-                <CardContent className="py-12 text-center">
-                  <h3 className="text-lg font-semibold mb-2">No tienes establecimientos</h3>
-                  <Button asChild>
+                <CardContent className="py-8 md:py-12 px-4 text-center">
+                  <h3 className="text-base md:text-lg font-semibold mb-2">No tienes establecimientos</h3>
+                  <Button size="sm" className="w-full sm:w-auto" asChild>
                     <a href={createPageUrl("RegistrarEstablecimiento")}>
                       Crear establecimiento
                     </a>
@@ -267,16 +259,16 @@ export default function MisCanchas() {
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                 {myEstablishments.map(est => (
                   <Card key={est.id}>
-                    <CardHeader>
-                      <CardTitle>{est.name}</CardTitle>
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-lg md:text-xl truncate">{est.name}</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-3">
-                      <p className="text-sm text-muted-foreground">{est.address}</p>
+                      <p className="text-xs md:text-sm text-muted-foreground line-clamp-2">{est.address}</p>
                       <div className="flex gap-2">
-                        <Button variant="outline" size="sm" className="flex-1" asChild>
+                        <Button variant="outline" size="sm" className="flex-1 text-xs md:text-sm" asChild>
                           <a href={createPageUrl(`EditarEstablecimiento?id=${est.id}`)}>
                             Editar
                           </a>
