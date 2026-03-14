@@ -47,40 +47,42 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
+import CanchaDetail from './pages/CanchaDetail';
+import Canchas from './pages/Canchas';
+import ConfigurarStripe from './pages/ConfigurarStripe';
 import CreateMatch from './pages/CreateMatch';
 import FieldDetail from './pages/FieldDetail';
 import FieldOwnerDashboard from './pages/FieldOwnerDashboard';
 import Fields from './pages/Fields';
+import GestionarCancha from './pages/GestionarCancha';
 import Home from './pages/Home';
 import MatchDetail from './pages/MatchDetail';
+import MisCanchas from './pages/MisCanchas';
 import MyMatches from './pages/MyMatches';
 import Profile from './pages/Profile';
-import Canchas from './pages/Canchas';
-import CanchaDetail from './pages/CanchaDetail';
-import MisCanchas from './pages/MisCanchas';
-import RegistrarEstablecimiento from './pages/RegistrarEstablecimiento';
 import RegistrarCancha from './pages/RegistrarCancha';
-import GestionarCancha from './pages/GestionarCancha';
-import ConfigurarStripe from './pages/ConfigurarStripe';
+import RegistrarEstablecimiento from './pages/RegistrarEstablecimiento';
+import EditarEstablecimiento from './pages/EditarEstablecimiento';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
+    "CanchaDetail": CanchaDetail,
+    "Canchas": Canchas,
+    "ConfigurarStripe": ConfigurarStripe,
     "CreateMatch": CreateMatch,
     "FieldDetail": FieldDetail,
     "FieldOwnerDashboard": FieldOwnerDashboard,
     "Fields": Fields,
+    "GestionarCancha": GestionarCancha,
     "Home": Home,
     "MatchDetail": MatchDetail,
+    "MisCanchas": MisCanchas,
     "MyMatches": MyMatches,
     "Profile": Profile,
-    "Canchas": Canchas,
-    "CanchaDetail": CanchaDetail,
-    "MisCanchas": MisCanchas,
-    "RegistrarEstablecimiento": RegistrarEstablecimiento,
     "RegistrarCancha": RegistrarCancha,
-    "GestionarCancha": GestionarCancha,
-    "ConfigurarStripe": ConfigurarStripe,
+    "RegistrarEstablecimiento": RegistrarEstablecimiento,
+    "EditarEstablecimiento": EditarEstablecimiento,
 }
 
 export const pagesConfig = {

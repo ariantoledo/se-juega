@@ -36,12 +36,19 @@ export default function Layout({ children, currentPageName }) {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-card/80 backdrop-blur-xl border-b border-border">
-        <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+        <div className="max-w-5xl mx-auto px-3 md:px-4 h-14 md:h-16 flex items-center justify-between">
+          {/* Mobile: Profile left, logo center, menu right */}
+          <div className="flex items-center gap-2 md:hidden">
+            <a href={createPageUrl("Profile")} className="p-2 rounded-lg hover:bg-secondary">
+              <User className="w-5 h-5" />
+            </a>
+          </div>
+
           <a href={createPageUrl("Home")} className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-lg">⚽</span>
+            <div className="w-8 h-8 md:w-9 md:h-9 rounded-xl bg-primary flex items-center justify-center">
+              <span className="text-primary-foreground font-bold text-base md:text-lg">⚽</span>
             </div>
-            <span className="font-bold text-xl text-foreground tracking-tight">Hay Equipo</span>
+            <span className="font-bold text-lg md:text-xl text-foreground tracking-tight">Hay Equipo</span>
           </a>
 
           {/* Desktop nav */}
@@ -53,7 +60,7 @@ export default function Layout({ children, currentPageName }) {
                 <a
                   key={item.page}
                   href={createPageUrl(item.page)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                     isActive
                       ? "bg-primary text-primary-foreground"
                       : "text-muted-foreground hover:text-foreground hover:bg-secondary"
@@ -124,21 +131,21 @@ export default function Layout({ children, currentPageName }) {
       </main>
 
       {/* Mobile bottom bar */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-card/90 backdrop-blur-xl border-t border-border">
-        <div className="flex items-center justify-around h-16">
-          {navItems.map((item) => {
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-card/90 backdrop-blur-xl border-t border-border pb-safe">
+        <div className="flex items-center justify-around h-14">
+          {navItems.filter(item => item.page !== "Profile").map((item) => {
             const Icon = item.icon;
             const isActive = currentPageName === item.page;
             return (
               <a
                 key={item.page}
                 href={createPageUrl(item.page)}
-                className={`flex flex-col items-center gap-1 px-3 py-1 ${
+                className={`flex flex-col items-center gap-0.5 px-2 py-1 ${
                   isActive ? "text-primary" : "text-muted-foreground"
                 }`}
               >
                 <Icon className="w-5 h-5" />
-                <span className="text-[10px] font-medium">{item.name}</span>
+                <span className="text-[9px] font-medium leading-tight">{item.name}</span>
               </a>
             );
           })}

@@ -94,6 +94,16 @@ export default function GestionarCancha() {
     }
   });
 
+  const deleteFieldMutation = useMutation({
+    mutationFn: async () => {
+      await base44.entities.FieldNew.delete(fieldId);
+    },
+    onSuccess: () => {
+      toast.success("Cancha eliminada");
+      window.location.href = createPageUrl("MisCanchas");
+    }
+  });
+
   const confirmReservationMutation = useMutation({
     mutationFn: async (reservationId) => {
       const reservation = reservations.find(r => r.id === reservationId);
@@ -181,9 +191,18 @@ Si pagaste, el reembolso será procesado en los próximos días.`
             <h1 className="text-3xl font-bold">{field.name}</h1>
             <p className="text-muted-foreground">{field.field_type}</p>
           </div>
-          <Button variant="outline" asChild>
-            <a href={createPageUrl("MisCanchas")}>Volver</a>
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="destructive" onClick={() => {
+              if (confirm("¿Estás seguro de eliminar esta cancha? Esta acción no se puede deshacer.")) {
+                deleteFieldMutation.mutate();
+              }
+            }}>
+              Eliminar cancha
+            </Button>
+            <Button variant="outline" asChild>
+              <a href={createPageUrl("MisCanchas")}>Volver</a>
+            </Button>
+          </div>
         </div>
 
         {/* Stats */}

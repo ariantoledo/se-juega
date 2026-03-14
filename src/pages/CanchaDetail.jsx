@@ -193,13 +193,13 @@ Ingresa a la aplicación para confirmar o rechazar la reserva.`
                 <div className="flex items-center justify-between p-3 bg-primary/10 rounded-lg">
                   <span className="font-medium">Precio Total</span>
                   <span className="text-xl font-bold text-primary">
-                    ${field.precio_total.toLocaleString()}
+                    ARS ${field.precio_total.toLocaleString()}
                   </span>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-secondary rounded-lg">
                   <span className="font-medium">Seña</span>
                   <span className="text-lg font-semibold">
-                    ${field.precio_sena.toLocaleString()}
+                    ARS ${field.precio_sena.toLocaleString()}
                   </span>
                 </div>
               </CardContent>
@@ -309,7 +309,7 @@ Ingresa a la aplicación para confirmar o rechazar la reserva.`
                     <div className="text-left">
                       <div className="font-semibold">Pagar seña</div>
                       <div className="text-sm text-muted-foreground">
-                        Reserva con ${field.precio_sena.toLocaleString()}
+                        Reserva con ARS ${field.precio_sena.toLocaleString()}
                       </div>
                     </div>
                     {paymentType === "sena" && <CheckCircle2 className="w-5 h-5 text-primary" />}
@@ -328,7 +328,7 @@ Ingresa a la aplicación para confirmar o rechazar la reserva.`
                     <div className="text-left">
                       <div className="font-semibold">Pagar total</div>
                       <div className="text-sm text-muted-foreground">
-                        ${field.precio_total.toLocaleString()} completo
+                        ARS ${field.precio_total.toLocaleString()} completo
                       </div>
                     </div>
                     {paymentType === "total" && <CheckCircle2 className="w-5 h-5 text-primary" />}
@@ -338,11 +338,16 @@ Ingresa a la aplicación para confirmar o rechazar la reserva.`
             </div>
 
             <div className="border-t pt-4">
-              <div className="flex items-center justify-between text-lg font-semibold">
-                <span>Total a pagar</span>
-                <span className="text-primary">
-                  ${(paymentType === "sena" ? field.precio_sena : field.precio_total).toLocaleString()}
-                </span>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-lg font-semibold">
+                  <span>Total a pagar</span>
+                  <span className="text-primary">
+                    ARS ${(paymentType === "sena" ? field.precio_sena : field.precio_total).toLocaleString()}
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  La comisión del 10% se calcula sobre el precio total (ARS ${field.precio_total.toLocaleString()})
+                </p>
               </div>
             </div>
           </div>

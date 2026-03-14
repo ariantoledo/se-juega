@@ -12,7 +12,7 @@ import { toast } from "sonner";
 
 export default function ConfigurarStripe() {
   const [user, setUser] = useState(null);
-  const [stripeAccountId, setStripeAccountId] = useState("");
+  const [mercadopagoAccountId, setMercadopagoAccountId] = useState("");
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -29,19 +29,19 @@ export default function ConfigurarStripe() {
   });
 
   const updateEstablishmentMutation = useMutation({
-    mutationFn: async ({ establishmentId, stripeId }) => {
+    mutationFn: async ({ establishmentId, mercadopagoId }) => {
       await base44.entities.Establishment.update(establishmentId, {
-        stripe_account_id: stripeId
+        mercadopago_account_id: mercadopagoId
       });
     },
     onSuccess: () => {
-      toast.success("Cuenta Stripe vinculada exitosamente");
+      toast.success("Cuenta Mercado Pago vinculada exitosamente");
       queryClient.invalidateQueries(["my-establishments"]);
-      setStripeAccountId("");
+      setMercadopagoAccountId("");
     }
   });
 
-  const hasStripeConfigured = myEstablishments.some(e => e.stripe_account_id);
+  const hasMercadopagoConfigured = myEstablishments.some(e => e.mercadopago_account_id);
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-6">
@@ -51,8 +51,9 @@ export default function ConfigurarStripe() {
         <Alert className="mb-6">
           <AlertCircle className="w-4 h-4" />
           <AlertDescription>
-            Para recibir pagos de las reservas, necesitas vincular tu cuenta de Stripe Connect.
-            La aplicación cobrará una comisión del 10% sobre cada reserva.
+            Para recibir pagos de las reservas, necesitas vincular tu cuenta de Mercado Pago.
+            La aplicación cobrará una comisión del 10% sobre el monto total de cada reserva.
+            Los pagos se procesan en pesos argentinos (ARS).
           </AlertDescription>
         </Alert>
 
@@ -77,7 +78,7 @@ export default function ConfigurarStripe() {
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
                     <span>{establishment.name}</span>
-                    {establishment.stripe_account_id && (
+                    {establishment.mercadopago_account_id && (
                       <div className="flex items-center gap-2 text-sm font-normal text-primary">
                         <CheckCircle2 className="w-4 h-4" />
                         Configurado
@@ -86,37 +87,37 @@ export default function ConfigurarStripe() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {establishment.stripe_account_id ? (
+                  {establishment.mercadopago_account_id ? (
                     <div className="space-y-3">
                       <div className="p-3 bg-primary/10 rounded-lg">
-                        <p className="text-sm font-medium mb-1">ID de cuenta Stripe</p>
+                        <p className="text-sm font-medium mb-1">ID de cuenta Mercado Pago</p>
                         <code className="text-xs text-muted-foreground">
-                          {establishment.stripe_account_id}
+                          {establishment.mercadopago_account_id}
                         </code>
                       </div>
                       <Alert>
                         <CheckCircle2 className="w-4 h-4" />
                         <AlertDescription>
-                          Tu cuenta está lista para recibir pagos. El 90% de cada reserva llegará a tu cuenta automáticamente.
+                          Tu cuenta está lista para recibir pagos en ARS. El 90% del monto total de cada reserva llegará a tu cuenta automáticamente.
                         </AlertDescription>
                       </Alert>
                     </div>
                   ) : (
                     <div className="space-y-4">
                       <div>
-                        <Label>ID de cuenta Stripe Connect</Label>
+                        <Label>ID de cuenta Mercado Pago</Label>
                         <div className="flex gap-2 mt-1">
                           <Input
-                            placeholder="acct_xxxxxxxxxxxxx"
-                            value={stripeAccountId}
-                            onChange={(e) => setStripeAccountId(e.target.value)}
+                            placeholder="123456789"
+                            value={mercadopagoAccountId}
+                            onChange={(e) => setMercadopagoAccountId(e.target.value)}
                           />
                           <Button
                             onClick={() => updateEstablishmentMutation.mutate({
                               establishmentId: establishment.id,
-                              stripeId: stripeAccountId
+                              mercadopagoId: mercadopagoAccountId
                             })}
-                            disabled={!stripeAccountId}
+                            disabled={!mercadopagoAccountId}
                           >
                             Vincular
                           </Button>
@@ -126,16 +127,16 @@ export default function ConfigurarStripe() {
                       <Alert>
                         <AlertCircle className="w-4 h-4" />
                         <AlertDescription className="space-y-2">
-                          <p>Para obtener tu ID de cuenta Stripe Connect:</p>
+                          <p>Para obtener tu ID de cuenta Mercado Pago:</p>
                           <ol className="list-decimal list-inside text-xs space-y-1 ml-2">
-                            <li>Crea una cuenta en Stripe Connect</li>
+                            <li>Crea una cuenta de vendedor en Mercado Pago</li>
                             <li>Completa el proceso de verificación</li>
-                            <li>Copia tu ID de cuenta (comienza con "acct_")</li>
+                            <li>Obtén tu Access Token o User ID</li>
                             <li>Pégalo aquí para vincularlo</li>
                           </ol>
                           <Button variant="link" className="h-auto p-0 text-xs" asChild>
-                            <a href="https://stripe.com/connect" target="_blank" rel="noopener noreferrer">
-                              Ir a Stripe Connect <ExternalLink className="w-3 h-3 ml-1" />
+                            <a href="https://www.mercadopago.com.ar/developers" target="_blank" rel="noopener noreferrer">
+                              Ir a Mercado Pago Developers <ExternalLink className="w-3 h-3 ml-1" />
                             </a>
                           </Button>
                         </AlertDescription>
@@ -163,11 +164,15 @@ export default function ConfigurarStripe() {
             </div>
             <div className="flex items-start gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2" />
-              <p>Los pagos se procesan de forma segura a través de Stripe</p>
+              <p>Los pagos se procesan de forma segura a través de Mercado Pago en pesos argentinos (ARS)</p>
             </div>
             <div className="flex items-start gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2" />
-              <p>Puedes ver el historial de pagos en tu panel de Stripe</p>
+              <p>Puedes ver el historial de pagos en tu panel de Mercado Pago</p>
+            </div>
+            <div className="flex items-start gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2" />
+              <p>La comisión del 10% se calcula sobre el precio total, independientemente de si el cliente paga seña o total</p>
             </div>
           </CardContent>
         </Card>

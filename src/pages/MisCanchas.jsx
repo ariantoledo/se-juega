@@ -180,6 +180,14 @@ export default function MisCanchas() {
                         </div>
                       </CardHeader>
                       <CardContent>
+                        <div className="flex justify-end mb-3">
+                          <Button size="sm" variant="outline" asChild>
+                            <a href={createPageUrl(`RegistrarCancha?establishment_id=${est.id}`)}>
+                              <PlusCircle className="w-4 h-4 mr-1" />
+                              Agregar Cancha
+                            </a>
+                          </Button>
+                        </div>
                         {estFields.length === 0 ? (
                           <p className="text-sm text-muted-foreground text-center py-4">
                             No hay canchas en este establecimiento
@@ -196,7 +204,7 @@ export default function MisCanchas() {
                                   </div>
                                   <div className="flex justify-between">
                                     <span className="text-muted-foreground">Precio</span>
-                                    <span>${field.precio_total.toLocaleString()}</span>
+                                    <span>ARS ${field.precio_total.toLocaleString()}</span>
                                   </div>
                                 </div>
                                 <Button variant="outline" size="sm" className="w-full" asChild>
@@ -265,13 +273,15 @@ export default function MisCanchas() {
                     <CardHeader>
                       <CardTitle>{est.name}</CardTitle>
                     </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground mb-4">{est.address}</p>
-                      <Button variant="outline" size="sm" className="w-full" asChild>
-                        <a href={createPageUrl(`EditarEstablecimiento?id=${est.id}`)}>
-                          Editar
-                        </a>
-                      </Button>
+                    <CardContent className="space-y-3">
+                      <p className="text-sm text-muted-foreground">{est.address}</p>
+                      <div className="flex gap-2">
+                        <Button variant="outline" size="sm" className="flex-1" asChild>
+                          <a href={createPageUrl(`EditarEstablecimiento?id=${est.id}`)}>
+                            Editar
+                          </a>
+                        </Button>
+                      </div>
                     </CardContent>
                   </Card>
                 ))}
