@@ -51,6 +51,7 @@ import CanchaDetail from './pages/CanchaDetail';
 import Canchas from './pages/Canchas';
 import ConfigurarStripe from './pages/ConfigurarStripe';
 import CreateMatch from './pages/CreateMatch';
+import EditarEstablecimiento from './pages/EditarEstablecimiento';
 import FieldDetail from './pages/FieldDetail';
 import FieldOwnerDashboard from './pages/FieldOwnerDashboard';
 import Fields from './pages/Fields';
@@ -62,7 +63,6 @@ import MyMatches from './pages/MyMatches';
 import Profile from './pages/Profile';
 import RegistrarCancha from './pages/RegistrarCancha';
 import RegistrarEstablecimiento from './pages/RegistrarEstablecimiento';
-import EditarEstablecimiento from './pages/EditarEstablecimiento';
 import __Layout from './Layout.jsx';
 
 
@@ -71,6 +71,7 @@ export const PAGES = {
     "Canchas": Canchas,
     "ConfigurarStripe": ConfigurarStripe,
     "CreateMatch": CreateMatch,
+    "EditarEstablecimiento": EditarEstablecimiento,
     "FieldDetail": FieldDetail,
     "FieldOwnerDashboard": FieldOwnerDashboard,
     "Fields": Fields,
@@ -82,7 +83,6 @@ export const PAGES = {
     "Profile": Profile,
     "RegistrarCancha": RegistrarCancha,
     "RegistrarEstablecimiento": RegistrarEstablecimiento,
-    "EditarEstablecimiento": EditarEstablecimiento,
 }
 
 export const pagesConfig = {

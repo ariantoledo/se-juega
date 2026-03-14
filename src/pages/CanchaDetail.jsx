@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { MapPin, Phone, Clock, Banknote, CheckCircle2 } from "lucide-react";
+import { MapPin, Phone, Clock, Banknote, CheckCircle2, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -25,6 +25,7 @@ export default function CanchaDetail() {
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [paymentType, setPaymentType] = useState("sena");
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -105,10 +106,9 @@ Ingresa a la aplicación para confirmar o rechazar la reserva.`
       }
     },
     onSuccess: () => {
-      toast.success("¡Reserva creada exitosamente! El dueño recibirá una notificación.");
       queryClient.invalidateQueries(["fieldnew-slots"]);
       setShowConfirmDialog(false);
-      setSelectedSlot(null);
+      setShowSuccessDialog(true);
     }
   });
 
@@ -267,6 +267,56 @@ Ingresa a la aplicación para confirmar o rechazar la reserva.`
         </div>
       </div>
 
+      {/* Success Dialog */}
+      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Clock className="w-5 h-5 text-accent" />
+              Reserva Pendiente de Confirmación
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div className="p-4 bg-accent/10 rounded-lg border border-accent/20">
+              <p className="text-sm font-medium mb-2">Tu reserva está pendiente</p>
+              <p className="text-sm text-muted-foreground">
+                El establecimiento recibirá una notificación y deberá confirmar tu reserva. 
+                Te avisaremos por email cuando sea confirmada.
+              </p>
+            </div>
+
+            <div className="p-4 bg-destructive/10 rounded-lg border border-destructive/20">
+              <p className="text-sm font-medium mb-2 text-destructive">Política de cancelación</p>
+              <p className="text-sm text-muted-foreground">
+                En caso de que el establecimiento rechace la reserva o tú decidas cancelarla, 
+                <span className="font-semibold text-foreground"> no se devolverá el monto abonado</span>.
+              </p>
+            </div>
+
+            <div className="text-center pt-2">
+              <CheckCircle2 className="w-12 h-12 mx-auto text-primary mb-3" />
+              <p className="text-sm text-muted-foreground">
+                Gracias por tu reserva. Revisa tu email para más detalles.
+              </p>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button 
+              className="w-full" 
+              onClick={() => {
+                setShowSuccessDialog(false);
+                setSelectedSlot(null);
+                window.location.href = createPageUrl("Home");
+              }}
+            >
+              Entendido
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Confirmation Dialog */}
       <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
         <DialogContent>
@@ -348,6 +398,16 @@ Ingresa a la aplicación para confirmar o rechazar la reserva.`
                 <p className="text-xs text-muted-foreground">
                   La comisión del 10% se calcula sobre el precio total (ARS ${field.precio_total.toLocaleString()})
                 </p>
+              </div>
+
+              <div className="bg-muted p-3 rounded-lg">
+                <div className="flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
+                  <p className="text-xs text-muted-foreground">
+                    Tu reserva estará pendiente hasta que el establecimiento la confirme. 
+                    No se realizarán devoluciones en caso de cancelación.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
