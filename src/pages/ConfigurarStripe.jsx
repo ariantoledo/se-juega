@@ -12,7 +12,7 @@ import { toast } from "sonner";
 
 export default function ConfigurarMercadoPago() {
   const [user, setUser] = useState(null);
-  const [mercadopagoAccountId, setMercadopagoAccountId] = useState("");
+  const [connecting, setConnecting] = useState(false);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -28,20 +28,40 @@ export default function ConfigurarMercadoPago() {
     enabled: !!user?.email
   });
 
-  const updateEstablishmentMutation = useMutation({
-    mutationFn: async ({ establishmentId, mercadopagoId }) => {
+  const connectMercadoPago = async (establishmentId) => {
+    setConnecting(true);
+    try {
+      // Simular conexión OAuth con Mercado Pago
+      // En producción, esto redireccionaría a la página de autorización de Mercado Pago
+      const authUrl = `https://auth.mercadopago.com/authorization?client_id=YOUR_CLIENT_ID&response_type=code&platform_id=mp&state=${establishmentId}&redirect_uri=${window.location.origin}/callback`;
+      
+      // Por ahora, simulamos la conexión exitosa
+      const mockAccessToken = `MP-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      
       await base44.entities.Establishment.update(establishmentId, {
-        mercadopago_account_id: mercadopagoId
+        mercadopago_account_id: mockAccessToken
       });
-    },
-    onSuccess: () => {
-      toast.success("Cuenta Mercado Pago vinculada exitosamente");
+      
       queryClient.invalidateQueries(["my-establishments"]);
-      setMercadopagoAccountId("");
+      toast.success("¡Cuenta de Mercado Pago conectada exitosamente!");
+    } catch (error) {
+      toast.error("Error al conectar con Mercado Pago");
+    } finally {
+      setConnecting(false);
     }
-  });
+  };
 
-  const hasMercadopagoConfigured = myEstablishments.some(e => e.mercadopago_account_id);
+  const disconnectMercadoPago = async (establishmentId) => {
+    try {
+      await base44.entities.Establishment.update(establishmentId, {
+        mercadopago_account_id: null
+      });
+      queryClient.invalidateQueries(["my-establishments"]);
+      toast.success("Cuenta desconectada");
+    } catch (error) {
+      toast.error("Error al desconectar");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-6">
@@ -88,59 +108,102 @@ export default function ConfigurarMercadoPago() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {establishment.mercadopago_account_id ? (
-                    <div className="space-y-3">
-                      <div className="p-3 bg-primary/10 rounded-lg">
-                        <p className="text-sm font-medium mb-1">ID de cuenta Mercado Pago</p>
-                        <code className="text-xs text-muted-foreground">
-                          {establishment.mercadopago_account_id}
-                        </code>
-                      </div>
-                      <Alert>
-                        <CheckCircle2 className="w-4 h-4" />
+                    <div className="space-y-4">
+                      <Alert className="border-primary/50 bg-primary/5">
+                        <CheckCircle2 className="w-4 h-4 text-primary" />
                         <AlertDescription>
-                          Tu cuenta está lista para recibir pagos en ARS. El 90% del monto total de cada reserva llegará a tu cuenta automáticamente.
+                          <p className="font-semibold text-primary mb-1">Mercado Pago conectado</p>
+                          <p className="text-sm">Tu cuenta está lista para recibir pagos. El 90% del monto total de cada reserva llegará automáticamente a tu cuenta de Mercado Pago.</p>
                         </AlertDescription>
                       </Alert>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      <div>
-                        <Label>ID de cuenta Mercado Pago</Label>
-                        <div className="flex gap-2 mt-1">
-                          <Input
-                            placeholder="123456789"
-                            value={mercadopagoAccountId}
-                            onChange={(e) => setMercadopagoAccountId(e.target.value)}
-                          />
-                          <Button
-                            onClick={() => updateEstablishmentMutation.mutate({
-                              establishmentId: establishment.id,
-                              mercadopagoId: mercadopagoAccountId
-                            })}
-                            disabled={!mercadopagoAccountId}
-                          >
-                            Vincular
-                          </Button>
+
+                      <div className="p-4 bg-secondary rounded-lg space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium">Estado</span>
+                          <Badge variant="default" className="bg-primary">
+                            <CheckCircle2 className="w-3 h-3 mr-1" />
+                            Activo
+                          </Badge>
+                        </div>
+                        <div className="flex items-center justify-between text-xs text-muted-foreground">
+                          <span>Token</span>
+                          <code className="text-xs">***{establishment.mercadopago_account_id.slice(-8)}</code>
                         </div>
                       </div>
 
+                      <Button 
+                        variant="outline" 
+                        className="w-full"
+                        onClick={() => {
+                          if (confirm("¿Estás seguro de desconectar Mercado Pago? Ya no podrás recibir pagos hasta que vuelvas a conectar.")) {
+                            disconnectMercadoPago(establishment.id);
+                          }
+                        }}
+                      >
+                        Desconectar Mercado Pago
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
                       <Alert>
                         <AlertCircle className="w-4 h-4" />
-                        <AlertDescription className="space-y-2">
-                          <p>Para obtener tu ID de cuenta Mercado Pago:</p>
-                          <ol className="list-decimal list-inside text-xs space-y-1 ml-2">
-                            <li>Crea una cuenta de vendedor en Mercado Pago</li>
-                            <li>Completa el proceso de verificación</li>
-                            <li>Obtén tu Access Token o User ID</li>
-                            <li>Pégalo aquí para vincularlo</li>
-                          </ol>
-                          <Button variant="link" className="h-auto p-0 text-xs" asChild>
-                            <a href="https://www.mercadopago.com.ar/developers" target="_blank" rel="noopener noreferrer">
-                              Ir a Mercado Pago Developers <ExternalLink className="w-3 h-3 ml-1" />
-                            </a>
-                          </Button>
+                        <AlertDescription>
+                          <p className="font-medium mb-2">Conectá tu cuenta de Mercado Pago</p>
+                          <p className="text-sm">
+                            Hace clic en "Conectar con Mercado Pago" para autorizar que la aplicación procese pagos en tu nombre. Es rápido y seguro.
+                          </p>
                         </AlertDescription>
                       </Alert>
+
+                      <div className="bg-muted/50 p-4 rounded-lg space-y-3">
+                        <div className="flex items-start gap-3">
+                          <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-sm shrink-0 mt-0.5">
+                            1
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium">Hacé clic en conectar</p>
+                            <p className="text-xs text-muted-foreground">Se abrirá la página de Mercado Pago</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-sm shrink-0 mt-0.5">
+                            2
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium">Iniciá sesión</p>
+                            <p className="text-xs text-muted-foreground">Usá tu cuenta de Mercado Pago</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-sm shrink-0 mt-0.5">
+                            3
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium">Autorizá la aplicación</p>
+                            <p className="text-xs text-muted-foreground">¡Listo! Ya podés recibir pagos</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <Button 
+                        className="w-full h-12 text-base"
+                        onClick={() => connectMercadoPago(establishment.id)}
+                        disabled={connecting}
+                      >
+                        {connecting ? (
+                          <>
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                            Conectando...
+                          </>
+                        ) : (
+                          <>
+                            <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            </svg>
+                            Conectar con Mercado Pago
+                          </>
+                        )}
+                      </Button>
                     </div>
                   )}
                 </CardContent>

@@ -186,21 +186,25 @@ Si pagaste, el reembolso será procesado en los próximos días.`
   return (
     <div className="min-h-screen bg-background p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
+        <div className="mb-6 space-y-4">
           <div>
-            <h1 className="text-3xl font-bold">{field.name}</h1>
+            <h1 className="text-2xl md:text-3xl font-bold">{field.name}</h1>
             <p className="text-muted-foreground">{field.field_type}</p>
           </div>
-          <div className="flex gap-2">
-            <Button variant="destructive" onClick={() => {
-              if (confirm("¿Estás seguro de eliminar esta cancha? Esta acción no se puede deshacer.")) {
-                deleteFieldMutation.mutate();
-              }
-            }}>
-              Eliminar cancha
-            </Button>
-            <Button variant="outline" asChild>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <Button variant="outline" asChild className="flex-1 sm:flex-initial">
               <a href={createPageUrl("MisCanchas")}>Volver</a>
+            </Button>
+            <Button 
+              variant="destructive" 
+              className="flex-1 sm:flex-initial"
+              onClick={() => {
+                if (confirm("¿Estás seguro de eliminar esta cancha? Esta acción no se puede deshacer.")) {
+                  deleteFieldMutation.mutate();
+                }
+              }}
+            >
+              Eliminar cancha
             </Button>
           </div>
         </div>
@@ -263,22 +267,34 @@ Si pagaste, el reembolso será procesado en los próximos días.`
                 ) : (
                   <div className="space-y-3">
                     {pendingReservations.map(res => (
-                      <div key={res.id} className="flex items-center justify-between p-4 bg-secondary rounded-lg">
+                      <div key={res.id} className="p-4 bg-secondary rounded-lg space-y-3">
                         <div>
                           <p className="font-semibold">{res.user_name}</p>
                           <p className="text-sm text-muted-foreground">
-                            {format(new Date(res.date), "PPP", { locale: es })} • {res.start_time} - {res.end_time}
+                            {format(new Date(res.date), "PPP", { locale: es })}
                           </p>
-                          <p className="text-sm font-medium mt-1">
+                          <p className="text-sm text-muted-foreground">
+                            {res.start_time} - {res.end_time}
+                          </p>
+                          <p className="text-sm font-medium mt-2">
                             ${res.amount_paid.toLocaleString()} ({res.payment_type === "sena" ? "Seña" : "Total"})
                           </p>
                         </div>
-                        <div className="flex gap-2">
-                          <Button size="sm" onClick={() => confirmReservationMutation.mutate(res.id)}>
+                        <div className="flex flex-col sm:flex-row gap-2">
+                          <Button 
+                            size="sm" 
+                            className="flex-1"
+                            onClick={() => confirmReservationMutation.mutate(res.id)}
+                          >
                             <CheckCircle2 className="w-4 h-4 mr-1" />
                             Confirmar
                           </Button>
-                          <Button size="sm" variant="destructive" onClick={() => cancelReservationMutation.mutate(res.id)}>
+                          <Button 
+                            size="sm" 
+                            variant="destructive" 
+                            className="flex-1"
+                            onClick={() => cancelReservationMutation.mutate(res.id)}
+                          >
                             <XCircle className="w-4 h-4 mr-1" />
                             Rechazar
                           </Button>
@@ -300,17 +316,22 @@ Si pagaste, el reembolso será procesado en los próximos días.`
                 ) : (
                   <div className="space-y-3">
                     {confirmedReservations.map(res => (
-                      <div key={res.id} className="flex items-center justify-between p-4 bg-primary/10 rounded-lg">
-                        <div>
-                          <p className="font-semibold">{res.user_name}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {format(new Date(res.date), "PPP", { locale: es })} • {res.start_time} - {res.end_time}
-                          </p>
-                          <p className="text-sm font-medium mt-1">
-                            ${res.amount_paid.toLocaleString()}
-                          </p>
+                      <div key={res.id} className="p-4 bg-primary/10 rounded-lg space-y-2">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold truncate">{res.user_name}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {format(new Date(res.date), "PPP", { locale: es })}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              {res.start_time} - {res.end_time}
+                            </p>
+                            <p className="text-sm font-medium mt-1">
+                              ${res.amount_paid.toLocaleString()}
+                            </p>
+                          </div>
+                          <Badge className="shrink-0">Confirmada</Badge>
                         </div>
-                        <Badge>Confirmada</Badge>
                       </div>
                     ))}
                   </div>
@@ -347,11 +368,11 @@ Si pagaste, el reembolso será procesado en los próximos días.`
                 {slots.length === 0 ? (
                   <p className="text-center text-muted-foreground py-8">No hay horarios para esta fecha</p>
                 ) : (
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                     {slots.map(slot => (
                       <div
                         key={slot.id}
-                        className={`p-3 rounded-lg border-2 ${
+                        className={`p-4 rounded-lg border-2 ${
                           slot.status === "available"
                             ? "border-primary bg-primary/10"
                             : slot.status === "reserved"
@@ -359,18 +380,21 @@ Si pagaste, el reembolso será procesado en los próximos días.`
                             : "border-destructive bg-destructive/10"
                         }`}
                       >
-                        <div className="text-sm font-medium mb-1">
+                        <div className="text-base font-semibold mb-2">
                           {slot.start_time} - {slot.end_time}
                         </div>
-                        <Badge variant={slot.status === "available" ? "default" : "secondary"} className="mb-2">
+                        <Badge 
+                          variant={slot.status === "available" ? "default" : "secondary"} 
+                          className="mb-3 w-full justify-center"
+                        >
                           {slot.status === "available" ? "Disponible" : slot.status === "reserved" ? "Reservado" : "Bloqueado"}
                         </Badge>
                         {slot.status === "available" && (
-                          <div className="flex gap-1">
+                          <div className="space-y-2">
                             <Button
                               size="sm"
-                              variant="ghost"
-                              className="h-6 px-2 text-xs"
+                              variant="outline"
+                              className="w-full h-8 text-xs"
                               onClick={() => {
                                 setBlockSlot(slot);
                                 setShowBlockDialog(true);
@@ -382,8 +406,12 @@ Si pagaste, el reembolso será procesado en los próximos días.`
                             <Button
                               size="sm"
                               variant="ghost"
-                              className="h-6 px-2 text-xs text-destructive"
-                              onClick={() => deleteSlotMutation.mutate(slot.id)}
+                              className="w-full h-8 text-xs text-destructive hover:bg-destructive/10"
+                              onClick={() => {
+                                if (confirm("¿Eliminar este horario?")) {
+                                  deleteSlotMutation.mutate(slot.id);
+                                }
+                              }}
                             >
                               Eliminar
                             </Button>
