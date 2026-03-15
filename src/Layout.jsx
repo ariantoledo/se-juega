@@ -45,8 +45,12 @@ export default function Layout({ children, currentPageName }) {
           </div>
 
           <a href={createPageUrl("Home")} className="flex items-center gap-2">
-            <div className="w-8 h-8 md:w-9 md:h-9 rounded-xl bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-base md:text-lg">⚽</span>
+            <div className="w-8 h-8 md:w-9 md:h-9 rounded-xl bg-primary flex items-center justify-center shadow-md">
+              <svg viewBox="0 0 100 100" className="w-5 h-5 md:w-6 md:h-6">
+                <circle cx="50" cy="50" r="40" fill="white"/>
+                <path d="M 30 50 L 40 60 L 60 40 L 70 50" stroke="currentColor" strokeWidth="6" fill="none" className="text-primary"/>
+                <circle cx="50" cy="70" r="8" fill="currentColor" className="text-primary"/>
+              </svg>
             </div>
             <span className="font-bold text-lg md:text-xl text-foreground tracking-tight">Hay Equipo</span>
           </a>
