@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CheckCircle2, AlertCircle, ExternalLink } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 
 export default function ConfigurarMercadoPago() {
@@ -223,7 +224,7 @@ export default function ConfigurarMercadoPago() {
             </div>
             <div className="flex items-start gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2" />
-              <p>El 90% restante se transfiere automáticamente a tu cuenta de Stripe</p>
+              <p>El 90% restante se transfiere automáticamente a tu cuenta de Mercado Pago</p>
             </div>
             <div className="flex items-start gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2" />
