@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar } from "@/components/ui/calendar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { MapPin, Phone, Clock, Banknote, CheckCircle2, AlertCircle } from "lucide-react";
+import { MapPin, Phone, Clock, Banknote, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -417,8 +417,18 @@ Ingresa a la aplicación para confirmar o rechazar la reserva.`
             <Button variant="outline" onClick={() => setShowConfirmDialog(false)}>
               Cancelar
             </Button>
-            <Button onClick={() => createReservationMutation.mutate()}>
-              Confirmar y pagar
+            <Button 
+              onClick={() => createReservationMutation.mutate()}
+              disabled={createReservationMutation.isPending}
+            >
+              {createReservationMutation.isPending ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Procesando...
+                </>
+              ) : (
+                "Confirmar y pagar"
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -76,16 +76,22 @@ export default function MatchDetail() {
       return;
     }
     setActionLoading(true);
-    await base44.entities.MatchRequest.create({
-      match_id: matchId,
-      player_email: user.email,
-      player_name: user.full_name,
-      position: selectedPosition,
-      status: "pending",
-    });
-    queryClient.invalidateQueries({ queryKey: ["match_requests", matchId] });
-    toast.success("Solicitud enviada");
-    setActionLoading(false);
+    try {
+      await base44.entities.MatchRequest.create({
+        match_id: matchId,
+        player_email: user.email,
+        player_name: user.full_name,
+        position: selectedPosition,
+        status: "pending",
+      });
+      queryClient.invalidateQueries({ queryKey: ["match_requests", matchId] });
+      toast.success("¡Solicitud enviada! El organizador recibirá tu pedido.");
+      setSelectedPosition("");
+    } catch (error) {
+      toast.error("Error al enviar solicitud. Intentá de nuevo.");
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   const handleAccept = async (request) => {
@@ -207,10 +213,13 @@ export default function MatchDetail() {
       </Card>
 
       {/* Join request section */}
-      {!isCreator && !isPlayer && !hasRequested && spotsLeft > 0 && !isPast && (
+      {!isCreator && !isPlayer && !hasRequested && spotsLeft > 0 && !isPast && user && (
         <Card className="border-border/50 mb-6">
           <CardContent className="pt-6">
-            <h3 className="font-semibold text-foreground mb-3">Quiero jugar</h3>
+            <h3 className="font-semibold text-foreground mb-3">Completar el equipo</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Seleccioná tu posición para unirte al partido
+            </p>
             <div className="flex flex-col sm:flex-row gap-3">
               <Select value={selectedPosition} onValueChange={setSelectedPosition}>
                 <SelectTrigger className="flex-1">
@@ -223,9 +232,22 @@ export default function MatchDetail() {
                   <SelectItem value="Delantero">Delantero</SelectItem>
                 </SelectContent>
               </Select>
-              <Button onClick={handleJoinRequest} disabled={actionLoading} className="bg-primary hover:bg-primary/90">
-                {actionLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Send className="w-4 h-4 mr-2" />}
-                Enviar Solicitud
+              <Button 
+                onClick={handleJoinRequest} 
+                disabled={actionLoading || !selectedPosition} 
+                className="bg-primary hover:bg-primary/90 sm:min-w-[180px]"
+              >
+                {actionLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    Enviando...
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-4 h-4 mr-2" />
+                    Enviar Solicitud
+                  </>
+                )}
               </Button>
             </div>
           </CardContent>
