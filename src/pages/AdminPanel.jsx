@@ -216,8 +216,14 @@ export default function AdminPanel() {
         </div>
 
         <Tabs defaultValue="pending">
-          <TabsList className="w-full mb-4 flex">
+          <TabsList className="w-full mb-4">
             <TabsTrigger value="pending" className="flex-1">
+              Pendientes {pending.length > 0 && `(${pending.length})`}
+            </TabsTrigger>
+            <TabsTrigger value="approved" className="flex-1">Aprobados</TabsTrigger>
+            <TabsTrigger value="rejected" className="flex-1">Rechazados</TabsTrigger>
+            <TabsTrigger value="finance" className="flex-1">Finanzas</TabsTrigger>
+          </TabsList>
 
           <TabsContent value="pending">
             {isLoading ? (
