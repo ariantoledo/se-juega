@@ -9,10 +9,14 @@ export default function MercadoPagoCallback() {
   const [status, setStatus] = useState("loading");
   const [errorMsg, setErrorMsg] = useState("");
 
+  const [isAdmin, setIsAdmin] = useState(false);
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
     const establishmentId = params.get("state");
+    const adminFlow = establishmentId === 'admin_account';
+    setIsAdmin(adminFlow);
 
     if (!code || !establishmentId) {
       setStatus("error");
