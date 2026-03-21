@@ -9,6 +9,9 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import RegistrarCancha from './pages/RegistrarCancha';
 import GestionarCancha from './pages/GestionarCancha';
 import ConfigurarStripe from './pages/ConfigurarStripe';
+import Estadios from './pages/Estadios';
+import RegistrarDueno from './pages/RegistrarDueno';
+import AdminPanel from './pages/AdminPanel';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -95,6 +98,21 @@ const AuthenticatedApp = () => {
       <Route path="/ConfigurarStripe" element={
         <LayoutWrapper currentPageName="ConfigurarStripe">
           <ConfigurarStripe />
+        </LayoutWrapper>
+      } />
+      <Route path="/Estadios" element={
+        <LayoutWrapper currentPageName="Estadios">
+          <Estadios />
+        </LayoutWrapper>
+      } />
+      <Route path="/RegistrarDueno" element={
+        <LayoutWrapper currentPageName="RegistrarDueno">
+          <RegistrarDueno />
+        </LayoutWrapper>
+      } />
+      <Route path="/AdminPanel" element={
+        <LayoutWrapper currentPageName="AdminPanel">
+          <AdminPanel />
         </LayoutWrapper>
       } />
       <Route path="*" element={<PageNotFound />} />

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
+import { createPageUrl } from "@/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import {
   User as UserIcon, Phone, Mail, Shield, Trophy, CalendarDays,
-  CheckCircle2, XCircle, Loader2, LogOut, Save, Camera
+  CheckCircle2, XCircle, Loader2, LogOut, Save, Camera, Building2, Clock, Settings
 } from "lucide-react";
 import PositionSelector from "../components/matches/PositionSelector";
 
@@ -207,6 +208,62 @@ export default function Profile() {
           </p>
         </CardContent>
       </Card>
+
+      {/* Owner / Admin section */}
+      {(user.role === "dueño_verificado" || user.role === "admin") && (
+        <Card className="border-border/50 mb-4">
+          <CardContent className="pt-4 pb-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Building2 className="w-5 h-5 text-primary" />
+              <span className="font-semibold text-foreground">Gestión de Estadios</span>
+            </div>
+            <a href={createPageUrl("Estadios")} className="block">
+              <Button className="w-full" size="sm">Ir a Mis Estadios</Button>
+            </a>
+          </CardContent>
+        </Card>
+      )}
+
+      {user.role === "admin" && (
+        <Card className="border-border/50 mb-4">
+          <CardContent className="pt-4 pb-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Settings className="w-5 h-5 text-accent" />
+              <span className="font-semibold text-foreground">Administración</span>
+            </div>
+            <a href={createPageUrl("AdminPanel")} className="block">
+              <Button variant="outline" className="w-full" size="sm">Panel de administración</Button>
+            </a>
+          </CardContent>
+        </Card>
+      )}
+
+      {user.role === "usuario_normal" || (!user.role || user.role === "user") ? (
+        <Card className="border-border/50 mb-4">
+          <CardContent className="pt-4 pb-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Building2 className="w-5 h-5 text-muted-foreground" />
+              <span className="font-semibold text-foreground">¿Tenés una cancha?</span>
+            </div>
+            <p className="text-xs text-muted-foreground mb-3">Registrate como dueño para gestionar tu establecimiento.</p>
+            <a href={createPageUrl("RegistrarDueno")} className="block">
+              <Button variant="outline" className="w-full" size="sm">Registrarme como dueño</Button>
+            </a>
+          </CardContent>
+        </Card>
+      ) : user.role === "dueño_pendiente" ? (
+        <Card className="border-border/50 mb-4">
+          <CardContent className="pt-4 pb-4">
+            <div className="flex items-center gap-2">
+              <Clock className="w-5 h-5 text-accent" />
+              <div>
+                <p className="font-medium text-sm">Solicitud en revisión</p>
+                <p className="text-xs text-muted-foreground">Te notificaremos cuando sea aprobada</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      ) : null}
 
       {/* Logout */}
       <Button
