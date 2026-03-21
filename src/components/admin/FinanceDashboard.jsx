@@ -4,8 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { DollarSign, TrendingUp, Calendar, BarChart2, Link, CheckCircle2 } from "lucide-react";
+import { DollarSign, TrendingUp, Calendar, BarChart2, Link, CheckCircle2, AlertCircle } from "lucide-react";
 import { format, subDays, startOfWeek, startOfMonth } from "date-fns";
 import { es } from "date-fns/locale";
 import { toast } from "sonner";
@@ -13,8 +12,7 @@ import { toast } from "sonner";
 const APP_COMMISSION = 2000;
 
 export default function FinanceDashboard({ user }) {
-  const [mpAccount, setMpAccount] = useState(user?.mp_admin_account || "");
-  const [savingMp, setSavingMp] = useState(false);
+  const [connecting, setConnecting] = useState(false);
   const [period, setPeriod] = useState("month"); // day | week | month | all
 
   const { data: reservations = [] } = useQuery({
@@ -40,47 +38,69 @@ export default function FinanceDashboard({ user }) {
     ? Math.round(totalCommissions / Math.max(1, Math.ceil((now - new Date(reservations[reservations.length - 1]?.created_date)) / 86400000)))
     : null;
 
-  const handleSaveMp = async () => {
-    setSavingMp(true);
+  const handleConnectMP = async () => {
+    setConnecting(true);
     try {
-      await base44.auth.updateMe({ mp_admin_account: mpAccount });
-      toast.success("Cuenta de Mercado Pago guardada");
+      const res = await base44.functions.invoke("mpGetAuthUrl", {
+        establishment_id: "admin_account",
+        redirect_uri: window.location.origin + "/MercadoPagoCallback"
+      });
+      window.location.href = res.data.auth_url;
     } catch {
-      toast.error("Error al guardar");
+      toast.error("Error al iniciar conexión con Mercado Pago.");
+      setConnecting(false);
     }
-    setSavingMp(false);
+  };
+
+  const handleDisconnectMP = async () => {
+    if (!confirm("¿Desconectar tu cuenta de Mercado Pago?")) return;
+    try {
+      await base44.auth.updateMe({ mp_admin_token: null, mp_admin_user_id: null });
+      toast.success("Cuenta desconectada");
+    } catch {
+      toast.error("Error al desconectar");
+    }
   };
 
   return (
     <div className="space-y-6">
-      {/* App account section */}
+      {/* Admin MP account section */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
             <Link className="w-4 h-4 text-primary" />
-            Cuenta de la aplicación
+            Mi cuenta de Mercado Pago (comisiones)
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <p className="text-sm text-muted-foreground">
-            Ingresá el alias o CBU de tu cuenta de Mercado Pago donde se acreditarán las comisiones.
-          </p>
-          <div className="flex gap-2">
-            <Input
-              value={mpAccount}
-              onChange={e => setMpAccount(e.target.value)}
-              placeholder="Alias o CBU de Mercado Pago"
-              className="flex-1"
-            />
-            <Button onClick={handleSaveMp} disabled={savingMp || !mpAccount}>
-              {savingMp ? "Guardando..." : "Guardar"}
-            </Button>
-          </div>
-          {user?.mp_admin_account && (
-            <div className="flex items-center gap-2 text-sm text-primary">
-              <CheckCircle2 className="w-4 h-4" />
-              Cuenta configurada: <strong>{user.mp_admin_account}</strong>
-            </div>
+          {user?.mp_admin_token ? (
+            <>
+              <div className="flex items-center gap-3 p-3 bg-primary/5 border border-primary/20 rounded-lg">
+                <CheckCircle2 className="w-5 h-5 text-primary shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-primary">Cuenta conectada</p>
+                  <p className="text-xs text-muted-foreground">Las comisiones de ARS $2.000 por reserva se acreditan automáticamente en tu cuenta.</p>
+                  <code className="text-xs text-muted-foreground">ID: {user.mp_admin_user_id || "—"}</code>
+                </div>
+              </div>
+              <Button variant="outline" size="sm" onClick={handleDisconnectMP}>
+                Desconectar cuenta
+              </Button>
+            </>
+          ) : (
+            <>
+              <div className="flex items-start gap-3 p-3 bg-secondary rounded-lg">
+                <AlertCircle className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
+                <p className="text-sm text-muted-foreground">
+                  Conectá tu cuenta de Mercado Pago para recibir automáticamente las comisiones de cada reserva.
+                </p>
+              </div>
+              <Button className="w-full" onClick={handleConnectMP} disabled={connecting}>
+                {connecting ? (
+                  <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />Conectando...</>
+                ) : "Conectar mi Mercado Pago"}
+              </Button>
+            </>
           )}
         </CardContent>
       </Card>
