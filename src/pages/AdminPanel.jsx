@@ -5,7 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CheckCircle2, XCircle, Clock, User, MapPin, Phone, FileText } from "lucide-react";
+import { CheckCircle2, XCircle, Clock, User, MapPin, Phone, FileText, TrendingUp } from "lucide-react";
+import FinanceDashboard from "../components/admin/FinanceDashboard";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -18,10 +19,11 @@ const statusConfig = {
 
 export default function AdminPanel() {
   const [user, setUser] = useState(null);
+  const [adminUser, setAdminUser] = useState(null);
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
+    base44.auth.me().then(u => { setUser(u); setAdminUser(u); }).catch(() => {});
   }, []);
 
   const { data: requests = [], isLoading } = useQuery({
@@ -214,13 +216,8 @@ export default function AdminPanel() {
         </div>
 
         <Tabs defaultValue="pending">
-          <TabsList className="w-full mb-4">
+          <TabsList className="w-full mb-4 flex">
             <TabsTrigger value="pending" className="flex-1">
-              Pendientes {pending.length > 0 && `(${pending.length})`}
-            </TabsTrigger>
-            <TabsTrigger value="approved" className="flex-1">Aprobados</TabsTrigger>
-            <TabsTrigger value="rejected" className="flex-1">Rechazados</TabsTrigger>
-          </TabsList>
 
           <TabsContent value="pending">
             {isLoading ? (
@@ -240,6 +237,10 @@ export default function AdminPanel() {
             {rejected.length === 0 ? (
               <Card><CardContent className="py-12 text-center text-muted-foreground">No hay solicitudes rechazadas</CardContent></Card>
             ) : rejected.map(r => <RequestCard key={r.id} request={r} />)}
+          </TabsContent>
+
+          <TabsContent value="finance">
+            <FinanceDashboard user={adminUser} />
           </TabsContent>
         </Tabs>
       </div>
