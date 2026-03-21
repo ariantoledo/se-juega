@@ -52,10 +52,15 @@ export default function MercadoPagoCallback() {
               <CheckCircle2 className="w-12 h-12 text-primary mx-auto" />
               <h2 className="text-xl font-bold">¡Cuenta conectada!</h2>
               <p className="text-muted-foreground">
-                Tu cuenta de Mercado Pago fue vinculada correctamente. Ya podés recibir pagos.
+                {isAdmin
+                  ? "Tu cuenta de Mercado Pago fue vinculada correctamente. Las comisiones se acreditarán automáticamente."
+                  : "Tu cuenta de Mercado Pago fue vinculada correctamente. Ya podés recibir pagos."
+                }
               </p>
               <Button className="w-full" asChild>
-                <a href={createPageUrl("ConfigurarStripe")}>Volver a configuración</a>
+                <a href={isAdmin ? "/AdminPanel" : createPageUrl("ConfigurarStripe")}>
+                  {isAdmin ? "Volver al panel" : "Volver a configuración"}
+                </a>
               </Button>
             </>
           )}
