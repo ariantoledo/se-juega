@@ -13,6 +13,8 @@ import ConfigurarStripe from './pages/ConfigurarStripe';
 import Estadios from './pages/Estadios';
 import RegistrarDueno from './pages/RegistrarDueno';
 import AdminPanel from './pages/AdminPanel';
+import MercadoPagoCallback from './pages/MercadoPagoCallback';
+import PaymentResult from './pages/PaymentResult';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -131,6 +133,16 @@ const AuthenticatedApp = () => {
       <Route path="/AdminPanel" element={
         <LayoutWrapper currentPageName="AdminPanel">
           <AdminPanel />
+        </LayoutWrapper>
+      } />
+      <Route path="/MercadoPagoCallback" element={
+        <LayoutWrapper currentPageName="MercadoPagoCallback">
+          <MercadoPagoCallback />
+        </LayoutWrapper>
+      } />
+      <Route path="/PaymentResult" element={
+        <LayoutWrapper currentPageName="PaymentResult">
+          <PaymentResult />
         </LayoutWrapper>
       } />
       <Route path="*" element={<PageNotFound />} />

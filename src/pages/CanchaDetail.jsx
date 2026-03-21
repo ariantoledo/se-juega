@@ -58,62 +58,25 @@ export default function CanchaDetail() {
     enabled: !!fieldId
   });
 
-  const APP_COMMISSION = 2000;
-
   const createReservationMutation = useMutation({
     mutationFn: async () => {
-      const user = await base44.auth.me();
-      
-      const amount = paymentType === "sena" ? field.precio_sena : field.precio_total;
-      const commissionAmount = APP_COMMISSION;
-      const ownerAmount = amount - APP_COMMISSION;
-
-      await base44.entities.FieldNewReservation.create({
-        user_email: user.email,
-        user_name: user.full_name,
-        field_new_id: fieldId,
-        field_name: field.name,
-        establishment_id: field.establishment_id,
-        timeslot_id: selectedSlot.id,
-        date: selectedSlot.date,
-        start_time: selectedSlot.start_time,
-        end_time: selectedSlot.end_time,
+      const res = await base44.functions.invoke("createMPPayment", {
+        field: { id: fieldId, ...field },
+        slot: selectedSlot,
         payment_type: paymentType,
-        amount_paid: amount,
-        precio_total: field.precio_total,
-        commission_amount: commissionAmount,
-        owner_amount: ownerAmount,
-        reservation_status: "confirmed",
-        payment_status: "paid"
+        app_base_url: window.location.origin
       });
-
-      await base44.entities.FieldNewTimeSlot.update(selectedSlot.id, { status: "reserved" });
-
-      if (establishment?.owner_email) {
-        await base44.integrations.Core.SendEmail({
-          to: establishment.owner_email,
-          subject: `Nueva reserva en ${field.name}`,
-          body: `Tienes una nueva reserva pendiente:\n\nCancha: ${field.name}\nFecha: ${selectedSlot.date}\nHorario: ${selectedSlot.start_time} - ${selectedSlot.end_time}\nMonto: $${amount.toLocaleString()} (${paymentType === "sena" ? "Seña" : "Total"})\n\nIngresa a la aplicación para confirmar o rechazar la reserva.`
-        });
-      }
+      return res.data;
     },
-    onMutate: async () => {
-      const key = ["fieldnew-slots", fieldId, selectedDate];
-      await queryClient.cancelQueries({ queryKey: key });
-      const prev = queryClient.getQueryData(key);
-      // Optimistically mark slot as reserved
-      queryClient.setQueryData(key, (old = []) =>
-        old.map(s => s.id === selectedSlot?.id ? { ...s, status: "reserved" } : s)
-      );
-      return { prev, key };
-    },
-    onError: (_err, _vars, ctx) => {
-      if (ctx?.prev) queryClient.setQueryData(ctx.key, ctx.prev);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries(["fieldnew-slots"]);
+    onSuccess: (data) => {
       setShowConfirmDialog(false);
-      setShowSuccessDialog(true);
+      toast.success("Redirigiendo a Mercado Pago...");
+      setTimeout(() => {
+        window.location.href = data.init_point;
+      }, 800);
+    },
+    onError: (err) => {
+      toast.error(err?.response?.data?.error || "Error al crear el pago. Intentá de nuevo.");
     }
   });
 
@@ -258,7 +221,16 @@ export default function CanchaDetail() {
                   )}
                 </div>
 
-                {selectedSlot && (
+                {establishment && !establishment.mercadopago_account_id && (
+                  <div className="p-3 bg-destructive/10 rounded-lg border border-destructive/20">
+                    <p className="text-sm font-medium text-destructive flex items-center gap-1">
+                      <AlertCircle className="w-4 h-4" />
+                      Reservas no disponibles
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">El dueño aún no configuró su cuenta de Mercado Pago.</p>
+                  </div>
+                )}
+                {selectedSlot && establishment?.mercadopago_account_id && (
                   <Button
                     className="w-full"
                     onClick={() => setShowConfirmDialog(true)}
@@ -272,57 +244,7 @@ export default function CanchaDetail() {
         </div>
       </div>
 
-      {/* Success Dialog */}
-      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <CheckCircle2 className="w-5 h-5 text-primary" />
-              ¡Reserva confirmada!
-            </DialogTitle>
-          </DialogHeader>
-          
-          <div className="space-y-4">
-            <div className="p-4 bg-primary/10 rounded-lg border border-primary/20 text-center">
-              <CheckCircle2 className="w-10 h-10 text-primary mx-auto mb-2" />
-              <p className="font-semibold">Pago aprobado, reserva confirmada</p>
-              <p className="text-sm text-muted-foreground mt-1">
-                Tu turno está reservado. Recibirás los detalles por email.
-              </p>
-            </div>
-
-            <div className="p-3 bg-secondary rounded-lg text-sm space-y-1">
-              <div className="flex justify-between"><span className="text-muted-foreground">Cancha</span><span className="font-medium">{field.name}</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Fecha</span><span className="font-medium">{selectedSlot && format(new Date(selectedSlot.date), "PPP", { locale: es })}</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Horario</span><span className="font-medium">{selectedSlot?.start_time} - {selectedSlot?.end_time}</span></div>
-            </div>
-
-            <div className="p-3 bg-muted rounded-lg">
-              <div className="flex items-start gap-2">
-                <AlertCircle className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
-                <p className="text-xs text-muted-foreground">
-                  Si cancelas la reserva, el pago no será reembolsado.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <DialogFooter>
-            <Button 
-              className="w-full" 
-              onClick={() => {
-                setShowSuccessDialog(false);
-                setSelectedSlot(null);
-                window.location.href = createPageUrl("Home");
-              }}
-            >
-              Entendido
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Confirmation Dialog */}
+      {/* Confirmation Dialog */
       <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
         <DialogContent>
           <DialogHeader>
@@ -417,7 +339,7 @@ export default function CanchaDetail() {
               {createReservationMutation.isPending ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Procesando...
+                  Redirigiendo a Mercado Pago...
                 </>
               ) : (
                 "Confirmar y pagar"

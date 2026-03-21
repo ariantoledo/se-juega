@@ -32,22 +32,14 @@ export default function ConfigurarMercadoPago() {
   const connectMercadoPago = async (establishmentId) => {
     setConnecting(true);
     try {
-      // Simular conexión OAuth con Mercado Pago
-      // En producción, esto redireccionaría a la página de autorización de Mercado Pago
-      const authUrl = `https://auth.mercadopago.com/authorization?client_id=YOUR_CLIENT_ID&response_type=code&platform_id=mp&state=${establishmentId}&redirect_uri=${window.location.origin}/callback`;
-      
-      // Por ahora, simulamos la conexión exitosa
-      const mockAccessToken = `MP-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-      
-      await base44.entities.Establishment.update(establishmentId, {
-        mercadopago_account_id: mockAccessToken
+      const res = await base44.functions.invoke("mpGetAuthUrl", {
+        establishment_id: establishmentId,
+        redirect_uri: window.location.origin + "/MercadoPagoCallback"
       });
-      
-      queryClient.invalidateQueries(["my-establishments"]);
-      toast.success("¡Cuenta de Mercado Pago conectada exitosamente!");
+      // Redirect to Mercado Pago OAuth page
+      window.location.href = res.data.auth_url;
     } catch (error) {
-      toast.error("Error al conectar con Mercado Pago");
-    } finally {
+      toast.error("Error al iniciar conexión con Mercado Pago. Verificá tu configuración.");
       setConnecting(false);
     }
   };
@@ -220,11 +212,11 @@ export default function ConfigurarMercadoPago() {
           <CardContent className="space-y-3 text-sm text-muted-foreground">
             <div className="flex items-start gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2" />
-              <p>La aplicación cobra un 10% de comisión sobre el precio total de cada cancha</p>
+              <p>La aplicación cobra una comisión fija de $2.000 ARS por reserva</p>
             </div>
             <div className="flex items-start gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2" />
-              <p>El 90% restante se transfiere automáticamente a tu cuenta de Mercado Pago</p>
+              <p>El resto del monto pagado corresponde al dueño de la cancha</p>
             </div>
             <div className="flex items-start gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2" />
@@ -232,11 +224,7 @@ export default function ConfigurarMercadoPago() {
             </div>
             <div className="flex items-start gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2" />
-              <p>Puedes ver el historial de pagos en tu panel de Mercado Pago</p>
-            </div>
-            <div className="flex items-start gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2" />
-              <p>La comisión del 10% se calcula sobre el precio total, independientemente de si el cliente paga seña o total</p>
+              <p>La conexión OAuth es real: tus credenciales se obtienen directamente de Mercado Pago</p>
             </div>
           </CardContent>
         </Card>
