@@ -1,0 +1,235 @@
+import React, { useState, useEffect } from "react";
+import { base44 } from "@/api/base44Client";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CheckCircle2, XCircle, Clock, User, MapPin, Phone, FileText } from "lucide-react";
+import { toast } from "sonner";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+
+const statusConfig = {
+  pending: { label: "Pendiente", variant: "secondary", icon: Clock },
+  approved: { label: "Aprobado", variant: "default", icon: CheckCircle2 },
+  rejected: { label: "Rechazado", variant: "destructive", icon: XCircle }
+};
+
+export default function AdminPanel() {
+  const [user, setUser] = useState(null);
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    base44.auth.me().then(setUser).catch(() => {});
+  }, []);
+
+  const { data: requests = [], isLoading } = useQuery({
+    queryKey: ["owner-requests"],
+    queryFn: () => base44.entities.OwnerRequest.list("-created_date"),
+    enabled: user?.role === "admin"
+  });
+
+  const approveMutation = useMutation({
+    mutationFn: async (request) => {
+      await base44.entities.OwnerRequest.update(request.id, { status: "approved" });
+      const users = await base44.entities.User.list();
+      const targetUser = users.find(u => u.email === request.user_email);
+      if (targetUser) {
+        await base44.entities.User.update(targetUser.id, { role: "dueño_verificado" });
+      }
+      await base44.integrations.Core.SendEmail({
+        to: request.user_email,
+        subject: "¡Tu cuenta fue verificada correctamente!",
+        body: `Hola ${request.user_name},\n\nTu solicitud para gestionar el establecimiento "${request.establishment_name}" fue aprobada.\n\nYa puedes acceder a la sección Estadios y comenzar a crear y gestionar tus canchas.\n\n¡Bienvenido!`
+      });
+    },
+    onSuccess: () => {
+      toast.success("Dueño aprobado y notificado");
+      queryClient.invalidateQueries(["owner-requests"]);
+    }
+  });
+
+  const rejectMutation = useMutation({
+    mutationFn: async (request) => {
+      await base44.entities.OwnerRequest.update(request.id, { status: "rejected" });
+      const users = await base44.entities.User.list();
+      const targetUser = users.find(u => u.email === request.user_email);
+      if (targetUser) {
+        await base44.entities.User.update(targetUser.id, { role: "usuario_normal" });
+      }
+      await base44.integrations.Core.SendEmail({
+        to: request.user_email,
+        subject: "Solicitud de dueño rechazada",
+        body: `Hola ${request.user_name},\n\nTu solicitud para gestionar el establecimiento "${request.establishment_name}" fue rechazada.\n\nSi crees que hay un error, por favor contáctanos.`
+      });
+    },
+    onSuccess: () => {
+      toast.success("Solicitud rechazada");
+      queryClient.invalidateQueries(["owner-requests"]);
+    }
+  });
+
+  if (!user) return null;
+
+  if (user.role !== "admin") {
+    return (
+      <div className="min-h-screen bg-background p-4 flex items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardContent className="py-12 text-center">
+            <XCircle className="w-12 h-12 text-destructive mx-auto mb-4" />
+            <h2 className="text-xl font-semibold mb-2">Sin acceso</h2>
+            <p className="text-muted-foreground">Solo administradores pueden acceder a este panel.</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  const pending = requests.filter(r => r.status === "pending");
+  const approved = requests.filter(r => r.status === "approved");
+  const rejected = requests.filter(r => r.status === "rejected");
+
+  const RequestCard = ({ request }) => {
+    const StatusIcon = statusConfig[request.status]?.icon || Clock;
+    return (
+      <Card className="mb-3">
+        <CardContent className="p-4">
+          <div className="flex flex-col gap-3">
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <p className="font-semibold truncate">{request.user_name}</p>
+                  <Badge variant={statusConfig[request.status]?.variant || "secondary"}>
+                    <StatusIcon className="w-3 h-3 mr-1" />
+                    {statusConfig[request.status]?.label}
+                  </Badge>
+                </div>
+                <p className="text-sm text-muted-foreground truncate">{request.user_email}</p>
+              </div>
+              <p className="text-xs text-muted-foreground shrink-0">
+                {format(new Date(request.created_date), "d MMM", { locale: es })}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-muted-foreground shrink-0" />
+                <span className="truncate"><strong>{request.establishment_name}</strong></span>
+              </div>
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-muted-foreground shrink-0" />
+                <span className="truncate text-muted-foreground">{request.address}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Phone className="w-4 h-4 text-muted-foreground shrink-0" />
+                <span className="text-muted-foreground">{request.phone}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
+                <span className="text-muted-foreground truncate">{request.document_info}</span>
+              </div>
+            </div>
+
+            {request.evidence_url && (
+              <a
+                href={request.evidence_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-primary hover:underline flex items-center gap-1"
+              >
+                <FileText className="w-4 h-4" /> Ver evidencia adjunta
+              </a>
+            )}
+
+            {request.status === "pending" && (
+              <div className="flex gap-2 pt-1">
+                <Button
+                  className="flex-1"
+                  size="sm"
+                  onClick={() => approveMutation.mutate(request)}
+                  disabled={approveMutation.isPending}
+                >
+                  <CheckCircle2 className="w-4 h-4 mr-1" />
+                  Aprobar
+                </Button>
+                <Button
+                  className="flex-1"
+                  size="sm"
+                  variant="destructive"
+                  onClick={() => rejectMutation.mutate(request)}
+                  disabled={rejectMutation.isPending}
+                >
+                  <XCircle className="w-4 h-4 mr-1" />
+                  Rechazar
+                </Button>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-background p-3 md:p-6 pb-24 md:pb-6">
+      <div className="max-w-4xl mx-auto">
+        <div className="mb-6">
+          <h1 className="text-2xl md:text-3xl font-bold">Panel de Administración</h1>
+          <p className="text-muted-foreground mt-1">Gestión de solicitudes de dueños de canchas</p>
+        </div>
+
+        <div className="grid grid-cols-3 gap-3 mb-6">
+          <Card>
+            <CardContent className="py-4 text-center">
+              <p className="text-2xl font-bold text-accent">{pending.length}</p>
+              <p className="text-xs text-muted-foreground">Pendientes</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="py-4 text-center">
+              <p className="text-2xl font-bold text-primary">{approved.length}</p>
+              <p className="text-xs text-muted-foreground">Aprobados</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="py-4 text-center">
+              <p className="text-2xl font-bold text-destructive">{rejected.length}</p>
+              <p className="text-xs text-muted-foreground">Rechazados</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        <Tabs defaultValue="pending">
+          <TabsList className="w-full mb-4">
+            <TabsTrigger value="pending" className="flex-1">
+              Pendientes {pending.length > 0 && `(${pending.length})`}
+            </TabsTrigger>
+            <TabsTrigger value="approved" className="flex-1">Aprobados</TabsTrigger>
+            <TabsTrigger value="rejected" className="flex-1">Rechazados</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="pending">
+            {isLoading ? (
+              <div className="space-y-3">{[1,2,3].map(i => <div key={i} className="h-32 bg-secondary rounded-xl animate-pulse" />)}</div>
+            ) : pending.length === 0 ? (
+              <Card><CardContent className="py-12 text-center text-muted-foreground">No hay solicitudes pendientes</CardContent></Card>
+            ) : pending.map(r => <RequestCard key={r.id} request={r} />)}
+          </TabsContent>
+
+          <TabsContent value="approved">
+            {approved.length === 0 ? (
+              <Card><CardContent className="py-12 text-center text-muted-foreground">No hay solicitudes aprobadas</CardContent></Card>
+            ) : approved.map(r => <RequestCard key={r.id} request={r} />)}
+          </TabsContent>
+
+          <TabsContent value="rejected">
+            {rejected.length === 0 ? (
+              <Card><CardContent className="py-12 text-center text-muted-foreground">No hay solicitudes rechazadas</CardContent></Card>
+            ) : rejected.map(r => <RequestCard key={r.id} request={r} />)}
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  );
+}
