@@ -139,24 +139,28 @@ export default function RegistrarDueno() {
               <div>
                 <Label>Evidencia (foto del local, habilitación, etc.)</Label>
                 {formData.evidence_url ? (
-                  <div className="mt-2 flex items-center gap-3 p-3 bg-primary/10 rounded-lg">
-                    <CheckCircle2 className="w-5 h-5 text-primary shrink-0" />
-                    <span className="text-sm truncate">Archivo subido correctamente</span>
+                  <div className="mt-2 space-y-2">
+                    <img
+                      src={formData.evidence_url}
+                      alt="Evidencia"
+                      className="w-full max-h-48 object-cover rounded-lg border"
+                    />
                     <Button
                       type="button"
-                      variant="ghost"
+                      variant="outline"
                       size="sm"
+                      className="w-full"
                       onClick={() => setFormData({ ...formData, evidence_url: "" })}
                     >
-                      Cambiar
+                      Cambiar imagen
                     </Button>
                   </div>
                 ) : (
-                  <label className="flex items-center justify-center gap-2 border-2 border-dashed rounded-lg p-4 cursor-pointer hover:bg-secondary transition-colors mt-2">
+                  <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-lg p-6 cursor-pointer hover:bg-secondary transition-colors mt-2">
                     {uploading ? (
-                      <><Loader2 className="w-4 h-4 animate-spin" /> Subiendo...</>
+                      <><Loader2 className="w-6 h-6 animate-spin text-primary" /><span className="text-sm text-muted-foreground">Subiendo imagen...</span></>
                     ) : (
-                      <><Upload className="w-4 h-4" /> Subir imagen o archivo</>
+                      <><Upload className="w-6 h-6 text-muted-foreground" /><span className="text-sm text-muted-foreground">Toca para subir imagen o PDF</span><span className="text-xs text-muted-foreground">Foto del local, habilitación municipal, etc.</span></>
                     )}
                     <input
                       type="file"

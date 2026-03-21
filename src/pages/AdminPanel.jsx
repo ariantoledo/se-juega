@@ -132,14 +132,26 @@ export default function AdminPanel() {
             </div>
 
             {request.evidence_url && (
-              <a
-                href={request.evidence_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm text-primary hover:underline flex items-center gap-1"
-              >
-                <FileText className="w-4 h-4" /> Ver evidencia adjunta
-              </a>
+              <div className="space-y-2">
+                <p className="text-xs font-medium text-muted-foreground">Evidencia adjunta:</p>
+                <a href={request.evidence_url} target="_blank" rel="noopener noreferrer">
+                  <img
+                    src={request.evidence_url}
+                    alt="Evidencia"
+                    className="w-full max-h-40 object-cover rounded-lg border hover:opacity-90 transition-opacity"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.nextSibling.style.display = 'flex';
+                    }}
+                  />
+                  <div
+                    style={{display:'none'}}
+                    className="items-center gap-2 p-3 bg-secondary rounded-lg text-sm text-primary"
+                  >
+                    <FileText className="w-4 h-4" /> Ver archivo adjunto (PDF)
+                  </div>
+                </a>
+              </div>
             )}
 
             {request.status === "pending" && (
