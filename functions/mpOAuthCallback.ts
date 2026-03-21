@@ -34,12 +34,17 @@ Deno.serve(async (req) => {
 
     const tokenData = await tokenRes.json();
 
-    await base44.asServiceRole.entities.Establishment.update(establishment_id, {
-      mercadopago_account_id: tokenData.access_token,
-      mercadopago_user_id: String(tokenData.user_id)
-    });
+    // If establishment_id is 'admin_account', save to the admin user entity
+    if (establishment_id === 'admin_account') {
+      await base44.auth.updateMe({ mp_admin_token: tokenData.access_token, mp_admin_user_id: String(tokenData.user_id) });
+    } else {
+      await base44.asServiceRole.entities.Establishment.update(establishment_id, {
+        mercadopago_account_id: tokenData.access_token,
+        mercadopago_user_id: String(tokenData.user_id)
+      });
+    }
 
-    return Response.json({ success: true, mp_user_id: tokenData.user_id });
+    return Response.json({ success: true, mp_user_id: tokenData.user_id, is_admin: establishment_id === 'admin_account' });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
