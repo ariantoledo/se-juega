@@ -244,7 +244,7 @@ export default function CanchaDetail() {
         </div>
       </div>
 
-      {/* Confirmation Dialog */
+      {/* Confirmation Dialog */}
       <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
         <DialogContent>
           <DialogHeader>
