@@ -58,13 +58,15 @@ export default function CanchaDetail() {
     enabled: !!fieldId
   });
 
+  const APP_COMMISSION = 2000;
+
   const createReservationMutation = useMutation({
     mutationFn: async () => {
       const user = await base44.auth.me();
       
       const amount = paymentType === "sena" ? field.precio_sena : field.precio_total;
-      const commissionAmount = field.precio_total * 0.10;
-      const ownerAmount = field.precio_total * 0.90;
+      const commissionAmount = APP_COMMISSION;
+      const ownerAmount = amount - APP_COMMISSION;
 
       await base44.entities.FieldNewReservation.create({
         user_email: user.email,
@@ -81,8 +83,8 @@ export default function CanchaDetail() {
         precio_total: field.precio_total,
         commission_amount: commissionAmount,
         owner_amount: ownerAmount,
-        reservation_status: "pending",
-        payment_status: "pending"
+        reservation_status: "confirmed",
+        payment_status: "paid"
       });
 
       await base44.entities.FieldNewTimeSlot.update(selectedSlot.id, { status: "reserved" });
@@ -275,33 +277,33 @@ export default function CanchaDetail() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Clock className="w-5 h-5 text-accent" />
-              Reserva Pendiente de Confirmación
+              <CheckCircle2 className="w-5 h-5 text-primary" />
+              ¡Reserva confirmada!
             </DialogTitle>
           </DialogHeader>
           
           <div className="space-y-4">
-            <div className="p-4 bg-accent/10 rounded-lg border border-accent/20">
-              <p className="text-sm font-medium mb-2">Tu reserva está pendiente</p>
-              <p className="text-sm text-muted-foreground">
-                El establecimiento recibirá una notificación y deberá confirmar tu reserva. 
-                Te avisaremos por email cuando sea confirmada.
+            <div className="p-4 bg-primary/10 rounded-lg border border-primary/20 text-center">
+              <CheckCircle2 className="w-10 h-10 text-primary mx-auto mb-2" />
+              <p className="font-semibold">Pago aprobado, reserva confirmada</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                Tu turno está reservado. Recibirás los detalles por email.
               </p>
             </div>
 
-            <div className="p-4 bg-destructive/10 rounded-lg border border-destructive/20">
-              <p className="text-sm font-medium mb-2 text-destructive">Política de cancelación</p>
-              <p className="text-sm text-muted-foreground">
-                En caso de que el establecimiento rechace la reserva o tú decidas cancelarla, 
-                <span className="font-semibold text-foreground"> no se devolverá el monto abonado</span>.
-              </p>
+            <div className="p-3 bg-secondary rounded-lg text-sm space-y-1">
+              <div className="flex justify-between"><span className="text-muted-foreground">Cancha</span><span className="font-medium">{field.name}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Fecha</span><span className="font-medium">{selectedSlot && format(new Date(selectedSlot.date), "PPP", { locale: es })}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Horario</span><span className="font-medium">{selectedSlot?.start_time} - {selectedSlot?.end_time}</span></div>
             </div>
 
-            <div className="text-center pt-2">
-              <CheckCircle2 className="w-12 h-12 mx-auto text-primary mb-3" />
-              <p className="text-sm text-muted-foreground">
-                Gracias por tu reserva. Revisa tu email para más detalles.
-              </p>
+            <div className="p-3 bg-muted rounded-lg">
+              <div className="flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
+                <p className="text-xs text-muted-foreground">
+                  Si cancelas la reserva, el pago no será reembolsado.
+                </p>
+              </div>
             </div>
           </div>
 
@@ -390,27 +392,16 @@ export default function CanchaDetail() {
               </div>
             </div>
 
-            <div className="border-t pt-4">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-lg font-semibold">
-                  <span>Total a pagar</span>
-                  <span className="text-primary">
-                    ARS ${(paymentType === "sena" ? field.precio_sena : field.precio_total).toLocaleString()}
-                  </span>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  La comisión del 10% se calcula sobre el precio total (ARS ${field.precio_total.toLocaleString()})
-                </p>
+            <div className="border-t pt-4 space-y-3">
+              <div className="flex items-center justify-between text-lg font-semibold">
+                <span>Total a pagar</span>
+                <span className="text-primary">
+                  ARS ${(paymentType === "sena" ? field.precio_sena : field.precio_total).toLocaleString()}
+                </span>
               </div>
-
-              <div className="bg-muted p-3 rounded-lg">
-                <div className="flex items-start gap-2">
-                  <AlertCircle className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
-                  <p className="text-xs text-muted-foreground">
-                    Tu reserva estará pendiente hasta que el establecimiento la confirme. 
-                    No se realizarán devoluciones en caso de cancelación.
-                  </p>
-                </div>
+              <div className="bg-primary/5 border border-primary/20 p-3 rounded-lg">
+                <p className="text-sm font-medium mb-1">Tu reserva será confirmada al completar el pago.</p>
+                <p className="text-xs text-muted-foreground">Si cancelas la reserva, el pago no será reembolsado.</p>
               </div>
             </div>
           </div>
