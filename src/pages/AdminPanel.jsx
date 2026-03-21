@@ -133,24 +133,25 @@ export default function AdminPanel() {
 
             {request.evidence_url && (
               <div className="space-y-2">
-                <p className="text-xs font-medium text-muted-foreground">Evidencia adjunta:</p>
-                <a href={request.evidence_url} target="_blank" rel="noopener noreferrer">
-                  <img
-                    src={request.evidence_url}
-                    alt="Evidencia"
-                    className="w-full max-h-40 object-cover rounded-lg border hover:opacity-90 transition-opacity"
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                      e.target.nextSibling.style.display = 'flex';
-                    }}
-                  />
-                  <div
-                    style={{display:'none'}}
-                    className="items-center gap-2 p-3 bg-secondary rounded-lg text-sm text-primary"
-                  >
-                    <FileText className="w-4 h-4" /> Ver archivo adjunto (PDF)
-                  </div>
-                </a>
+                <p className="text-xs font-medium text-muted-foreground">Evidencias adjuntas:</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {request.evidence_url.split(",").filter(Boolean).map((url, i) => (
+                    <a key={i} href={url} target="_blank" rel="noopener noreferrer">
+                      <img
+                        src={url}
+                        alt={`Evidencia ${i + 1}`}
+                        className="w-full h-28 object-cover rounded-lg border hover:opacity-90 transition-opacity"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'flex';
+                        }}
+                      />
+                      <div style={{display:'none'}} className="items-center gap-2 p-3 bg-secondary rounded-lg text-sm text-primary h-28 justify-center">
+                        <FileText className="w-5 h-5" /> PDF {i + 1}
+                      </div>
+                    </a>
+                  ))}
+                </div>
               </div>
             )}
 
