@@ -1,4 +1,5 @@
 import { Toaster } from "@/components/ui/toaster"
+import { AnimatePresence, motion } from 'framer-motion';
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
 import { pagesConfig } from './pages.config'
@@ -17,9 +18,26 @@ const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
 const MainPage = mainPageKey ? Pages[mainPageKey] : <></>;
 
-const LayoutWrapper = ({ children, currentPageName }) => Layout ?
-  <Layout currentPageName={currentPageName}>{children}</Layout>
-  : <>{children}</>;
+const PageTransition = ({ children, pageKey }) => (
+  <AnimatePresence mode="wait">
+    <motion.div
+      key={pageKey}
+      initial={{ x: 18, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      exit={{ x: -18, opacity: 0 }}
+      transition={{ duration: 0.18, ease: "easeInOut" }}
+    >
+      {children}
+    </motion.div>
+  </AnimatePresence>
+);
+
+const LayoutWrapper = ({ children, currentPageName }) => {
+  const content = <PageTransition pageKey={currentPageName}>{children}</PageTransition>;
+  return Layout
+    ? <Layout currentPageName={currentPageName}>{content}</Layout>
+    : content;
+};
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
