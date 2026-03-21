@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
-import { Home, PlusCircle, CalendarDays, User, Menu, X, Sun, Moon, MapPin } from "lucide-react";
+import { Home, PlusCircle, CalendarDays, User, Menu, X, Sun, Moon, MapPin, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const navItems = [
   { name: "Partidos", page: "Home", icon: Home },
@@ -11,9 +12,13 @@ const navItems = [
   { name: "Perfil", page: "Profile", icon: User },
 ];
 
+const MAIN_PAGES = new Set(["Home", "CreateMatch", "MyMatches", "Canchas", "Profile"]);
+
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const isChildScreen = !MAIN_PAGES.has(currentPageName);
   const [dark, setDark] = useState(() => localStorage.getItem("theme") === "dark");
 
   useEffect(() => {
@@ -36,11 +41,21 @@ export default function Layout({ children, currentPageName }) {
       {/* Header */}
       <header className="sticky top-0 z-50 bg-card/80 backdrop-blur-xl border-b border-border">
         <div className="max-w-5xl mx-auto px-3 md:px-4 h-14 md:h-16 flex items-center justify-between">
-          {/* Mobile: Profile left, logo center, menu right */}
+          {/* Mobile: back or profile left, logo center, menu right */}
           <div className="flex items-center gap-2 md:hidden">
-            <a href={createPageUrl("Profile")} className="p-2 rounded-lg hover:bg-secondary">
-              <User className="w-5 h-5" />
-            </a>
+            {isChildScreen ? (
+              <button
+                onClick={() => navigate(-1)}
+                className="p-2 rounded-lg hover:bg-secondary min-h-[44px] min-w-[44px] flex items-center justify-center"
+                aria-label="Volver"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </button>
+            ) : (
+              <a href="/Profile" className="p-2 rounded-lg hover:bg-secondary min-h-[44px] min-w-[44px] flex items-center justify-center">
+                <User className="w-5 h-5" />
+              </a>
+            )}
           </div>
 
           <a href={createPageUrl("Home")} className="flex items-center gap-2">

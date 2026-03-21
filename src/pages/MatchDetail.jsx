@@ -70,13 +70,8 @@ export default function MatchDetail() {
   const isPast = new Date(match.date) < new Date();
   const pendingRequests = requests.filter((r) => r.status === "pending");
 
-  const handleJoinRequest = async () => {
-    if (!selectedPosition) {
-      toast.error("Elegí una posición");
-      return;
-    }
-    setActionLoading(true);
-    try {
+  const joinMutation = useMutation({
+    mutationFn: async () => {
       await base44.entities.MatchRequest.create({
         match_id: matchId,
         player_email: user.email,
@@ -84,14 +79,37 @@ export default function MatchDetail() {
         position: selectedPosition,
         status: "pending",
       });
+    },
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ["match_requests", matchId] });
+      const prev = queryClient.getQueryData(["match_requests", matchId]);
+      queryClient.setQueryData(["match_requests", matchId], (old = []) => [
+        ...old,
+        {
+          id: "optimistic-" + Date.now(),
+          match_id: matchId,
+          player_email: user.email,
+          player_name: user.full_name,
+          position: selectedPosition,
+          status: "pending",
+        },
+      ]);
+      return { prev };
+    },
+    onError: (_err, _vars, ctx) => {
+      queryClient.setQueryData(["match_requests", matchId], ctx?.prev);
+      toast.error("Error al enviar solicitud. Intentá de nuevo.");
+    },
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["match_requests", matchId] });
       toast.success("¡Solicitud enviada! El organizador recibirá tu pedido.");
       setSelectedPosition("");
-    } catch (error) {
-      toast.error("Error al enviar solicitud. Intentá de nuevo.");
-    } finally {
-      setActionLoading(false);
-    }
+    },
+  });
+
+  const handleJoinRequest = () => {
+    if (!selectedPosition) { toast.error("Elegí una posición"); return; }
+    joinMutation.mutate();
   };
 
   const handleAccept = async (request) => {
@@ -234,7 +252,7 @@ export default function MatchDetail() {
               </Select>
               <Button 
                 onClick={handleJoinRequest} 
-                disabled={actionLoading || !selectedPosition} 
+                disabled={joinMutation.isPending || !selectedPosition} 
                 className="bg-primary hover:bg-primary/90 sm:min-w-[180px]"
               >
                 {actionLoading ? (

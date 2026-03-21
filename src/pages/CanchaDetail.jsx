@@ -66,7 +66,7 @@ export default function CanchaDetail() {
       const commissionAmount = field.precio_total * 0.10;
       const ownerAmount = field.precio_total * 0.90;
 
-      const reservation = await base44.entities.FieldNewReservation.create({
+      await base44.entities.FieldNewReservation.create({
         user_email: user.email,
         user_name: user.full_name,
         field_new_id: fieldId,
@@ -85,26 +85,28 @@ export default function CanchaDetail() {
         payment_status: "pending"
       });
 
-      await base44.entities.FieldNewTimeSlot.update(selectedSlot.id, {
-        status: "reserved"
-      });
+      await base44.entities.FieldNewTimeSlot.update(selectedSlot.id, { status: "reserved" });
 
-      // Send notification to owner
       if (establishment?.owner_email) {
         await base44.integrations.Core.SendEmail({
           to: establishment.owner_email,
           subject: `Nueva reserva en ${field.name}`,
-          body: `Tienes una nueva reserva pendiente:
-          
-Cancha: ${field.name}
-Cliente: ${user.full_name} (${user.email})
-Fecha: ${selectedSlot.date}
-Horario: ${selectedSlot.start_time} - ${selectedSlot.end_time}
-Monto: $${amount.toLocaleString()} (${paymentType === "sena" ? "Seña" : "Total"})
-
-Ingresa a la aplicación para confirmar o rechazar la reserva.`
+          body: `Tienes una nueva reserva pendiente:\n\nCancha: ${field.name}\nFecha: ${selectedSlot.date}\nHorario: ${selectedSlot.start_time} - ${selectedSlot.end_time}\nMonto: $${amount.toLocaleString()} (${paymentType === "sena" ? "Seña" : "Total"})\n\nIngresa a la aplicación para confirmar o rechazar la reserva.`
         });
       }
+    },
+    onMutate: async () => {
+      const key = ["fieldnew-slots", fieldId, selectedDate];
+      await queryClient.cancelQueries({ queryKey: key });
+      const prev = queryClient.getQueryData(key);
+      // Optimistically mark slot as reserved
+      queryClient.setQueryData(key, (old = []) =>
+        old.map(s => s.id === selectedSlot?.id ? { ...s, status: "reserved" } : s)
+      );
+      return { prev, key };
+    },
+    onError: (_err, _vars, ctx) => {
+      if (ctx?.prev) queryClient.setQueryData(ctx.key, ctx.prev);
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["fieldnew-slots"]);

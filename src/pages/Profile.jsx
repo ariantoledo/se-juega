@@ -13,6 +13,7 @@ import {
   CheckCircle2, XCircle, Loader2, LogOut, Save, Camera, Building2, Clock, Settings, Trash2
 } from "lucide-react";
 import PositionSelector from "../components/matches/PositionSelector";
+import DeleteAccountModal from "../components/DeleteAccountModal";
 
 export default function Profile() {
   const [user, setUser] = useState(null);
@@ -22,7 +23,7 @@ export default function Profile() {
   const [positions, setPositions] = useState([]);
   const [avatarUrl, setAvatarUrl] = useState("");
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletingAccount, setDeletingAccount] = useState(false);
 
   useEffect(() => {
@@ -268,41 +269,25 @@ export default function Profile() {
       ) : null}
 
       {/* Delete account */}
-      {!showDeleteConfirm ? (
-        <Button
-          variant="ghost"
-          className="w-full mt-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 text-sm"
-          onClick={() => setShowDeleteConfirm(true)}
-        >
-          <Trash2 className="w-4 h-4 mr-2" />
-          Eliminar cuenta
-        </Button>
-      ) : (
-        <div className="mt-2 p-4 border border-destructive/40 rounded-xl bg-destructive/5 space-y-3">
-          <p className="text-sm font-medium text-destructive">¿Estás seguro que querés eliminar tu cuenta?</p>
-          <p className="text-xs text-muted-foreground">Esta acción no se puede deshacer. Perderás todos tus datos.</p>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" className="flex-1" onClick={() => setShowDeleteConfirm(false)}>
-              Cancelar
-            </Button>
-            <Button
-              variant="destructive"
-              size="sm"
-              className="flex-1"
-              disabled={deletingAccount}
-              onClick={async () => {
-                setDeletingAccount(true);
-                try {
-                  await base44.auth.updateMe({ role: "deleted" });
-                } catch {}
-                base44.auth.logout();
-              }}
-            >
-              {deletingAccount ? <Loader2 className="w-4 h-4 animate-spin" /> : "Sí, eliminar"}
-            </Button>
-          </div>
-        </div>
-      )}
+      <Button
+        variant="ghost"
+        className="w-full mt-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 text-sm"
+        onClick={() => setShowDeleteModal(true)}
+      >
+        <Trash2 className="w-4 h-4 mr-2" />
+        Eliminar cuenta
+      </Button>
+
+      <DeleteAccountModal
+        open={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        loading={deletingAccount}
+        onConfirm={async () => {
+          setDeletingAccount(true);
+          try { await base44.auth.updateMe({ role: "deleted" }); } catch {}
+          base44.auth.logout();
+        }}
+      />
 
       {/* Logout */}
       <Button

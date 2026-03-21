@@ -58,5 +58,10 @@
   button, [role="tab"] {
     user-select: none;
     -webkit-user-select: none;
+    min-height: 44px;
+  }
+  /* Smaller icon-only buttons keep their size */
+  button[data-size="icon"] {
+    min-height: 36px;
   }
 }
