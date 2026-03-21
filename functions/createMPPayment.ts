@@ -8,12 +8,16 @@ Deno.serve(async (req) => {
 
     const { field, slot, payment_type, app_base_url } = await req.json();
 
-    const accessToken = Deno.env.get("MP_ACCESS_TOKEN");
-    if (!accessToken) return Response.json({ error: 'MP_ACCESS_TOKEN not configured' }, { status: 500 });
+    // Get owner's MP access token from establishment
+    const establishment = await base44.asServiceRole.entities.Establishment.filter({ id: field.establishment_id });
+    const ownerAccessToken = establishment[0]?.mercadopago_account_id;
+    if (!ownerAccessToken) {
+      return Response.json({ error: 'El dueño no tiene Mercado Pago configurado' }, { status: 400 });
+    }
 
+    const COMMISSION = 2000;
     const amount = payment_type === "sena" ? field.precio_sena : field.precio_total;
-    const commissionAmount = 2000;
-    const ownerAmount = amount - commissionAmount;
+    const ownerAmount = amount - COMMISSION;
 
     // Create reservation with pending status
     const reservation = await base44.asServiceRole.entities.FieldNewReservation.create({
@@ -29,7 +33,7 @@ Deno.serve(async (req) => {
       payment_type,
       amount_paid: amount,
       precio_total: field.precio_total,
-      commission_amount: commissionAmount,
+      commission_amount: COMMISSION,
       owner_amount: ownerAmount,
       reservation_status: "pending",
       payment_status: "pending"
@@ -38,7 +42,8 @@ Deno.serve(async (req) => {
     // Block slot to prevent double booking
     await base44.asServiceRole.entities.FieldNewTimeSlot.update(slot.id, { status: "reserved" });
 
-    // Create Mercado Pago preference
+    // Create Mercado Pago preference using owner's access token
+    // application_fee routes the commission to the platform's MP account automatically
     const prefBody = {
       items: [{
         title: `Reserva - ${field.name}`,
@@ -54,13 +59,14 @@ Deno.serve(async (req) => {
       },
       auto_return: "approved",
       external_reference: reservation.id,
-      payer: { email: user.email }
+      payer: { email: user.email },
+      application_fee: COMMISSION
     };
 
     const prefRes = await fetch("https://api.mercadopago.com/checkout/preferences", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${accessToken}`,
+        "Authorization": `Bearer ${ownerAccessToken}`,
         "Content-Type": "application/json"
       },
       body: JSON.stringify(prefBody)
