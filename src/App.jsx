@@ -23,17 +23,14 @@ const mainPageKey = mainPage ?? Object.keys(Pages)[0];
 const MainPage = mainPageKey ? Pages[mainPageKey] : <></>;
 
 const PageTransition = ({ children, pageKey }) => (
-  <AnimatePresence mode="wait">
-    <motion.div
-      key={pageKey}
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -6 }}
-      transition={{ duration: 0.12, ease: "easeOut" }}
-    >
-      {children}
-    </motion.div>
-  </AnimatePresence>
+  <motion.div
+    key={pageKey}
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    transition={{ duration: 0.1, ease: "easeOut" }}
+  >
+    {children}
+  </motion.div>
 );
 
 const LayoutWrapper = ({ children, currentPageName }) => {
