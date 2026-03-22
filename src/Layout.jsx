@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
 import { Home, PlusCircle, CalendarDays, User, Menu, X, Sun, Moon, MapPin, ArrowLeft, HelpCircle } from "lucide-react";
+import NotificationBell from "./components/NotificationBell";
 import { useNavigate } from "react-router-dom";
 
 const navItems = [
@@ -90,11 +91,13 @@ export default function Layout({ children, currentPageName }) {
             })}
           </nav>
 
-          {/* Dark mode toggle (desktop) */}
-          <button
-            onClick={() => setDark(!dark)}
-            className="hidden md:flex items-center justify-center w-9 h-9 rounded-lg hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
-            title={dark ? "Modo claro" : "Modo oscuro"}>
+          {/* Notification bell + Dark mode toggle (desktop) */}
+          <div className="hidden md:flex items-center gap-1">
+            <NotificationBell userEmail={user?.email} />
+            <button
+              onClick={() => setDark(!dark)}
+              className="flex items-center justify-center w-9 h-9 rounded-lg hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+              title={dark ? "Modo claro" : "Modo oscuro"}>
             
             {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
