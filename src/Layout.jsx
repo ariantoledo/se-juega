@@ -119,7 +119,7 @@ export default function Layout({ children, currentPageName }) {
         {/* Mobile nav */}
         {menuOpen &&
         <nav className="md:hidden border-t border-border bg-card px-4 py-3 space-y-1">
-            {navItems.map((item) => {
+            {navItems.filter((item) => item.page !== "Help").map((item) => {
             const Icon = item.icon;
             const isActive = currentPageName === item.page;
             return (
