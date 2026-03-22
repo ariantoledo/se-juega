@@ -213,6 +213,21 @@ Horario: ${reservation.start_time} - ${reservation.end_time}
 Si pagaste, el reembolso será procesado en los próximos días.`
       });
     },
+    onMutate: async (reservationId) => {
+      await queryClient.cancelQueries(["field-reservations"]);
+      await queryClient.cancelQueries(["field-slots"]);
+      const prevRes = queryClient.getQueryData(["field-reservations", fieldId]);
+      const prevSlots = queryClient.getQueryData(["field-slots", fieldId, selectedDate]);
+      queryClient.setQueryData(["field-reservations", fieldId], (old = []) =>
+        old.map(r => r.id === reservationId ? { ...r, reservation_status: "cancelled" } : r)
+      );
+      return { prevRes, prevSlots };
+    },
+    onError: (_e, _v, ctx) => {
+      queryClient.setQueryData(["field-reservations", fieldId], ctx?.prevRes);
+      queryClient.setQueryData(["field-slots", fieldId, selectedDate], ctx?.prevSlots);
+      toast.error("Error al cancelar reserva");
+    },
     onSuccess: () => {
       toast.success("Reserva cancelada y notificación enviada");
       queryClient.invalidateQueries(["field-reservations"]);
