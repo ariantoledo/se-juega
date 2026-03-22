@@ -85,31 +85,20 @@ export default function CreateMatch() {
 
     if (reserveField && selectedSlot) {
       const field = allFields.find((f) => f.id === selectedFieldId);
-      const commissionAmount = field.precio_total * 0.10;
-      const ownerAmount = field.precio_total * 0.90;
 
-      await base44.entities.FieldNewReservation.create({
-        user_email: user?.email,
-        user_name: user?.full_name,
-        field_new_id: selectedFieldId,
-        field_name: field?.name || "",
-        establishment_id: field?.establishment_id,
-        timeslot_id: selectedSlot.id,
-        date: selectedSlot.date,
-        start_time: selectedSlot.start_time,
-        end_time: selectedSlot.end_time,
-        payment_type: "total",
-        amount_paid: field.precio_total,
-        precio_total: field.precio_total,
-        commission_amount: commissionAmount,
-        owner_amount: ownerAmount,
-        reservation_status: "pending",
-        payment_status: "pending",
+      // Initiate Mercado Pago payment — redirect user to checkout
+      const res = await base44.functions.invoke("createMPPayment", {
+        field: { id: selectedFieldId, ...field },
+        slot: selectedSlot,
+        payment_type: "sena",
+        app_base_url: window.location.origin,
         match_id: created.id,
       });
 
-      // Block the slot
-      await base44.entities.FieldNewTimeSlot.update(selectedSlot.id, { status: "reserved" });
+      if (res.data?.init_point) {
+        window.location.href = res.data.init_point;
+        return;
+      }
     }
 
     navigate(createPageUrl("MatchDetail") + `?id=${created.id}`);
