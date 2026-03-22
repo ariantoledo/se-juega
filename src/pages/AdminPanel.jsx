@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CheckCircle2, XCircle, Clock, User, MapPin, Phone, FileText, TrendingUp } from "lucide-react";
 import FinanceDashboard from "../components/admin/FinanceDashboard";
+import CommissionManager from "../components/admin/CommissionManager";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -223,6 +224,7 @@ export default function AdminPanel() {
             <TabsTrigger value="approved" className="flex-1">Aprobados</TabsTrigger>
             <TabsTrigger value="rejected" className="flex-1">Rechazados</TabsTrigger>
             <TabsTrigger value="finance" className="flex-1">Finanzas</TabsTrigger>
+            <TabsTrigger value="commissions" className="flex-1">Comisiones</TabsTrigger>
           </TabsList>
 
           <TabsContent value="pending">
@@ -247,6 +249,10 @@ export default function AdminPanel() {
 
           <TabsContent value="finance">
             <FinanceDashboard user={adminUser} />
+          </TabsContent>
+
+          <TabsContent value="commissions">
+            <CommissionManager />
           </TabsContent>
         </Tabs>
       </div>
