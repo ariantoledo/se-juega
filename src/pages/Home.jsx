@@ -55,7 +55,7 @@ export default function Home() {
     <>
       {showOnboarding && <Onboarding onClose={handleCloseOnboarding} />}
       <PullToRefresh onRefresh={refetch}>
-        <div className="max-w-5xl mx-auto px-4 py-6 pb-24 md:pb-6" style={{ overscrollBehavior: "none" }}>
+        <div className="max-w-5xl mx-auto px-4 py-6 pb-20 md:pb-6" style={{ overscrollBehavior: "none" }}>
           {/* Hero section */}
           <div className="mb-8">
             <h1 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">
