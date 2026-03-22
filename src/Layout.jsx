@@ -55,16 +55,25 @@ export default function Layout({ children, currentPageName }) {
     }
   }, [location, currentPageName, isChildScreen]);
 
-  // Hardware back button: prevent app exit when at a root tab
+  // Stack-aware navigation: Android back button support
+  useEffect(() => {
+    const navigationStack = JSON.parse(sessionStorage.getItem('navigationStack') || '[]');
+    const currentPath = location.pathname + location.search;
+    if (!navigationStack.length || navigationStack[navigationStack.length - 1] !== currentPath) {
+      navigationStack.push(currentPath);
+      sessionStorage.setItem('navigationStack', JSON.stringify(navigationStack));
+    }
+  }, [location]);
+
   useEffect(() => {
     const isRoot = TAB_ROOTS.includes(location.pathname);
-    if (isRoot) {
-      window.history.pushState({ seJuegaRoot: true }, "");
-    }
     const handlePopState = (e) => {
-      if (e.state?.seJuegaRoot) {
-        // Already at root — push again to prevent exit
-        window.history.pushState({ seJuegaRoot: true }, "");
+      const navigationStack = JSON.parse(sessionStorage.getItem('navigationStack') || '[]');
+      if (navigationStack.length > 1) {
+        navigationStack.pop();
+        sessionStorage.setItem('navigationStack', JSON.stringify(navigationStack));
+      } else if (isRoot) {
+        window.history.pushState({ navigationStack }, "");
       }
     };
     window.addEventListener("popstate", handlePopState);
