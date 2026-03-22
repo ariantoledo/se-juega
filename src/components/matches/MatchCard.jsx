@@ -8,6 +8,7 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
 const typeLabels = { "5": "Fútbol 5", "7": "Fútbol 7", "11": "Fútbol 11" };
+const levelLabels = { principiante: "Principiante", intermedio: "Intermedio", avanzado: "Avanzado" };
 
 export default function MatchCard({ match }) {
   const spotsLeft = match.players_needed - (match.current_players || 0);
@@ -30,7 +31,7 @@ export default function MatchCard({ match }) {
               </div>
             </div>
             <Badge className="bg-primary/10 text-primary border-0 font-semibold">
-              {typeLabels[match.football_type] || match.football_type}
+              {match.sport_type === "padel" ? "🎾 Pádel" : (typeLabels[match.football_type] || "⚽ Fútbol")}
             </Badge>
           </div>
 
@@ -49,6 +50,15 @@ export default function MatchCard({ match }) {
               <span>{spotsLeft > 0 ? `${spotsLeft} lugares` : "Completo"}</span>
             </div>
           </div>
+
+          {/* Padel level */}
+          {match.sport_type === "padel" && match.level && (
+            <div className="mt-2">
+              <Badge variant="outline" className="text-xs border-primary/30 text-primary bg-primary/5">
+                Nivel: {levelLabels[match.level] || match.level}
+              </Badge>
+            </div>
+          )}
 
           {/* Missing positions */}
           {match.missing_positions?.length > 0 && (
