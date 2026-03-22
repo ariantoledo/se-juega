@@ -5,7 +5,9 @@ import { createPageUrl } from "@/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PlusCircle, TrendingUp, Calendar, DollarSign, MapPin } from "lucide-react";
+import { PlusCircle, TrendingUp, Calendar, DollarSign, MapPin, FileDown } from "lucide-react";
+import { exportEstablishmentStats } from "@/utils/excelExport";
+import { toast } from "sonner";
 
 export default function MisCanchas() {
   const [user, setUser] = useState(null);
@@ -171,12 +173,31 @@ export default function MisCanchas() {
                             <CardTitle className="text-lg md:text-xl truncate">{est.name}</CardTitle>
                             <p className="text-xs md:text-sm text-muted-foreground mt-1 line-clamp-1">{est.address}</p>
                           </div>
-                          <Button size="sm" className="w-full sm:w-auto shrink-0" asChild>
-                            <a href={createPageUrl(`RegistrarCancha?establishment_id=${est.id}`)}>
-                              <PlusCircle className="w-4 h-4 mr-1" />
-                              Agregar Cancha
-                            </a>
-                          </Button>
+                          <div className="flex gap-2 flex-col sm:flex-row w-full sm:w-auto">
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              className="flex-1 sm:flex-initial"
+                              onClick={async () => {
+                                try {
+                                  const estFields = myFields.filter(f => f.establishment_id === est.id);
+                                  await exportEstablishmentStats(est, estFields, allReservations);
+                                  toast.success("Excel descargado");
+                                } catch (err) {
+                                  toast.error("Error al exportar");
+                                }
+                              }}
+                            >
+                              <FileDown className="w-4 h-4 mr-1" />
+                              Descargar
+                            </Button>
+                            <Button size="sm" className="flex-1 sm:flex-initial" asChild>
+                              <a href={createPageUrl(`RegistrarCancha?establishment_id=${est.id}`)}>  
+                                <PlusCircle className="w-4 h-4 mr-1" />
+                                Agregar Cancha
+                              </a>
+                            </Button>
+                          </div>
                         </div>
                       </CardHeader>
                       <CardContent className="pt-0">
