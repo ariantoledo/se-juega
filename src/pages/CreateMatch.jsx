@@ -8,8 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { Loader2, ArrowLeft, Building2 } from "lucide-react";
+import { Loader2, ArrowLeft, Building2, CheckCircle2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { format } from "date-fns";
 import PositionSelector from "../components/matches/PositionSelector";
 
 export default function CreateMatch() {
@@ -17,7 +18,10 @@ export default function CreateMatch() {
   const [user, setUser] = useState(null);
   const [saving, setSaving] = useState(false);
   const [reserveField, setReserveField] = useState(false);
+  const [selectedEstablishmentId, setSelectedEstablishmentId] = useState("");
   const [selectedFieldId, setSelectedFieldId] = useState("");
+  const [slotDate, setSlotDate] = useState("");
+  const [selectedSlot, setSelectedSlot] = useState(null);
 
   const [form, setForm] = useState({
     football_type: "5",
@@ -30,9 +34,29 @@ export default function CreateMatch() {
     missing_positions: [],
   });
 
-  const { data: fields = [] } = useQuery({
+  const { data: establishments = [] } = useQuery({
+    queryKey: ["establishments"],
+    queryFn: () => base44.entities.Establishment.list(),
+  });
+
+  const { data: allFields = [] } = useQuery({
     queryKey: ["fieldsnew"],
     queryFn: () => base44.entities.FieldNew.list(),
+  });
+
+  const fieldsForEstablishment = allFields.filter(
+    (f) => f.establishment_id === selectedEstablishmentId && f.is_active !== false
+  );
+
+  const { data: availableSlots = [] } = useQuery({
+    queryKey: ["slots", selectedFieldId, slotDate],
+    queryFn: async () => {
+      const all = await base44.entities.FieldNewTimeSlot.list();
+      return all.filter(
+        (s) => s.field_new_id === selectedFieldId && s.date === slotDate && s.status === "available"
+      );
+    },
+    enabled: !!selectedFieldId && !!slotDate,
   });
 
   useEffect(() => {
@@ -59,17 +83,8 @@ export default function CreateMatch() {
 
     const created = await base44.entities.Match.create(matchData);
 
-    // If reserving a field, create reservation linked to the match
-    if (reserveField && selectedFieldId && form.date) {
-      const field = fields.find((f) => f.id === selectedFieldId);
-      const matchDate = new Date(form.date);
-      const dateStr = matchDate.toISOString().split("T")[0];
-      const startHour = matchDate.getHours().toString().padStart(2, "0");
-      const startMin = matchDate.getMinutes().toString().padStart(2, "0");
-      const endDate = new Date(matchDate.getTime() + 2 * 60 * 60 * 1000);
-      const endHour = endDate.getHours().toString().padStart(2, "0");
-      const endMin = endDate.getMinutes().toString().padStart(2, "0");
-
+    if (reserveField && selectedSlot) {
+      const field = allFields.find((f) => f.id === selectedFieldId);
       const commissionAmount = field.precio_total * 0.10;
       const ownerAmount = field.precio_total * 0.90;
 
@@ -79,9 +94,10 @@ export default function CreateMatch() {
         field_new_id: selectedFieldId,
         field_name: field?.name || "",
         establishment_id: field?.establishment_id,
-        date: dateStr,
-        start_time: `${startHour}:${startMin}`,
-        end_time: `${endHour}:${endMin}`,
+        timeslot_id: selectedSlot.id,
+        date: selectedSlot.date,
+        start_time: selectedSlot.start_time,
+        end_time: selectedSlot.end_time,
         payment_type: "total",
         amount_paid: field.precio_total,
         precio_total: field.precio_total,
@@ -91,6 +107,9 @@ export default function CreateMatch() {
         payment_status: "pending",
         match_id: created.id,
       });
+
+      // Block the slot
+      await base44.entities.FieldNewTimeSlot.update(selectedSlot.id, { status: "reserved" });
     }
 
     navigate(createPageUrl("MatchDetail") + `?id=${created.id}`);
@@ -200,34 +219,99 @@ export default function CreateMatch() {
             />
 
             {/* Reserve field toggle */}
-            <div className="border border-border rounded-xl p-4 space-y-3">
+            <div className="border border-border rounded-xl p-4 space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Building2 className="w-4 h-4 text-primary" />
                   <div>
                     <p className="text-sm font-medium text-foreground">Reservar cancha</p>
-                    <p className="text-xs text-muted-foreground">Vincular una reserva a este partido</p>
+                    <p className="text-xs text-muted-foreground">Elegí establecimiento, cancha y horario</p>
                   </div>
                 </div>
-                <Switch checked={reserveField} onCheckedChange={setReserveField} />
+                <Switch checked={reserveField} onCheckedChange={(v) => { setReserveField(v); setSelectedEstablishmentId(""); setSelectedFieldId(""); setSlotDate(""); setSelectedSlot(null); }} />
               </div>
+
               {reserveField && (
-                <div className="space-y-2">
-                  <Label>Seleccioná la cancha</Label>
-                  <Select value={selectedFieldId} onValueChange={setSelectedFieldId}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Elegir cancha..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {fields.map((f) => (
-                        <SelectItem key={f.id} value={f.id}>
-                          {f.name} — {f.address}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {fields.length === 0 && (
-                    <p className="text-xs text-muted-foreground">No hay canchas registradas aún.</p>
+                <div className="space-y-3">
+                  {/* Step 1: Establishment */}
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-muted-foreground">1. Establecimiento</Label>
+                    <Select value={selectedEstablishmentId} onValueChange={(v) => { setSelectedEstablishmentId(v); setSelectedFieldId(""); setSlotDate(""); setSelectedSlot(null); }}>
+                      <SelectTrigger><SelectValue placeholder="Elegir establecimiento..." /></SelectTrigger>
+                      <SelectContent>
+                        {establishments.map((e) => (
+                          <SelectItem key={e.id} value={e.id}>{e.name} — {e.address}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Step 2: Field */}
+                  {selectedEstablishmentId && (
+                    <div className="space-y-1.5">
+                      <Label className="text-xs text-muted-foreground">2. Cancha</Label>
+                      <Select value={selectedFieldId} onValueChange={(v) => { setSelectedFieldId(v); setSlotDate(""); setSelectedSlot(null); }}>
+                        <SelectTrigger><SelectValue placeholder="Elegir cancha..." /></SelectTrigger>
+                        <SelectContent>
+                          {fieldsForEstablishment.length === 0 ? (
+                            <SelectItem value="__none" disabled>Sin canchas disponibles</SelectItem>
+                          ) : fieldsForEstablishment.map((f) => (
+                            <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
+                  {/* Step 3: Date */}
+                  {selectedFieldId && (
+                    <div className="space-y-1.5">
+                      <Label className="text-xs text-muted-foreground">3. Fecha</Label>
+                      <Input
+                        type="date"
+                        value={slotDate}
+                        min={new Date().toISOString().split("T")[0]}
+                        onChange={(e) => { setSlotDate(e.target.value); setSelectedSlot(null); }}
+                      />
+                    </div>
+                  )}
+
+                  {/* Step 4: Time slot */}
+                  {slotDate && (
+                    <div className="space-y-1.5">
+                      <Label className="text-xs text-muted-foreground">4. Horario disponible</Label>
+                      {availableSlots.length === 0 ? (
+                        <p className="text-xs text-muted-foreground py-2">No hay horarios disponibles para esta fecha.</p>
+                      ) : (
+                        <div className="grid grid-cols-3 gap-2">
+                          {availableSlots.map((slot) => (
+                            <button
+                              key={slot.id}
+                              type="button"
+                              onClick={() => {
+                                setSelectedSlot(slot);
+                                // Auto-fill match date
+                                const dt = `${slot.date}T${slot.start_time}`;
+                                handleChange("date", dt);
+                                // Auto-fill field name/address
+                                const field = allFields.find((f) => f.id === selectedFieldId);
+                                const est = establishments.find((e) => e.id === selectedEstablishmentId);
+                                if (field) handleChange("field_name", field.name);
+                                if (est) handleChange("address", est.address);
+                              }}
+                              className={`p-2.5 rounded-lg border-2 text-xs font-medium transition-all flex items-center justify-center gap-1 ${
+                                selectedSlot?.id === slot.id
+                                  ? "border-primary bg-primary/10 text-primary"
+                                  : "border-border hover:border-primary/40"
+                              }`}
+                            >
+                              {selectedSlot?.id === slot.id && <CheckCircle2 className="w-3 h-3" />}
+                              {slot.start_time} - {slot.end_time}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
               )}
