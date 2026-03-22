@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
 import { Home, PlusCircle, CalendarDays, User, Menu, X, Sun, Moon, MapPin, ArrowLeft, HelpCircle } from "lucide-react";
 import NotificationBell from "./components/NotificationBell";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const navItems = [
 { name: "Partidos", page: "Home", icon: Home },
@@ -16,27 +16,95 @@ const navItems = [
 
 const MAIN_PAGES = new Set(["Home", "CreateMatch", "MyMatches", "Canchas", "Profile"]);
 
+// Bottom tab pages (excluding Profile/Help)
+const BOTTOM_TABS = navItems.filter(i => i.page !== "Profile" && i.page !== "Help");
+const TAB_ROOTS = BOTTOM_TABS.map(i => createPageUrl(i.page));
+
+// Store/restore last visited path per tab
+function getTabKey(page) { return `tab_last_${page}`; }
+function saveTabPath(page, path) { sessionStorage.setItem(getTabKey(page), path); }
+function getTabPath(page) { return sessionStorage.getItem(getTabKey(page)) || createPageUrl(page); }
+
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const isChildScreen = !MAIN_PAGES.has(currentPageName);
-  const [dark, setDark] = useState(() => localStorage.getItem("theme") === "dark");
+
+  // Determine initial dark mode: manual preference → OS preference
+  const [dark, setDark] = useState(() => {
+    const stored = localStorage.getItem("theme");
+    if (stored) return stored === "dark";
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  });
+  const [manualTheme, setManualTheme] = useState(() => !!localStorage.getItem("theme"));
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
+  }, []);
+
+  // Sync current path into per-tab storage
+  useEffect(() => {
+    const activeTab = BOTTOM_TABS.find(t => {
+      const root = createPageUrl(t.page);
+      return location.pathname === root || (isChildScreen && location.pathname.startsWith("/"));
+    });
+    if (activeTab && currentPageName) {
+      saveTabPath(activeTab.page, location.pathname + location.search);
+    }
+  }, [location, currentPageName, isChildScreen]);
+
+  // Hardware back button: prevent app exit when at a root tab
+  useEffect(() => {
+    const isRoot = TAB_ROOTS.includes(location.pathname);
+    if (isRoot) {
+      window.history.pushState({ seJuegaRoot: true }, "");
+    }
+    const handlePopState = (e) => {
+      if (e.state?.seJuegaRoot) {
+        // Already at root — push again to prevent exit
+        window.history.pushState({ seJuegaRoot: true }, "");
+      }
+    };
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [location.pathname]);
+
+  // Listen to OS dark mode changes (only if user hasn't set a manual preference)
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const handler = (e) => {
+      if (!localStorage.getItem("theme")) {
+        setDark(e.matches);
+      }
+    };
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
   }, []);
 
   useEffect(() => {
     const root = document.documentElement;
     if (dark) {
       root.classList.add("dark");
-      localStorage.setItem("theme", "dark");
     } else {
       root.classList.remove("dark");
-      localStorage.setItem("theme", "light");
     }
-  }, [dark]);
+    if (manualTheme) {
+      localStorage.setItem("theme", dark ? "dark" : "light");
+    }
+  }, [dark, manualTheme]);
+
+  const toggleTheme = useCallback(() => {
+    setManualTheme(true);
+    setDark(d => !d);
+  }, []);
+
+  // Navigate to tab, restoring last visited path within that tab
+  const navigateToTab = useCallback((tabPage) => {
+    const restoredPath = getTabPath(tabPage);
+    navigate(restoredPath);
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -95,7 +163,7 @@ export default function Layout({ children, currentPageName }) {
           <div className="hidden md:flex items-center gap-1">
             <NotificationBell userEmail={user?.email} />
             <button
-              onClick={() => setDark(!dark)}
+              onClick={toggleTheme}
               className="flex items-center justify-center w-9 h-9 rounded-lg hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
               title={dark ? "Modo claro" : "Modo oscuro"}>
             
@@ -107,7 +175,7 @@ export default function Layout({ children, currentPageName }) {
           <div className="md:hidden flex items-center gap-2">
             <NotificationBell userEmail={user?.email} />
             <button
-              onClick={() => setDark(!dark)}
+              onClick={toggleTheme}
               className="p-2 rounded-lg hover:bg-secondary transition-colors text-muted-foreground">
               
               {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
@@ -155,21 +223,19 @@ export default function Layout({ children, currentPageName }) {
       {/* Mobile bottom bar */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-card/90 backdrop-blur-xl border-t border-border pb-safe">
         <div className="flex items-center justify-around h-14">
-          {navItems.filter((item) => item.page !== "Profile" && item.page !== "Help").map((item) => {
+          {BOTTOM_TABS.map((item) => {
             const Icon = item.icon;
             const isActive = currentPageName === item.page;
             return (
-              <a
+              <button
                 key={item.page}
-                href={createPageUrl(item.page)}
-                className={`flex flex-col items-center gap-0.5 px-2 py-1 ${
+                onClick={() => navigateToTab(item.page)}
+                className={`flex flex-col items-center gap-0.5 px-2 py-1 min-h-0 ${
                 isActive ? "text-primary" : "text-muted-foreground"}`
                 }>
-                
                 <Icon className="w-5 h-5" />
                 <span className="text-[9px] font-medium leading-tight">{item.name}</span>
-              </a>);
-
+              </button>);
           })}
         </div>
       </nav>
