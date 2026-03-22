@@ -246,3 +246,4 @@ export default function Onboarding({ onClose }) {
     </div>,
     document.body
   );
+}
