@@ -119,7 +119,7 @@ export default function Layout({ children, currentPageName }) {
         {/* Mobile nav */}
         {menuOpen &&
         <nav className="md:hidden border-t border-border bg-card px-4 py-3 space-y-1">
-            {navItems.filter((item) => item.page !== "Help").map((item) => {
+            {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = currentPageName === item.page;
             return (
@@ -150,7 +150,7 @@ export default function Layout({ children, currentPageName }) {
       {/* Mobile bottom bar */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-card/90 backdrop-blur-xl border-t border-border pb-safe">
         <div className="flex items-center justify-around h-14">
-          {navItems.filter((item) => item.page !== "Profile").map((item) => {
+          {navItems.filter((item) => item.page !== "Profile" && item.page !== "Help").map((item) => {
             const Icon = item.icon;
             const isActive = currentPageName === item.page;
             return (
