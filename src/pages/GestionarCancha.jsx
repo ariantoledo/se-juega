@@ -10,10 +10,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Calendar as CalendarIcon, DollarSign, Clock, Ban, CheckCircle2, XCircle, Copy, Loader2 } from "lucide-react";
+import { Calendar as CalendarIcon, DollarSign, Clock, Ban, CheckCircle2, XCircle, Copy, Loader2, FileDown } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { exportFieldDayStats } from "@/utils/excelExport";
+import { useState, useRef } from "react";
 
 export default function GestionarCancha() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -25,6 +27,7 @@ export default function GestionarCancha() {
   const [showBlockDialog, setShowBlockDialog] = useState(false);
   const [newSlot, setNewSlot] = useState({ start_time: "", end_time: "" });
   const [blockSlot, setBlockSlot] = useState(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -429,25 +432,45 @@ Si pagaste, el reembolso será procesado en los próximos días.`
           <TabsContent value="horarios">
             <Card>
               <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <CardTitle>
-                  Horarios - {format(selectedDate, "PPP", { locale: es })}
-                </CardTitle>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => repeatYesterdayMutation.mutate()}
-                    disabled={repeatYesterdayMutation.isPending}
-                  >
-                    {repeatYesterdayMutation.isPending
-                      ? <Loader2 className="w-4 h-4 mr-1 animate-spin" />
-                      : <Copy className="w-4 h-4 mr-1" />}
-                    Repetir día anterior
-                  </Button>
-                  <Button onClick={() => setShowAddSlotDialog(true)}>
-                    Agregar horario
-                  </Button>
-                </div>
+               <CardTitle>
+                 Horarios - {format(selectedDate, "PPP", { locale: es })}
+               </CardTitle>
+               <div className="flex gap-2 flex-col sm:flex-row">
+                 <Button
+                   variant="outline"
+                   size="sm"
+                   onClick={async () => {
+                     setIsExporting(true);
+                     try {
+                       await exportFieldDayStats(field, selectedDate, reservations);
+                       toast.success("Excel descargado");
+                     } catch (err) {
+                       toast.error("Error al exportar");
+                     }
+                     setIsExporting(false);
+                   }}
+                   disabled={isExporting}
+                 >
+                   {isExporting
+                     ? <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                     : <FileDown className="w-4 h-4 mr-1" />}
+                   Descargar
+                 </Button>
+                 <Button
+                   variant="outline"
+                   size="sm"
+                   onClick={() => repeatYesterdayMutation.mutate()}
+                   disabled={repeatYesterdayMutation.isPending}
+                 >
+                   {repeatYesterdayMutation.isPending
+                     ? <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                     : <Copy className="w-4 h-4 mr-1" />}
+                   Repetir día anterior
+                 </Button>
+                 <Button onClick={() => setShowAddSlotDialog(true)}>
+                   Agregar horario
+                 </Button>
+               </div>
               </CardHeader>
               <CardContent>
                 {slots.length === 0 ? (
