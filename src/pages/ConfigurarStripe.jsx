@@ -205,27 +205,24 @@ export default function ConfigurarMercadoPago() {
           </div>
         )}
 
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle>Información sobre comisiones</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 text-sm text-muted-foreground">
-            <div className="flex items-start gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2" />
-              <p>La aplicación cobra una comisión fija de $2.000 ARS por reserva</p>
+        <Card className="mt-6 border-primary/20">
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                <CheckCircle2 className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <p className="font-semibold text-foreground">Comisión de la plataforma</p>
+                <p className="text-xs text-muted-foreground">Por cada reserva confirmada</p>
+              </div>
             </div>
-            <div className="flex items-start gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2" />
-              <p>El resto del monto pagado corresponde al dueño de la cancha</p>
+            <div className="bg-secondary/60 rounded-xl p-4 flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Comisión fija por reserva</span>
+              <span className="text-2xl font-bold text-primary">$2.000 ARS</span>
             </div>
-            <div className="flex items-start gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2" />
-              <p>Los pagos se procesan de forma segura a través de Mercado Pago en pesos argentinos (ARS)</p>
-            </div>
-            <div className="flex items-start gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2" />
-              <p>La conexión OAuth es real: tus credenciales se obtienen directamente de Mercado Pago</p>
-            </div>
+            <p className="text-xs text-muted-foreground mt-3">
+              Los pagos se procesan de forma segura a través de Mercado Pago en pesos argentinos. El monto restante de cada reserva se acredita directamente en tu cuenta vinculada.
+            </p>
           </CardContent>
         </Card>
       </div>
