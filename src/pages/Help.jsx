@@ -15,7 +15,7 @@ const TUTORIAL_STEPS = [
   {
     icon: PlusCircle,
     title: "Crear un partido",
-    description: "Andá a 'Crear Partido', completá el tipo de fútbol, fecha, cancha y cuántos jugadores necesitás. Podés elegir posiciones faltantes para que los jugadores sepan dónde jugar.",
+    description: "Andá a 'Crear Partido', completá el deporte (fútbol o pádel), fecha, cancha y cuántos jugadores necesitás. Para fútbol, podés elegir posiciones faltantes para que los jugadores sepan dónde jugar.",
     color: "bg-primary/10 text-primary",
   },
   {
@@ -86,7 +86,7 @@ export default function Help() {
   return (
     <>
     {showOnboarding && <Onboarding onClose={() => setShowOnboarding(false)} />}
-    <div className="max-w-2xl mx-auto px-4 py-6 pb-24 md:pb-6 space-y-6">
+    <div className="max-w-2xl mx-auto px-4 py-6 pb-20 md:pb-6 space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-foreground">Centro de Ayuda</h1>
         <p className="text-muted-foreground mt-1">Tutorial, valoraciones y sugerencias</p>
