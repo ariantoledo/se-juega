@@ -13,7 +13,7 @@ export default function SplashScreen({ onDone }) {
       initial={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-gradient-to-br from-[#1B5EA8] via-primary to-[#4CB648]"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-gradient-to-br from-[#0D3B5C] via-[#1A5A8C] to-[#2D8F47]"
     >
       {/* Minimal loading indicator */}
       <motion.div
