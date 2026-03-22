@@ -43,22 +43,9 @@ const LayoutWrapper = ({ children, currentPageName }) => {
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
 
-  // Show loading spinner while checking app public settings or auth
+  // While loading, render nothing (content loads in background)
   if (isLoadingPublicSettings || isLoadingAuth) {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center bg-background">
-        <div className="text-center space-y-4">
-          <div className="w-16 h-16 mx-auto rounded-2xl bg-primary flex items-center justify-center shadow-lg">
-            <svg viewBox="0 0 100 100" className="w-10 h-10">
-              <circle cx="50" cy="50" r="40" fill="white"/>
-              <path d="M 30 50 L 40 60 L 60 40 L 70 50" stroke="currentColor" strokeWidth="6" fill="none" className="text-primary"/>
-              <circle cx="50" cy="70" r="8" fill="currentColor" className="text-primary"/>
-            </svg>
-          </div>
-          <div className="w-8 h-8 mx-auto border-4 border-border border-t-primary rounded-full animate-spin"></div>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   // Handle authentication errors
