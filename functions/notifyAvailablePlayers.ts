@@ -59,7 +59,7 @@ Deno.serve(async (req) => {
     const defaultMessage = `¡Hay un partido disponible en tu horario! Unite ahora`;
     const messageBody = custom_message || defaultMessage;
 
-    const emailPromises = compatible.map(avail =>
+    const notifyPromises = compatible.map(avail => Promise.all([
       base44.asServiceRole.integrations.Core.SendEmail({
         to: avail.user_email,
         subject: `${sportLabel} — ¡Faltan jugadores para el partido del ${matchDay}!`,
@@ -75,10 +75,18 @@ Ingresá a la app para sumarte:
 ${matchUrl}
 
 ¡Nos vemos en la cancha!`
-      })
-    );
+      }),
+      base44.asServiceRole.entities.Notification.create({
+        user_email: avail.user_email,
+        title: `${sportLabel} — ¡Partido disponible!`,
+        message: `${messageBody} en ${match.field_name} el ${matchDay}. Faltan ${spotsLeft} jugador${spotsLeft !== 1 ? "es" : ""}.`,
+        type: "match",
+        link: `/MatchDetail?id=${match_id}`,
+        is_read: false,
+      }),
+    ]));
 
-    await Promise.all(emailPromises);
+    await Promise.all(notifyPromises);
 
     return Response.json({ sent: compatible.length });
   } catch (error) {

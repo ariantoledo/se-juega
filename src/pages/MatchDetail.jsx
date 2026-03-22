@@ -122,6 +122,14 @@ export default function MatchDetail() {
         updateData.missing_positions = match.missing_positions.filter(p => p !== request.position);
       }
       await base44.entities.Match.update(matchId, updateData);
+      // Notificación in-app al jugador aceptado
+      await base44.functions.invoke("createNotification", {
+        user_email: request.player_email,
+        title: "✅ ¡Fuiste aceptado!",
+        message: `Sos parte del partido en ${match.field_name}. ¡Nos vemos en la cancha!`,
+        type: "match",
+        link: `/MatchDetail?id=${matchId}`,
+      });
     },
     onMutate: async (request) => {
       await queryClient.cancelQueries({ queryKey: ["match_requests", matchId] });
