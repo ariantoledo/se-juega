@@ -15,7 +15,6 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { exportFieldDayStats } from "@/utils/excelExport";
-import { useState, useRef } from "react";
 
 export default function GestionarCancha() {
   const urlParams = new URLSearchParams(window.location.search);
