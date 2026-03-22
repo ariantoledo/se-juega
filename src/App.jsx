@@ -130,27 +130,22 @@ const AuthenticatedApp = () => {
 
 
 function App() {
-  const [showIntro, setShowIntro] = useState(() => {
-    return !sessionStorage.getItem('intro_shown');
-  });
-  const [showSplash, setShowSplash] = useState(() => {
-    return !sessionStorage.getItem('splash_shown');
-  });
-
-  const handleIntroDone = () => {
-    sessionStorage.setItem('intro_shown', '1');
-    setShowIntro(false);
-  };
+  const [showSplash, setShowSplash] = useState(true);
+  const [showIntro, setShowIntro] = useState(false);
 
   const handleSplashDone = () => {
-    sessionStorage.setItem('splash_shown', '1');
     setShowSplash(false);
+    setShowIntro(true);
+  };
+
+  const handleIntroDone = () => {
+    setShowIntro(false);
   };
 
   return (
     <>
-      {showIntro && <IntroAnimation onComplete={handleIntroDone} />}
-      {!showIntro && showSplash && <SplashScreen onDone={handleSplashDone} />}
+      {showSplash && <SplashScreen onDone={handleSplashDone} />}
+      {!showSplash && showIntro && <IntroAnimation onComplete={handleIntroDone} />}
       <AuthProvider>
         <QueryClientProvider client={queryClientInstance}>
           <Router>
