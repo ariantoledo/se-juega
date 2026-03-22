@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createPageUrl } from "@/utils";
@@ -18,6 +18,7 @@ import { es } from "date-fns/locale";
 export default function GestionarCancha() {
   const urlParams = new URLSearchParams(window.location.search);
   const fieldId = urlParams.get("id");
+  const dialogInputRef = useRef(null);
 
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showAddSlotDialog, setShowAddSlotDialog] = useState(false);
@@ -513,7 +514,7 @@ Si pagaste, el reembolso será procesado en los próximos días.`
 
       {/* Add Slot Dialog */}
       <Dialog open={showAddSlotDialog} onOpenChange={setShowAddSlotDialog}>
-        <DialogContent>
+        <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
           <DialogHeader>
             <DialogTitle>Agregar horario</DialogTitle>
           </DialogHeader>
@@ -528,9 +529,11 @@ Si pagaste, el reembolso será procesado en los próximos días.`
               <div>
                 <Label>Hora inicio</Label>
                 <Input
+                  ref={dialogInputRef}
                   type="time"
                   value={newSlot.start_time}
                   onChange={(e) => setNewSlot({ ...newSlot, start_time: e.target.value })}
+                  onFocus={() => setTimeout(() => dialogInputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100)}
                 />
               </div>
               <div>

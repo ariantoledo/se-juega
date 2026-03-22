@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { createPageUrl } from "@/utils";
@@ -14,6 +14,7 @@ import { Upload, X } from "lucide-react";
 export default function RegistrarCancha() {
   const urlParams = new URLSearchParams(window.location.search);
   const establishmentId = urlParams.get("establishment_id");
+  const formRef = useRef(null);
 
   const [user, setUser] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -116,7 +117,11 @@ export default function RegistrarCancha() {
             <CardTitle>Información de la cancha</CardTitle>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form ref={formRef} onSubmit={handleSubmit} className="space-y-4" onFocus={(e) => {
+              if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+                setTimeout(() => e.target.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+              }
+            }}>
               <div>
                 <Label>Nombre de la cancha *</Label>
                 <Input

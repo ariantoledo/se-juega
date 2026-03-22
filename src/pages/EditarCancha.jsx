@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import MobileSelect from "@/components/ui/mobile-select";
 import { Loader2, X, ImagePlus } from "lucide-react";
 import { toast } from "sonner";
 
@@ -130,15 +130,12 @@ export default function EditarCancha() {
               </div>
 
               <div>
-                <Label>Tipo de cancha *</Label>
-                <Select value={form.field_type} onValueChange={v => setForm(f => ({ ...f, field_type: v }))}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="futbol5">Fútbol 5</SelectItem>
-                    <SelectItem value="futbol7">Fútbol 7</SelectItem>
-                    <SelectItem value="futbol11">Fútbol 11</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label htmlFor="field-type">Tipo de cancha *</Label>
+                <MobileSelect value={form.field_type} onValueChange={v => setForm(f => ({ ...f, field_type: v }))} id="field-type">
+                  <option value="futbol5">Fútbol 5</option>
+                  <option value="futbol7">Fútbol 7</option>
+                  <option value="futbol11">Fútbol 11</option>
+                </MobileSelect>
               </div>
 
               <div>
