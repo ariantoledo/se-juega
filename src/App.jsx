@@ -1,6 +1,7 @@
 import React, { useState, lazy, Suspense } from 'react';
 import { Toaster } from "@/components/ui/toaster"
 import SplashScreen from './components/SplashScreen';
+import IntroAnimation from './components/IntroAnimation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
@@ -129,9 +130,17 @@ const AuthenticatedApp = () => {
 
 
 function App() {
+  const [showIntro, setShowIntro] = useState(() => {
+    return !sessionStorage.getItem('intro_shown');
+  });
   const [showSplash, setShowSplash] = useState(() => {
     return !sessionStorage.getItem('splash_shown');
   });
+
+  const handleIntroDone = () => {
+    sessionStorage.setItem('intro_shown', '1');
+    setShowIntro(false);
+  };
 
   const handleSplashDone = () => {
     sessionStorage.setItem('splash_shown', '1');
@@ -140,7 +149,8 @@ function App() {
 
   return (
     <>
-      {showSplash && <SplashScreen onDone={handleSplashDone} />}
+      {showIntro && <IntroAnimation onComplete={handleIntroDone} />}
+      {!showIntro && showSplash && <SplashScreen onDone={handleSplashDone} />}
       <AuthProvider>
         <QueryClientProvider client={queryClientInstance}>
           <Router>
