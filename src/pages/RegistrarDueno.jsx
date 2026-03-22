@@ -54,6 +54,7 @@ function FileItem({ file, onRemove }) {
 }
 
 export default function RegistrarDueno() {
+  const formRef = useRef(null);
   const [user, setUser] = useState(null);
   const [loadingUser, setLoadingUser] = useState(true);
   const [existingRequest, setExistingRequest] = useState(null);
@@ -285,7 +286,11 @@ export default function RegistrarDueno() {
         <Card>
           <CardHeader><CardTitle>Información del establecimiento</CardTitle></CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form ref={formRef} onSubmit={handleSubmit} className="space-y-4" onFocus={(e) => {
+                  if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+                    setTimeout(() => e.target.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+                  }
+                }}>
               <div>
                 <Label>Nombre del establecimiento *</Label>
                 <Input

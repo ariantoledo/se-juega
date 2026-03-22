@@ -55,30 +55,42 @@ export default function Layout({ children, currentPageName }) {
     }
   }, [location, currentPageName, isChildScreen]);
 
-  // Stack-aware navigation: Android back button support
+  // Stack-aware navigation: Android back button support with hardened loop prevention
   useEffect(() => {
     const navigationStack = JSON.parse(sessionStorage.getItem('navigationStack') || '[]');
     const currentPath = location.pathname + location.search;
+    
+    // Prevent duplicate entries and sync stack on navigation
     if (!navigationStack.length || navigationStack[navigationStack.length - 1] !== currentPath) {
       navigationStack.push(currentPath);
       sessionStorage.setItem('navigationStack', JSON.stringify(navigationStack));
     }
-  }, [location]);
+  }, [location.pathname, location.search]);
 
   useEffect(() => {
     const isRoot = TAB_ROOTS.includes(location.pathname);
-    const handlePopState = (e) => {
+    let isProcessing = false; // Flag to prevent concurrent popstate handlers
+    
+    const handlePopState = () => {
+      if (isProcessing) return; // Ignore concurrent popstate events
+      isProcessing = true;
+      
       const navigationStack = JSON.parse(sessionStorage.getItem('navigationStack') || '[]');
+      
       if (navigationStack.length > 1) {
         navigationStack.pop();
         sessionStorage.setItem('navigationStack', JSON.stringify(navigationStack));
       } else if (isRoot) {
-        window.history.pushState({ navigationStack }, "");
+        // At root level: re-push to prevent browser exit
+        window.history.pushState(null, "");
       }
+      
+      setTimeout(() => { isProcessing = false; }, 100); // Reset flag after event completes
     };
+    
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
-  }, [location.pathname]);
+  }, [location.pathname])
 
   // Listen to OS dark mode changes (only if user hasn't set a manual preference)
   useEffect(() => {
