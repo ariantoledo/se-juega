@@ -12,6 +12,28 @@
     --sal: env(safe-area-inset-left, 0px);
 
     --radius: 0.75rem;
+
+    /* Light mode colors */
+    --background: 0 0% 98%;
+    --foreground: 160 15% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 160 15% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 160 15% 10%;
+    --primary: 152 60% 36%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 160 10% 92%;
+    --secondary-foreground: 160 15% 15%;
+    --muted: 160 8% 90%;
+    --muted-foreground: 160 8% 40%;
+    --accent: 38 92% 50%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 160 10% 85%;
+    --input: 160 10% 85%;
+    --ring: 152 60% 36%;
+
     --chart-1: 152 60% 36%;
     --chart-2: 38 92% 50%;
     --chart-3: 200 60% 50%;
