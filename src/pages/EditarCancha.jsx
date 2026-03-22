@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createPageUrl } from "@/utils";
@@ -21,21 +21,24 @@ export default function EditarCancha() {
       const fields = await base44.entities.FieldNew.list();
       return fields.find(f => f.id === fieldId);
     },
-    enabled: !!fieldId,
-    onSuccess: (data) => {
-      if (data) setForm({
-        name: data.name || "",
-        field_type: data.field_type || "futbol5",
-        description: data.description || "",
-        address: data.address || "",
-        precio_total: data.precio_total || "",
-        precio_sena: data.precio_sena || "",
-        images: data.images || [],
-      });
-    }
+    enabled: !!fieldId
   });
 
   const [form, setForm] = useState(null);
+
+  useEffect(() => {
+    if (field && !form) {
+      setForm({
+        name: field.name || "",
+        field_type: field.field_type || "futbol5",
+        description: field.description || "",
+        address: field.address || "",
+        precio_total: field.precio_total || "",
+        precio_sena: field.precio_sena || "",
+        images: field.images || [],
+      });
+    }
+  }, [field]);
   const [uploadingImage, setUploadingImage] = useState(false);
 
   const updateMutation = useMutation({
