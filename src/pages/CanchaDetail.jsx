@@ -102,7 +102,7 @@ export default function CanchaDetail() {
   const availableSlots = slots.filter(s => s.status === "available");
 
   return (
-    <div className="min-h-screen bg-background p-4 md:p-6">
+    <div className="min-h-screen bg-background p-4 md:p-6 pb-28 md:pb-6">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="mb-6">
