@@ -60,10 +60,8 @@ export default function Layout({ children, currentPageName }) {
 
           <a href={createPageUrl("Home")} className="flex items-center gap-2">
             <div className="w-8 h-8 md:w-9 md:h-9 rounded-xl bg-primary flex items-center justify-center shadow-md">
-              <svg viewBox="0 0 100 100" className="w-5 h-5 md:w-6 md:h-6">
-                <circle cx="50" cy="50" r="40" fill="white" />
-                <path d="M 30 50 L 40 60 L 60 40 L 70 50" stroke="currentColor" strokeWidth="6" fill="none" className="text-primary" />
-                <circle cx="50" cy="70" r="8" fill="currentColor" className="text-primary" />
+              <svg viewBox="0 0 24 24" className="w-5 h-5 md:w-6 md:h-6" fill="white">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
               </svg>
             </div>
             <span className="font-bold text-lg md:text-xl text-foreground tracking-tight">Se Juega</span>
