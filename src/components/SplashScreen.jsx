@@ -53,16 +53,11 @@ const ELEMENTS = [
 ];
 
 export default function SplashScreen({ onDone }) {
-  const [phase, setPhase] = useState("elements"); // elements → logo → exit
-
   useEffect(() => {
-    // After elements appear (0.9 + 0.4 anim = ~1.5s), show logo
-    const t1 = setTimeout(() => setPhase("logo"), 1600);
-    // After logo shows, exit
-    const t2 = setTimeout(() => setPhase("exit"), 2500);
-    const t3 = setTimeout(onDone, 2900);
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
-  }, []);
+    // Splash muy breve: 0.5-0.8 segundos total
+    const timer = setTimeout(onDone, 700);
+    return () => clearTimeout(timer);
+  }, [onDone]);
 
   return (
     <AnimatePresence>
@@ -71,62 +66,15 @@ export default function SplashScreen({ onDone }) {
           key="splash"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.4 }}
-          className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden"
-          style={{
-            background: "linear-gradient(135deg, #1B5EA8 0%, #29ABE2 45%, #4CB648 100%)",
-          }}
+          transition={{ duration: 0.3 }}
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-gradient-to-br from-[#1B5EA8] via-primary to-[#4CB648]"
         >
-          {/* Background mesh */}
-          <div className="absolute inset-0 opacity-10"
-            style={{
-              backgroundImage: "radial-gradient(circle at 20% 80%, #fff 1px, transparent 1px), radial-gradient(circle at 80% 20%, #fff 1px, transparent 1px)",
-              backgroundSize: "40px 40px",
-            }}
-          />
-          <div className="absolute top-0 left-0 w-96 h-96 rounded-full bg-white/5 -translate-x-1/2 -translate-y-1/2" />
-          <div className="absolute bottom-0 right-0 w-80 h-80 rounded-full bg-white/5 translate-x-1/3 translate-y-1/3" />
-
-          {/* Floating logo elements */}
-          {ELEMENTS.map(({ id, Component, x, y, size, delay }) => (
-            <motion.div
-              key={id}
-                 initial={{ scale: 0, opacity: 0, rotate: -20 }}
-              animate={phase === "elements" || phase === "logo"
-                ? { scale: 1, opacity: 1, rotate: 0 }
-                : { scale: 0.5, opacity: 0 }}
-              exit={{ scale: 0.5, opacity: 0 }}
-            >
-              <Component />
-            </motion.div>
-          ))}
-
-          {/* Central logo */}
+          {/* Minimal loading indicator */}
           <motion.div
-            initial={{ scale: 0.5, opacity: 0 }}
-            animate={phase === "logo" || phase === "exit"
-              ? { scale: 1, opacity: 1 }
-              : { scale: 0.5, opacity: 0 }}
-            exit={{ scale: 0.5, opacity: 0 }}
-            transition={{ duration: 0.4, ease: "backOut" }}
-            className="relative z-10 flex flex-col items-center gap-4"
-          >
-            <div className="w-28 h-28 rounded-3xl bg-white/90 backdrop-blur-sm shadow-2xl flex items-center justify-center">
-              <img
-                src="https://media.base44.com/images/public/69af676714ee0899079240af/b369c31da_fc25c6634_logo.png"
-                alt="Se Juega"
-                className="w-20 h-20 rounded-2xl object-cover"
-              />
-            </div>
-            <motion.p
-              initial={{ opacity: 0, y: 10 }}
-              animate={phase === "logo" || phase === "exit" ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
-              transition={{ delay: 0.2, duration: 0.3 }}
-              className="text-white text-3xl font-extrabold tracking-tight drop-shadow-lg"
-            >
-              Se Juega
-            </motion.p>
-          </motion.div>
+            className="w-3 h-3 bg-white rounded-full"
+            animate={{ scale: [1, 1.3, 1] }}
+            transition={{ duration: 0.8, repeat: Infinity }}
+          />
         </motion.div>
       )}
     </AnimatePresence>
