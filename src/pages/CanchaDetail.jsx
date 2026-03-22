@@ -176,7 +176,7 @@ export default function CanchaDetail() {
 
           {/* Booking */}
           <div>
-            <Card className="sticky top-4">
+            <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Clock className="w-5 h-5" />
