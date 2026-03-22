@@ -9,7 +9,7 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/u
 import { toast } from "sonner";
 import {
   ArrowLeft, MapPin, Clock, Users, DollarSign, User,
-  Loader2, Send, CheckCircle2, XCircle
+  Loader2, Send, CheckCircle2, XCircle, Share2
 } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -258,10 +258,31 @@ export default function MatchDetail() {
             </div>
           )}
 
-          {/* Organizer */}
-          <div className="mt-4 pt-4 border-t border-border">
-            <p className="text-xs text-muted-foreground">Organizador</p>
-            <p className="text-sm font-medium text-foreground">{match.creator_name}</p>
+          {/* Organizer + share */}
+          <div className="mt-4 pt-4 border-t border-border flex items-center justify-between gap-2">
+            <div>
+              <p className="text-xs text-muted-foreground">Organizador</p>
+              <p className="text-sm font-medium text-foreground">{match.creator_name}</p>
+            </div>
+            {isCreator && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  const url = window.location.origin + window.location.pathname + window.location.search;
+                  if (navigator.share) {
+                    navigator.share({ title: `Partido en ${match.field_name}`, text: `¡Faltan jugadores para el partido en ${match.field_name}! Unite:`, url });
+                  } else {
+                    navigator.clipboard.writeText(url);
+                    toast.success("Link copiado al portapapeles");
+                  }
+                }}
+                className="shrink-0 gap-1.5"
+              >
+                <Share2 className="w-4 h-4" />
+                Compartir
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>
