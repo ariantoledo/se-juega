@@ -16,6 +16,7 @@ import AdminPanel from './pages/AdminPanel';
 import MercadoPagoCallback from './pages/MercadoPagoCallback';
 import PaymentResult from './pages/PaymentResult';
 import EditarCancha from './pages/EditarCancha';
+import Help from './pages/Help';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -149,6 +150,11 @@ const AuthenticatedApp = () => {
       <Route path="/EditarCancha" element={
         <LayoutWrapper currentPageName="EditarCancha">
           <EditarCancha />
+        </LayoutWrapper>
+      } />
+      <Route path="/Help" element={
+        <LayoutWrapper currentPageName="Help">
+          <Help />
         </LayoutWrapper>
       } />
       <Route path="*" element={<PageNotFound />} />
