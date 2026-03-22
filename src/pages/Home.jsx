@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Onboarding from "../components/Onboarding";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
@@ -12,10 +13,21 @@ import PullToRefresh from "../components/PullToRefresh";
 import EmptyState from "../components/matches/EmptyState";
 
 export default function Home() {
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
   const [genderFilter, setGenderFilter] = useState("all");
   const [showFilterSheet, setShowFilterSheet] = useState(false);
+
+  useEffect(() => {
+    const seen = localStorage.getItem("onboarding_seen");
+    if (!seen) setShowOnboarding(true);
+  }, []);
+
+  const handleCloseOnboarding = () => {
+    localStorage.setItem("onboarding_seen", "1");
+    setShowOnboarding(false);
+  };
 
   const { data: matches = [], isLoading, refetch } = useQuery({
     queryKey: ["matches"],
@@ -40,6 +52,7 @@ export default function Home() {
     .sort((a, b) => new Date(a.date) - new Date(b.date));
 
   return (
+    {showOnboarding && <Onboarding onClose={handleCloseOnboarding} />}
     <PullToRefresh onRefresh={refetch}>
       <div className="max-w-5xl mx-auto px-4 py-6 pb-24 md:pb-6" style={{ overscrollBehavior: "none" }}>
         {/* Hero section */}
