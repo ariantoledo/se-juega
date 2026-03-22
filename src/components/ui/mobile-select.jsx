@@ -18,7 +18,7 @@ export default function MobileSelect({
   className = "",
 }) {
   const [open, setOpen] = useState(false);
-  const isMobile = useMediaQuery("(max-width: 639px)");
+  const isMobile = useIsMobile();
 
   const handleSelect = useCallback(
     (val) => {
