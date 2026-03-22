@@ -243,11 +243,44 @@ export default function RegistrarDueno() {
           <p className="text-muted-foreground mt-1">Completa el formulario para solicitar acceso a la sección Estadios</p>
         </div>
 
-        <Alert className="mb-6">
+        <Alert className="mb-4">
           <AlertDescription>
             Tu solicitud será revisada por nuestro equipo. Una vez aprobada, podrás crear y gestionar tus establecimientos.
           </AlertDescription>
         </Alert>
+
+        {/* Política de comisión */}
+        <Card className="mb-6 border-primary/20 bg-primary/5">
+          <CardContent className="pt-5 pb-5">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-9 h-9 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
+                <CheckCircle2 className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <p className="font-semibold text-foreground text-sm">Política de comisión de la plataforma</p>
+                <p className="text-xs text-muted-foreground">Aplicable a todas las reservas gestionadas</p>
+              </div>
+            </div>
+            <div className="bg-background rounded-xl p-4 flex items-center justify-between mb-3">
+              <span className="text-sm text-muted-foreground">Comisión fija por reserva confirmada</span>
+              <span className="text-xl font-bold text-primary">$2.000 ARS</span>
+            </div>
+            <ul className="space-y-1.5">
+              <li className="flex items-start gap-2 text-xs text-muted-foreground">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
+                Se descuenta automáticamente de cada reserva procesada con Mercado Pago.
+              </li>
+              <li className="flex items-start gap-2 text-xs text-muted-foreground">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
+                El resto del monto se acredita directamente en tu cuenta vinculada.
+              </li>
+              <li className="flex items-start gap-2 text-xs text-muted-foreground">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
+                Al enviar esta solicitud aceptás estos términos.
+              </li>
+            </ul>
+          </CardContent>
+        </Card>
 
         <Card>
           <CardHeader><CardTitle>Información del establecimiento</CardTitle></CardHeader>
