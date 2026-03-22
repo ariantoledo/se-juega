@@ -170,6 +170,18 @@ Monto pagado: $${reservation.amount_paid.toLocaleString()}
 ¡Nos vemos en la cancha!`
       });
     },
+    onMutate: async (reservationId) => {
+      await queryClient.cancelQueries(["field-reservations"]);
+      const prev = queryClient.getQueryData(["field-reservations", fieldId]);
+      queryClient.setQueryData(["field-reservations", fieldId], (old = []) =>
+        old.map(r => r.id === reservationId ? { ...r, reservation_status: "confirmed" } : r)
+      );
+      return { prev };
+    },
+    onError: (_e, _v, ctx) => {
+      queryClient.setQueryData(["field-reservations", fieldId], ctx?.prev);
+      toast.error("Error al confirmar reserva");
+    },
     onSuccess: () => {
       toast.success("Reserva confirmada y notificación enviada");
       queryClient.invalidateQueries(["field-reservations"]);
