@@ -238,5 +238,6 @@ export default function Help() {
         </CardContent>
       </Card>
     </div>
+    </>  
   );
 }
