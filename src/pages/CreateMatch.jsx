@@ -51,21 +51,13 @@ export default function CreateMatch() {
       ...form,
       cost_per_player: Number(form.cost_per_player),
       players_needed: Number(form.players_needed),
-      current_players: 1, // creator counts
+      current_players: 0,
       status: "open",
       creator_email: user?.email,
       creator_name: user?.full_name,
     };
 
     const created = await base44.entities.Match.create(matchData);
-
-    // Add creator as player
-    await base44.entities.MatchPlayer.create({
-      match_id: created.id,
-      player_email: user?.email,
-      player_name: user?.full_name,
-      position: form.missing_positions[0] || "Sin definir",
-    });
 
     // If reserving a field, create reservation linked to the match
     if (reserveField && selectedFieldId && form.date) {
@@ -182,7 +174,7 @@ export default function CreateMatch() {
                 <Label>Jugadores necesarios</Label>
                 <Input
                   type="number"
-                  min="2"
+                  min="1"
                   max="22"
                   value={form.players_needed}
                   onChange={(e) => handleChange("players_needed", e.target.value)}
