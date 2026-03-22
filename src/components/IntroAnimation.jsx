@@ -13,7 +13,7 @@ export default function IntroAnimation({ onComplete }) {
   }, [onComplete]);
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-gradient-to-br from-[#1B5EA8] via-primary to-[#4CB648] flex flex-col items-center justify-center overflow-hidden">
+    <div className="fixed inset-0 z-[9999] bg-gradient-to-br from-[#0D3B5C] via-[#1A5A8C] to-[#2D8F47] flex flex-col items-center justify-center overflow-hidden">
       {/* Light sweep animation (0-2s) */}
       <motion.div
         className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
