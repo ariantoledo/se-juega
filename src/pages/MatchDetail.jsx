@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { toast } from "sonner";
 import {
   ArrowLeft, MapPin, Clock, Users, DollarSign, User,
@@ -27,6 +27,7 @@ export default function MatchDetail() {
   const [user, setUser] = useState(null);
   const [selectedPosition, setSelectedPosition] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
+  const [showPositionSheet, setShowPositionSheet] = useState(false);
 
   useEffect(() => {
     base44.auth.me().then(setUser);
@@ -112,33 +113,76 @@ export default function MatchDetail() {
     joinMutation.mutate();
   };
 
-  const handleAccept = async (request) => {
-    setActionLoading(true);
-    await base44.entities.MatchRequest.update(request.id, { status: "accepted" });
-    await base44.entities.MatchPlayer.create({
-      match_id: matchId,
-      player_email: request.player_email,
-      player_name: request.player_name,
-      position: request.position,
-    });
-    const newCount = (match.current_players || 0) + 1;
-    const updateData = { current_players: newCount };
-    if (newCount >= match.players_needed) {
-      updateData.status = "full";
+  const acceptMutation = useMutation({
+    mutationFn: async (request) => {
+      await base44.entities.MatchRequest.update(request.id, { status: "accepted" });
+      await base44.entities.MatchPlayer.create({
+        match_id: matchId,
+        player_email: request.player_email,
+        player_name: request.player_name,
+        position: request.position,
+      });
+      const newCount = (match.current_players || 0) + 1;
+      const updateData = { current_players: newCount };
+      if (newCount >= match.players_needed) updateData.status = "full";
+      if (match.missing_positions?.includes(request.position)) {
+        updateData.missing_positions = match.missing_positions.filter(p => p !== request.position);
+      }
+      await base44.entities.Match.update(matchId, updateData);
+    },
+    onMutate: async (request) => {
+      await queryClient.cancelQueries({ queryKey: ["match_requests", matchId] });
+      await queryClient.cancelQueries({ queryKey: ["match_players", matchId] });
+      const prevRequests = queryClient.getQueryData(["match_requests", matchId]);
+      const prevPlayers = queryClient.getQueryData(["match_players", matchId]);
+      queryClient.setQueryData(["match_requests", matchId], (old = []) =>
+        old.map(r => r.id === request.id ? { ...r, status: "accepted" } : r)
+      );
+      queryClient.setQueryData(["match_players", matchId], (old = []) => [
+        ...old, { id: "opt-" + Date.now(), match_id: matchId, player_email: request.player_email, player_name: request.player_name, position: request.position }
+      ]);
+      return { prevRequests, prevPlayers };
+    },
+    onError: (_e, _v, ctx) => {
+      queryClient.setQueryData(["match_requests", matchId], ctx?.prevRequests);
+      queryClient.setQueryData(["match_players", matchId], ctx?.prevPlayers);
+      toast.error("Error al aceptar jugador");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["match", matchId] });
+      queryClient.invalidateQueries({ queryKey: ["match_players", matchId] });
+      queryClient.invalidateQueries({ queryKey: ["match_requests", matchId] });
+      toast.success("Jugador aceptado");
     }
-    // Remove accepted position from missing
-    if (match.missing_positions?.includes(request.position)) {
-      updateData.missing_positions = match.missing_positions.filter(p => p !== request.position);
-    }
-    await base44.entities.Match.update(matchId, updateData);
-    queryClient.invalidateQueries({ queryKey: ["match", matchId] });
-    queryClient.invalidateQueries({ queryKey: ["match_players", matchId] });
-    queryClient.invalidateQueries({ queryKey: ["match_requests", matchId] });
-    toast.success("Jugador aceptado");
-    setActionLoading(false);
-  };
+  });
 
-  const handleReject = async (request) => {
+  const handleAccept = (request) => acceptMutation.mutate(request);
+
+  const rejectMutation = useMutation({
+    mutationFn: async (request) => {
+      await base44.entities.MatchRequest.update(request.id, { status: "rejected" });
+    },
+    onMutate: async (request) => {
+      await queryClient.cancelQueries({ queryKey: ["match_requests", matchId] });
+      const prev = queryClient.getQueryData(["match_requests", matchId]);
+      queryClient.setQueryData(["match_requests", matchId], (old = []) =>
+        old.map(r => r.id === request.id ? { ...r, status: "rejected" } : r)
+      );
+      return { prev };
+    },
+    onError: (_e, _v, ctx) => {
+      queryClient.setQueryData(["match_requests", matchId], ctx?.prev);
+      toast.error("Error al rechazar");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["match_requests", matchId] });
+      toast.info("Solicitud rechazada");
+    }
+  });
+
+  const handleReject = (request) => rejectMutation.mutate(request);
+
+  const handleMarkAttendance = async (player, attended) => {
     setActionLoading(true);
     await base44.entities.MatchRequest.update(request.id, { status: "rejected" });
     queryClient.invalidateQueries({ queryKey: ["match_requests", matchId] });
@@ -239,17 +283,15 @@ export default function MatchDetail() {
               Seleccioná tu posición para unirte al partido
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
-              <Select value={selectedPosition} onValueChange={setSelectedPosition}>
-                <SelectTrigger className="flex-1">
-                  <SelectValue placeholder="Elegí tu posición" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Arquero">Arquero</SelectItem>
-                  <SelectItem value="Defensor">Defensor</SelectItem>
-                  <SelectItem value="Mediocampista">Mediocampista</SelectItem>
-                  <SelectItem value="Delantero">Delantero</SelectItem>
-                </SelectContent>
-              </Select>
+              <button
+                onClick={() => setShowPositionSheet(true)}
+                className="flex-1 flex items-center justify-between px-4 h-9 rounded-md border border-input bg-background text-sm hover:bg-secondary transition-colors"
+              >
+                <span className={selectedPosition ? "text-foreground" : "text-muted-foreground"}>
+                  {selectedPosition || "Elegí tu posición"}
+                </span>
+                <svg className="w-4 h-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+              </button>
               <Button 
                 onClick={handleJoinRequest} 
                 disabled={joinMutation.isPending || !selectedPosition} 
@@ -271,6 +313,27 @@ export default function MatchDetail() {
           </CardContent>
         </Card>
       )}
+
+      <Drawer open={showPositionSheet} onOpenChange={setShowPositionSheet}>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>Elegí tu posición</DrawerTitle>
+          </DrawerHeader>
+          <div className="px-4 pb-10 space-y-2">
+            {["Arquero", "Defensor", "Mediocampista", "Delantero"].map(pos => (
+              <button
+                key={pos}
+                onClick={() => { setSelectedPosition(pos); setShowPositionSheet(false); }}
+                className={`w-full p-4 rounded-xl border-2 text-left font-medium transition-all ${
+                  selectedPosition === pos ? "border-primary bg-primary/10 text-primary" : "border-border hover:border-primary/30"
+                }`}
+              >
+                {pos}
+              </button>
+            ))}
+          </div>
+        </DrawerContent>
+      </Drawer>
 
       {hasRequested && (
         <Card className="border-accent/30 bg-accent/5 mb-6">
