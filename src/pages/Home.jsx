@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Search, PlusCircle, CalendarDays, Filter } from "lucide-react";
 import MatchCard from "../components/matches/MatchCard";
 import PullToRefresh from "../components/PullToRefresh";
@@ -15,6 +15,7 @@ export default function Home() {
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
   const [genderFilter, setGenderFilter] = useState("all");
+  const [showFilterSheet, setShowFilterSheet] = useState(false);
 
   const { data: matches = [], isLoading, refetch } = useQuery({
     queryKey: ["matches"],
@@ -62,28 +63,62 @@ export default function Home() {
               className="pl-10"
             />
           </div>
-          <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="w-full sm:w-36">
-              <SelectValue placeholder="Tipo" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos</SelectItem>
-              <SelectItem value="5">Fútbol 5</SelectItem>
-              <SelectItem value="7">Fútbol 7</SelectItem>
-              <SelectItem value="11">Fútbol 11</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={genderFilter} onValueChange={setGenderFilter}>
-            <SelectTrigger className="w-full sm:w-36">
-              <SelectValue placeholder="Género" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos</SelectItem>
-              <SelectItem value="hombres">Hombres</SelectItem>
-              <SelectItem value="mixto">Mixto</SelectItem>
-            </SelectContent>
-          </Select>
+          <button
+            onClick={() => setShowFilterSheet(true)}
+            className="flex items-center gap-2 px-4 h-9 rounded-md border border-input bg-background text-sm font-medium hover:bg-secondary transition-colors"
+          >
+            <Filter className="w-4 h-4" />
+            Filtros
+            {(typeFilter !== "all" || genderFilter !== "all") && (
+              <span className="ml-1 w-5 h-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center">
+                {[typeFilter !== "all", genderFilter !== "all"].filter(Boolean).length}
+              </span>
+            )}
+          </button>
         </div>
+
+        <Drawer open={showFilterSheet} onOpenChange={setShowFilterSheet}>
+          <DrawerContent>
+            <DrawerHeader>
+              <DrawerTitle>Filtrar partidos</DrawerTitle>
+            </DrawerHeader>
+            <div className="px-4 pb-10 space-y-6">
+              <div>
+                <p className="text-sm font-semibold mb-3">Tipo de fútbol</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {[["all","Todos"],["5","Fútbol 5"],["7","Fútbol 7"],["11","Fútbol 11"]].map(([val, label]) => (
+                    <button
+                      key={val}
+                      onClick={() => setTypeFilter(val)}
+                      className={`p-3 rounded-xl border-2 text-sm font-medium transition-all ${
+                        typeFilter === val ? "border-primary bg-primary/10 text-primary" : "border-border hover:border-primary/30"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <p className="text-sm font-semibold mb-3">Tipo de partido</p>
+                <div className="grid grid-cols-3 gap-2">
+                  {[["all","Todos"],["hombres","Hombres"],["mixto","Mixto"]].map(([val, label]) => (
+                    <button
+                      key={val}
+                      onClick={() => setGenderFilter(val)}
+                      className={`p-3 rounded-xl border-2 text-sm font-medium transition-all ${
+                        genderFilter === val ? "border-primary bg-primary/10 text-primary" : "border-border hover:border-primary/30"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <Button className="w-full" onClick={() => setShowFilterSheet(false)}>Ver resultados</Button>
+            </div>
+          </DrawerContent>
+        </Drawer>
 
         {/* Matches list */}
         {isLoading ? (
