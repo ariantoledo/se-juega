@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import MobileSelect from "@/components/ui/mobile-select";
 import { toast } from "sonner";
 import { Upload, X } from "lucide-react";
 
@@ -128,17 +128,12 @@ export default function RegistrarCancha() {
               </div>
 
               <div>
-                <Label>Tipo de cancha *</Label>
-                <Select value={formData.field_type} onValueChange={(value) => setFormData({...formData, field_type: value})}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="futbol5">Fútbol 5</SelectItem>
-                    <SelectItem value="futbol7">Fútbol 7</SelectItem>
-                    <SelectItem value="futbol11">Fútbol 11</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label htmlFor="field-type">Tipo de cancha *</Label>
+                <MobileSelect value={formData.field_type} onValueChange={(value) => setFormData({...formData, field_type: value})} id="field-type">
+                  <option value="futbol5">Fútbol 5</option>
+                  <option value="futbol7">Fútbol 7</option>
+                  <option value="futbol11">Fútbol 11</option>
+                </MobileSelect>
               </div>
 
               <div>

@@ -5,7 +5,7 @@ import { createPageUrl } from "@/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import MobileSelect from "@/components/ui/mobile-select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Loader2, ArrowLeft, Building2, CheckCircle2 } from "lucide-react";
@@ -169,26 +169,20 @@ export default function CreateMatch() {
             {sportType === "futbol" && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Tipo de fútbol</Label>
-                  <Select value={form.football_type} onValueChange={v => handleChange("football_type", v)}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="5">Fútbol 5</SelectItem>
-                      <SelectItem value="7">Fútbol 7</SelectItem>
-                      <SelectItem value="11">Fútbol 11</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                   <Label htmlFor="football-type">Tipo de fútbol</Label>
+                   <MobileSelect value={form.football_type} onValueChange={v => handleChange("football_type", v)} id="football-type">
+                     <option value="5">Fútbol 5</option>
+                     <option value="7">Fútbol 7</option>
+                     <option value="11">Fútbol 11</option>
+                   </MobileSelect>
+                 </div>
                 <div className="space-y-2">
-                  <Label>Tipo de partido</Label>
-                  <Select value={form.match_type} onValueChange={v => handleChange("match_type", v)}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="hombres">Hombres</SelectItem>
-                      <SelectItem value="mixto">Mixto</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                   <Label htmlFor="match-type-futbol">Tipo de partido</Label>
+                   <MobileSelect value={form.match_type} onValueChange={v => handleChange("match_type", v)} id="match-type-futbol">
+                     <option value="hombres">Hombres</option>
+                     <option value="mixto">Mixto</option>
+                   </MobileSelect>
+                 </div>
               </div>
             )}
 
@@ -196,29 +190,24 @@ export default function CreateMatch() {
             {sportType === "padel" && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Tipo de partido</Label>
-                  <Select value={form.match_type} onValueChange={v => handleChange("match_type", v)}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="dobles">Dobles</SelectItem>
-                      <SelectItem value="dobles_mixto">Dobles mixto</SelectItem>
-                      <SelectItem value="singles">Singles</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                   <Label htmlFor="match-type-padel">Tipo de partido</Label>
+                   <MobileSelect value={form.match_type} onValueChange={v => handleChange("match_type", v)} id="match-type-padel">
+                     <option value="dobles">Dobles</option>
+                     <option value="dobles_mixto">Dobles mixto</option>
+                     <option value="singles">Singles</option>
+                   </MobileSelect>
+                 </div>
                 <div className="space-y-2">
-                  <Label>Jugadores necesarios</Label>
-                  <Select
-                    value={String(form.players_needed)}
-                    onValueChange={v => handleChange("players_needed", Number(v))}
-                  >
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="2">2 jugadores</SelectItem>
-                      <SelectItem value="4">4 jugadores</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                   <Label htmlFor="players-needed">Jugadores necesarios</Label>
+                   <MobileSelect
+                     value={String(form.players_needed)}
+                     onValueChange={v => handleChange("players_needed", Number(v))}
+                     id="players-needed"
+                   >
+                     <option value="2">2 jugadores</option>
+                     <option value="4">4 jugadores</option>
+                   </MobileSelect>
+                 </div>
                 <div className="space-y-2 sm:col-span-2">
                   <Label>Nivel de juego</Label>
                   <div className="grid grid-cols-3 gap-2">
@@ -358,17 +347,16 @@ export default function CreateMatch() {
                 <div className="space-y-3">
                   <div className="space-y-1.5">
                     <Label className="text-xs text-muted-foreground">1. Establecimiento</Label>
-                    <Select
+                    <MobileSelect
                       value={selectedEstablishmentId}
                       onValueChange={v => { setSelectedEstablishmentId(v); setSelectedFieldId(""); setSlotDate(""); setSelectedSlot(null); }}
+                      id="establishment-select"
                     >
-                      <SelectTrigger><SelectValue placeholder="Elegir establecimiento..." /></SelectTrigger>
-                      <SelectContent>
-                        {establishments.map(e => (
-                          <SelectItem key={e.id} value={e.id}>{e.name} — {e.address}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                      <option value="">Elegir establecimiento...</option>
+                      {establishments.map(e => (
+                        <option key={e.id} value={e.id}>{e.name} — {e.address}</option>
+                      ))}
+                    </MobileSelect>
                   </div>
 
                   {selectedEstablishmentId && (
@@ -376,21 +364,18 @@ export default function CreateMatch() {
                       <Label className="text-xs text-muted-foreground">
                         2. Cancha {sportType === "padel" ? "de pádel" : ""}
                       </Label>
-                      <Select
+                      <MobileSelect
                         value={selectedFieldId}
                         onValueChange={v => { setSelectedFieldId(v); setSlotDate(""); setSelectedSlot(null); }}
+                        id="field-select"
                       >
-                        <SelectTrigger><SelectValue placeholder="Elegir cancha..." /></SelectTrigger>
-                        <SelectContent>
-                          {fieldsForEstablishment.length === 0 ? (
-                            <SelectItem value="__none" disabled>
-                              Sin canchas de {sportType} disponibles
-                            </SelectItem>
-                          ) : fieldsForEstablishment.map(f => (
-                            <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                        <option value="">Elegir cancha...</option>
+                        {fieldsForEstablishment.length === 0 ? (
+                          <option disabled>Sin canchas de {sportType} disponibles</option>
+                        ) : fieldsForEstablishment.map(f => (
+                          <option key={f.id} value={f.id}>{f.name}</option>
+                        ))}
+                      </MobileSelect>
                     </div>
                   )}
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, lazy, Suspense } from 'react';
 import { Toaster } from "@/components/ui/toaster"
 import SplashScreen from './components/SplashScreen';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -9,16 +9,25 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
-import RegistrarCancha from './pages/RegistrarCancha';
-import GestionarCancha from './pages/GestionarCancha';
-import ConfigurarStripe from './pages/ConfigurarStripe';
-import Estadios from './pages/Estadios';
-import RegistrarDueno from './pages/RegistrarDueno';
-import AdminPanel from './pages/AdminPanel';
-import MercadoPagoCallback from './pages/MercadoPagoCallback';
-import PaymentResult from './pages/PaymentResult';
-import EditarCancha from './pages/EditarCancha';
-import Help from './pages/Help';
+
+// Lazy load pages for code-splitting
+const RegistrarCancha = lazy(() => import('./pages/RegistrarCancha'));
+const GestionarCancha = lazy(() => import('./pages/GestionarCancha'));
+const ConfigurarStripe = lazy(() => import('./pages/ConfigurarStripe'));
+const Estadios = lazy(() => import('./pages/Estadios'));
+const RegistrarDueno = lazy(() => import('./pages/RegistrarDueno'));
+const AdminPanel = lazy(() => import('./pages/AdminPanel'));
+const MercadoPagoCallback = lazy(() => import('./pages/MercadoPagoCallback'));
+const PaymentResult = lazy(() => import('./pages/PaymentResult'));
+const EditarCancha = lazy(() => import('./pages/EditarCancha'));
+const Help = lazy(() => import('./pages/Help'));
+
+// Loading fallback
+const PageLoader = () => (
+  <div className="min-h-screen bg-background flex items-center justify-center">
+    <div className="w-8 h-8 border-4 border-border border-t-primary rounded-full animate-spin" />
+  </div>
+);
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -43,6 +52,14 @@ const LayoutWrapper = ({ children, currentPageName }) => {
     ? <Layout currentPageName={currentPageName}>{content}</Layout>
     : content;
 };
+
+const LazyPageWrapper = ({ element, currentPageName }) => (
+  <Suspense fallback={<PageLoader />}>
+    <LayoutWrapper currentPageName={currentPageName}>
+      {element}
+    </LayoutWrapper>
+  </Suspense>
+);
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -95,56 +112,16 @@ const AuthenticatedApp = () => {
           }
         />
       ))}
-      <Route path="/RegistrarCancha" element={
-        <LayoutWrapper currentPageName="RegistrarCancha">
-          <RegistrarCancha />
-        </LayoutWrapper>
-      } />
-      <Route path="/GestionarCancha" element={
-        <LayoutWrapper currentPageName="GestionarCancha">
-          <GestionarCancha />
-        </LayoutWrapper>
-      } />
-      <Route path="/ConfigurarStripe" element={
-        <LayoutWrapper currentPageName="ConfigurarStripe">
-          <ConfigurarStripe />
-        </LayoutWrapper>
-      } />
-      <Route path="/Estadios" element={
-        <LayoutWrapper currentPageName="Estadios">
-          <Estadios />
-        </LayoutWrapper>
-      } />
-      <Route path="/RegistrarDueno" element={
-        <LayoutWrapper currentPageName="RegistrarDueno">
-          <RegistrarDueno />
-        </LayoutWrapper>
-      } />
-      <Route path="/AdminPanel" element={
-        <LayoutWrapper currentPageName="AdminPanel">
-          <AdminPanel />
-        </LayoutWrapper>
-      } />
-      <Route path="/MercadoPagoCallback" element={
-        <LayoutWrapper currentPageName="MercadoPagoCallback">
-          <MercadoPagoCallback />
-        </LayoutWrapper>
-      } />
-      <Route path="/PaymentResult" element={
-        <LayoutWrapper currentPageName="PaymentResult">
-          <PaymentResult />
-        </LayoutWrapper>
-      } />
-      <Route path="/EditarCancha" element={
-        <LayoutWrapper currentPageName="EditarCancha">
-          <EditarCancha />
-        </LayoutWrapper>
-      } />
-      <Route path="/Help" element={
-        <LayoutWrapper currentPageName="Help">
-          <Help />
-        </LayoutWrapper>
-      } />
+      <Route path="/RegistrarCancha" element={<LazyPageWrapper element={<RegistrarCancha />} currentPageName="RegistrarCancha" />} />
+      <Route path="/GestionarCancha" element={<LazyPageWrapper element={<GestionarCancha />} currentPageName="GestionarCancha" />} />
+      <Route path="/ConfigurarStripe" element={<LazyPageWrapper element={<ConfigurarStripe />} currentPageName="ConfigurarStripe" />} />
+      <Route path="/Estadios" element={<LazyPageWrapper element={<Estadios />} currentPageName="Estadios" />} />
+      <Route path="/RegistrarDueno" element={<LazyPageWrapper element={<RegistrarDueno />} currentPageName="RegistrarDueno" />} />
+      <Route path="/AdminPanel" element={<LazyPageWrapper element={<AdminPanel />} currentPageName="AdminPanel" />} />
+      <Route path="/MercadoPagoCallback" element={<LazyPageWrapper element={<MercadoPagoCallback />} currentPageName="MercadoPagoCallback" />} />
+      <Route path="/PaymentResult" element={<LazyPageWrapper element={<PaymentResult />} currentPageName="PaymentResult" />} />
+      <Route path="/EditarCancha" element={<LazyPageWrapper element={<EditarCancha />} currentPageName="EditarCancha" />} />
+      <Route path="/Help" element={<LazyPageWrapper element={<Help />} currentPageName="Help" />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
