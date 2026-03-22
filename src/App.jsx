@@ -27,9 +27,11 @@ const MainPage = mainPageKey ? Pages[mainPageKey] : <></>;
 const PageTransition = ({ children, pageKey }) => (
   <motion.div
     key={pageKey}
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    transition={{ duration: 0.1, ease: "easeOut" }}
+    initial={{ opacity: 0, x: 24 }}
+    animate={{ opacity: 1, x: 0 }}
+    exit={{ opacity: 0, x: -24 }}
+    transition={{ duration: 0.2, ease: "easeOut" }}
+    style={{ willChange: "transform, opacity" }}
   >
     {children}
   </motion.div>
