@@ -84,6 +84,7 @@ export default function Help() {
   };
 
   return (
+    <>
     {showOnboarding && <Onboarding onClose={() => setShowOnboarding(false)} />}
     <div className="max-w-2xl mx-auto px-4 py-6 pb-24 md:pb-6 space-y-6">
       <div>
