@@ -91,17 +91,11 @@ export default function SplashScreen({ onDone }) {
           {ELEMENTS.map(({ id, Component, x, y, size, delay }) => (
             <motion.div
               key={id}
-              initial={{ scale: 0, opacity: 0, rotate: -20 }}
+                 initial={{ scale: 0, opacity: 0, rotate: -20 }}
               animate={phase === "elements" || phase === "logo"
-                ? { scale: 1, opacity: phase === "logo" ? 0.2 : 0.85, rotate: 0 }
+                ? { scale: 1, opacity: 1, rotate: 0 }
                 : { scale: 0.5, opacity: 0 }}
-              transition={{
-                delay: phase === "elements" ? delay : 0,
-                duration: 0.45,
-                ease: "backOut",
-              }}
-              className="absolute"
-              style={{ left: x, top: y, width: size, height: size, transform: "translate(-50%, -50%)" }}
+              exit={{ scale: 0.5, opacity: 0 }}
             >
               <Component />
             </motion.div>
@@ -113,6 +107,7 @@ export default function SplashScreen({ onDone }) {
             animate={phase === "logo" || phase === "exit"
               ? { scale: 1, opacity: 1 }
               : { scale: 0.5, opacity: 0 }}
+            exit={{ scale: 0.5, opacity: 0 }}
             transition={{ duration: 0.4, ease: "backOut" }}
             className="relative z-10 flex flex-col items-center gap-4"
           >
