@@ -196,36 +196,65 @@ export default function AdminPanel() {
         </div>
 
         <div className="grid grid-cols-3 gap-3 mb-6">
-          <Card>
-            <CardContent className="py-4 text-center">
-              <p className="text-2xl font-bold text-accent">{pending.length}</p>
-              <p className="text-xs text-muted-foreground">Pendientes</p>
+          <Card className="border-amber-200 dark:border-amber-800">
+            <CardContent className="py-5 text-center">
+              <div className="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center mx-auto mb-2">
+                <Clock className="w-4 h-4 text-amber-600" />
+              </div>
+              <p className="text-3xl font-bold text-amber-600">{pending.length}</p>
+              <p className="text-xs font-medium text-muted-foreground mt-0.5">Pendientes</p>
             </CardContent>
           </Card>
-          <Card>
-            <CardContent className="py-4 text-center">
-              <p className="text-2xl font-bold text-primary">{approved.length}</p>
-              <p className="text-xs text-muted-foreground">Aprobados</p>
+          <Card className="border-primary/30">
+            <CardContent className="py-5 text-center">
+              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-2">
+                <CheckCircle2 className="w-4 h-4 text-primary" />
+              </div>
+              <p className="text-3xl font-bold text-primary">{approved.length}</p>
+              <p className="text-xs font-medium text-muted-foreground mt-0.5">Aprobados</p>
             </CardContent>
           </Card>
-          <Card>
-            <CardContent className="py-4 text-center">
-              <p className="text-2xl font-bold text-destructive">{rejected.length}</p>
-              <p className="text-xs text-muted-foreground">Rechazados</p>
+          <Card className="border-destructive/20">
+            <CardContent className="py-5 text-center">
+              <div className="w-8 h-8 rounded-full bg-destructive/10 flex items-center justify-center mx-auto mb-2">
+                <XCircle className="w-4 h-4 text-destructive" />
+              </div>
+              <p className="text-3xl font-bold text-destructive">{rejected.length}</p>
+              <p className="text-xs font-medium text-muted-foreground mt-0.5">Rechazados</p>
             </CardContent>
           </Card>
         </div>
 
         <Tabs defaultValue="pending">
-          <TabsList className="w-full mb-4">
-            <TabsTrigger value="pending" className="flex-1">
-              Pendientes {pending.length > 0 && `(${pending.length})`}
-            </TabsTrigger>
-            <TabsTrigger value="approved" className="flex-1">Aprobados</TabsTrigger>
-            <TabsTrigger value="rejected" className="flex-1">Rechazados</TabsTrigger>
-            <TabsTrigger value="finance" className="flex-1">Finanzas</TabsTrigger>
-            <TabsTrigger value="commissions" className="flex-1">Comisiones</TabsTrigger>
-          </TabsList>
+          <div className="overflow-x-auto pb-1 mb-4">
+            <TabsList className="inline-flex w-auto min-w-full gap-1 h-auto p-1">
+              <TabsTrigger value="pending" className="flex-1 flex items-center gap-1.5 py-2 text-xs sm:text-sm whitespace-nowrap">
+                <Clock className="w-3.5 h-3.5 shrink-0" />
+                Pendientes
+                {pending.length > 0 && (
+                  <span className="ml-1 min-w-[18px] h-[18px] rounded-full bg-amber-500 text-white text-[10px] font-bold flex items-center justify-center px-1">
+                    {pending.length}
+                  </span>
+                )}
+              </TabsTrigger>
+              <TabsTrigger value="approved" className="flex-1 flex items-center gap-1.5 py-2 text-xs sm:text-sm whitespace-nowrap">
+                <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                Aprobados
+              </TabsTrigger>
+              <TabsTrigger value="rejected" className="flex-1 flex items-center gap-1.5 py-2 text-xs sm:text-sm whitespace-nowrap">
+                <XCircle className="w-3.5 h-3.5 shrink-0" />
+                Rechazados
+              </TabsTrigger>
+              <TabsTrigger value="finance" className="flex-1 flex items-center gap-1.5 py-2 text-xs sm:text-sm whitespace-nowrap">
+                <TrendingUp className="w-3.5 h-3.5 shrink-0" />
+                Finanzas
+              </TabsTrigger>
+              <TabsTrigger value="commissions" className="flex-1 flex items-center gap-1.5 py-2 text-xs sm:text-sm whitespace-nowrap">
+                <User className="w-3.5 h-3.5 shrink-0" />
+                Comisiones
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="pending">
             {isLoading ? (
