@@ -46,6 +46,13 @@ export default function AdminPanel() {
         subject: "¡Tu cuenta fue verificada correctamente!",
         body: `Hola ${request.user_name},\n\nTu solicitud para gestionar el establecimiento "${request.establishment_name}" fue aprobada.\n\nYa puedes acceder a la sección Estadios y comenzar a crear y gestionar tus canchas.\n\n¡Bienvenido!`
       });
+      await base44.functions.invoke("createNotification", {
+        user_email: request.user_email,
+        title: "✅ Solicitud aprobada",
+        message: `Tu solicitud para "${request.establishment_name}" fue aprobada. ¡Ya podés gestionar tus canchas!`,
+        type: "system",
+        link: "/Estadios",
+      });
     },
     onSuccess: () => {
       toast.success("Dueño aprobado y notificado");
@@ -65,6 +72,12 @@ export default function AdminPanel() {
         to: request.user_email,
         subject: "Solicitud de dueño rechazada",
         body: `Hola ${request.user_name},\n\nTu solicitud para gestionar el establecimiento "${request.establishment_name}" fue rechazada.\n\nSi crees que hay un error, por favor contáctanos.`
+      });
+      await base44.functions.invoke("createNotification", {
+        user_email: request.user_email,
+        title: "❌ Solicitud rechazada",
+        message: `Tu solicitud para "${request.establishment_name}" fue rechazada. Contactanos si creés que hay un error.`,
+        type: "system",
       });
     },
     onSuccess: () => {
