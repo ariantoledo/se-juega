@@ -100,10 +100,12 @@ export default function Layout({ children, currentPageName }) {
               title={dark ? "Modo claro" : "Modo oscuro"}>
             
             {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-          </button>
+            </button>
+          </div>
 
           {/* Mobile menu button */}
           <div className="md:hidden flex items-center gap-2">
+            <NotificationBell userEmail={user?.email} />
             <button
               onClick={() => setDark(!dark)}
               className="p-2 rounded-lg hover:bg-secondary transition-colors text-muted-foreground">
