@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createPageUrl } from "@/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,10 +14,15 @@ import {
 } from "lucide-react";
 import PositionSelector from "../components/matches/PositionSelector";
 import DeleteAccountModal from "../components/DeleteAccountModal";
+import AvailabilityEditor from "../components/availability/AvailabilityEditor";
+import { CalendarClock } from "lucide-react";
 
 export default function Profile() {
   const [user, setUser] = useState(null);
   const [editing, setEditing] = useState(false);
+  const [showAvailability, setShowAvailability] = useState(false);
+  const [savingAvail, setSavingAvail] = useState(false);
+  const queryClient = useQueryClient();
   const [saving, setSaving] = useState(false);
   const [phone, setPhone] = useState("");
   const [positions, setPositions] = useState([]);
@@ -34,6 +39,33 @@ export default function Profile() {
       setAvatarUrl(u.avatar_url || "");
     });
   }, []);
+
+  const { data: myAvailability } = useQuery({
+    queryKey: ["my_availability", user?.email],
+    queryFn: async () => {
+      const all = await base44.entities.PlayerAvailability.list();
+      return all.find(a => a.user_email === user.email) || null;
+    },
+    enabled: !!user?.email,
+  });
+
+  const handleSaveAvailability = async (slots, notify_enabled) => {
+    setSavingAvail(true);
+    if (myAvailability?.id) {
+      await base44.entities.PlayerAvailability.update(myAvailability.id, { slots, notify_enabled });
+    } else {
+      await base44.entities.PlayerAvailability.create({
+        user_email: user.email,
+        user_name: user.full_name,
+        slots,
+        notify_enabled,
+      });
+    }
+    queryClient.invalidateQueries(["my_availability", user.email]);
+    setSavingAvail(false);
+    const { toast } = await import("sonner");
+    toast.success("Disponibilidad guardada");
+  };
 
   const { data: myPlayers = [] } = useQuery({
     queryKey: ["profile_players", user?.email],
@@ -174,6 +206,35 @@ export default function Profile() {
               <Button variant="outline" onClick={() => setEditing(true)} className="mt-2">
                 Editar perfil
               </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Availability */}
+      <Card className="border-border/50 mb-6">
+        <CardContent className="pt-5 pb-5">
+          <button
+            className="flex items-center justify-between w-full"
+            onClick={() => setShowAvailability(v => !v)}
+          >
+            <div className="flex items-center gap-2">
+              <CalendarClock className="w-5 h-5 text-primary" />
+              <span className="font-semibold text-foreground">Mi Disponibilidad</span>
+            </div>
+            <span className="text-xs text-muted-foreground">{showAvailability ? "Cerrar" : "Ver / Editar"}</span>
+          </button>
+          {!showAvailability && myAvailability?.slots?.length > 0 && (
+            <p className="text-xs text-muted-foreground mt-2">{myAvailability.slots.length} horario{myAvailability.slots.length !== 1 ? "s" : ""} cargado{myAvailability.slots.length !== 1 ? "s" : ""}</p>
+          )}
+          {showAvailability && (
+            <div className="mt-4">
+              <AvailabilityEditor
+                initialSlots={myAvailability?.slots || []}
+                notifyEnabled={myAvailability?.notify_enabled !== false}
+                onSave={handleSaveAvailability}
+                saving={savingAvail}
+              />
             </div>
           )}
         </CardContent>

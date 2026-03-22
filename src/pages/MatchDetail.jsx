@@ -15,6 +15,7 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import RequestCard from "../components/matches/RequestCard";
 import PlayerList from "../components/matches/PlayerList";
+import NotifyPlayersCard from "../components/matches/NotifyPlayersCard";
 
 const typeLabels = { "5": "Fútbol 5", "7": "Fútbol 7", "11": "Fútbol 11" };
 
@@ -412,6 +413,11 @@ export default function MatchDetail() {
           )}
         </CardContent>
       </Card>
+
+      {/* Notify available players */}
+      {isCreator && match.status === "open" && spotsLeft > 0 && (
+        <NotifyPlayersCard matchId={matchId} />
+      )}
 
       {/* Requests section for creator */}
       {isCreator && pendingRequests.length > 0 && (
