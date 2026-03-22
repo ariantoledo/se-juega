@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Calendar as CalendarIcon, DollarSign, Clock, Ban, CheckCircle2, XCircle } from "lucide-react";
+import { Calendar as CalendarIcon, DollarSign, Clock, Ban, CheckCircle2, XCircle, Copy, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -91,6 +91,50 @@ export default function GestionarCancha() {
     onSuccess: () => {
       toast.success("Horario eliminado");
       queryClient.invalidateQueries(["field-slots"]);
+    }
+  });
+
+  const repeatYesterdayMutation = useMutation({
+    mutationFn: async () => {
+      const yesterday = new Date(selectedDate);
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayStr = format(yesterday, "yyyy-MM-dd");
+      const todayStr = format(selectedDate, "yyyy-MM-dd");
+
+      const all = await base44.entities.FieldNewTimeSlot.list();
+      const yesterdaySlots = all.filter(
+        s => s.field_new_id === fieldId && s.date === yesterdayStr && s.status !== "blocked"
+      );
+
+      if (yesterdaySlots.length === 0) {
+        throw new Error("No hay horarios en el día anterior para copiar.");
+      }
+
+      const existingToday = all.filter(s => s.field_new_id === fieldId && s.date === todayStr);
+      const existingTimes = new Set(existingToday.map(s => `${s.start_time}-${s.end_time}`));
+
+      const toCreate = yesterdaySlots.filter(
+        s => !existingTimes.has(`${s.start_time}-${s.end_time}`)
+      );
+
+      await Promise.all(toCreate.map(s =>
+        base44.entities.FieldNewTimeSlot.create({
+          field_new_id: fieldId,
+          date: todayStr,
+          start_time: s.start_time,
+          end_time: s.end_time,
+          status: "available"
+        })
+      ));
+
+      return toCreate.length;
+    },
+    onSuccess: (count) => {
+      toast.success(`${count} horario${count !== 1 ? "s" : ""} copiado${count !== 1 ? "s" : ""} del día anterior`);
+      queryClient.invalidateQueries(["field-slots"]);
+    },
+    onError: (err) => {
+      toast.error(err.message || "Error al copiar horarios");
     }
   });
 
@@ -356,13 +400,26 @@ Si pagaste, el reembolso será procesado en los próximos días.`
 
           <TabsContent value="horarios">
             <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
+              <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <CardTitle>
                   Horarios - {format(selectedDate, "PPP", { locale: es })}
                 </CardTitle>
-                <Button onClick={() => setShowAddSlotDialog(true)}>
-                  Agregar horario
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => repeatYesterdayMutation.mutate()}
+                    disabled={repeatYesterdayMutation.isPending}
+                  >
+                    {repeatYesterdayMutation.isPending
+                      ? <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                      : <Copy className="w-4 h-4 mr-1" />}
+                    Repetir día anterior
+                  </Button>
+                  <Button onClick={() => setShowAddSlotDialog(true)}>
+                    Agregar horario
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent>
                 {slots.length === 0 ? (
