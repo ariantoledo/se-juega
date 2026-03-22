@@ -184,14 +184,6 @@ export default function MatchDetail() {
 
   const handleMarkAttendance = async (player, attended) => {
     setActionLoading(true);
-    await base44.entities.MatchRequest.update(request.id, { status: "rejected" });
-    queryClient.invalidateQueries({ queryKey: ["match_requests", matchId] });
-    toast.info("Solicitud rechazada");
-    setActionLoading(false);
-  };
-
-  const handleMarkAttendance = async (player, attended) => {
-    setActionLoading(true);
     await base44.entities.MatchPlayer.update(player.id, { attended });
     queryClient.invalidateQueries({ queryKey: ["match_players", matchId] });
     setActionLoading(false);
