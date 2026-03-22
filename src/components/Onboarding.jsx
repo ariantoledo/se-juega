@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, PlusCircle, MapPin, User, ChevronRight, X, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -109,7 +110,7 @@ export default function Onboarding({ onClose }) {
 
   // Welcome screen
   if (isWelcome) {
-    return (
+    return createPortal(
       <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-background/95 backdrop-blur-sm px-6">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
@@ -167,7 +168,8 @@ export default function Onboarding({ onClose }) {
             </button>
           </motion.div>
         </motion.div>
-      </div>
+      </div>,
+      document.body
     );
   }
 
@@ -175,7 +177,7 @@ export default function Onboarding({ onClose }) {
   const featureIndex = step - 1; // 0..3
   const featureTotal = total - 1;
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-background/95 backdrop-blur-sm px-4">
       <div className="w-full max-w-sm">
         {/* Header */}
@@ -191,12 +193,12 @@ export default function Onboarding({ onClose }) {
             ))}
           </div>
           <button
-             onClick={handleFinish}
-             className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-lg hover:bg-secondary"
-           >
-             <X className="w-3.5 h-3.5" />
-             Saltar
-           </button>
+            onClick={handleFinish}
+            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-lg hover:bg-secondary"
+          >
+            <X className="w-3.5 h-3.5" />
+            Saltar
+          </button>
         </div>
 
         {/* Card */}
@@ -241,6 +243,6 @@ export default function Onboarding({ onClose }) {
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
-}
