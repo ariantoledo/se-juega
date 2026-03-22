@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import { Toaster } from "@/components/ui/toaster"
 import SplashScreen from './components/SplashScreen';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -149,7 +150,7 @@ const AuthenticatedApp = () => {
 
 
 function App() {
-  const [showSplash, setShowSplash] = React.useState(() => {
+  const [showSplash, setShowSplash] = useState(() => {
     return !sessionStorage.getItem('splash_shown');
   });
 
