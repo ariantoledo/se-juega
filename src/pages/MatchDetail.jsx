@@ -54,21 +54,13 @@ export default function MatchDetail() {
     enabled: !!matchId,
   });
 
-  if (matchLoading || !match) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-6 h-6 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  const isCreator = user?.email === match.creator_email;
+  const isCreator = user?.email === match?.creator_email;
   const isPlayer = players.some((p) => p.player_email === user?.email);
   const hasRequested = requests.some(
     (r) => r.player_email === user?.email && r.status === "pending"
   );
-  const spotsLeft = match.players_needed - (match.current_players || 0);
-  const isPast = new Date(match.date) < new Date();
+  const spotsLeft = (match?.players_needed || 0) - (match?.current_players || 0);
+  const isPast = match ? new Date(match.date) < new Date() : false;
   const pendingRequests = requests.filter((r) => r.status === "pending");
 
   const joinMutation = useMutation({
@@ -196,6 +188,14 @@ export default function MatchDetail() {
     toast.success("Partido marcado como jugado");
     setActionLoading(false);
   };
+
+  if (matchLoading || !match) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="w-6 h-6 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-6 pb-24 md:pb-6">
