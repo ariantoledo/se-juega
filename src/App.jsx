@@ -26,10 +26,10 @@ const PageTransition = ({ children, pageKey }) => (
   <AnimatePresence mode="wait">
     <motion.div
       key={pageKey}
-      initial={{ x: 18, opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      exit={{ x: -18, opacity: 0 }}
-      transition={{ duration: 0.18, ease: "easeInOut" }}
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -6 }}
+      transition={{ duration: 0.12, ease: "easeOut" }}
     >
       {children}
     </motion.div>

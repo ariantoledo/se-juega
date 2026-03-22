@@ -6,6 +6,8 @@ export const queryClientInstance = new QueryClient({
 		queries: {
 			refetchOnWindowFocus: false,
 			retry: 1,
+			staleTime: 60 * 1000, // 60s — show cached data instantly, refetch in background
+			placeholderData: (prev) => prev, // keep previous data while loading new page
 		},
 	},
 });
