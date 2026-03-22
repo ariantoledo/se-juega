@@ -6,7 +6,7 @@ Deno.serve(async (req) => {
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { field, slot, payment_type, app_base_url } = await req.json();
+    const { field, slot, payment_type, app_base_url, match_id } = await req.json();
 
     // Get owner's MP access token from establishment
     const establishment = await base44.asServiceRole.entities.Establishment.filter({ id: field.establishment_id });
@@ -36,7 +36,8 @@ Deno.serve(async (req) => {
       commission_amount: COMMISSION,
       owner_amount: ownerAmount,
       reservation_status: "pending",
-      payment_status: "pending"
+      payment_status: "pending",
+      ...(match_id ? { match_id } : {})
     });
 
     // Block slot to prevent double booking
