@@ -1,3 +1,6 @@
+import React, { useEffect } from "react";
+import { motion } from "framer-motion";
+
 const NEW_LOGO = "https://media.base44.com/images/public/69af676714ee0899079240af/514321eb2_Logodeportivoconp.png";
 
 export default function IntroAnimation({ onComplete }) {
