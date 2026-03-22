@@ -65,7 +65,6 @@ export default function ConfigurarMercadoPago() {
           <AlertCircle className="w-4 h-4" />
           <AlertDescription>
             Para recibir pagos de las reservas, necesitas vincular tu cuenta de Mercado Pago.
-            La aplicación cobrará una comisión del 10% sobre el monto total de cada reserva.
             Los pagos se procesan en pesos argentinos (ARS).
           </AlertDescription>
         </Alert>
@@ -106,7 +105,7 @@ export default function ConfigurarMercadoPago() {
                         <CheckCircle2 className="w-4 h-4 text-primary" />
                         <AlertDescription>
                           <p className="font-semibold text-primary mb-1">Mercado Pago conectado</p>
-                          <p className="text-sm">Tu cuenta está lista para recibir pagos. El 90% del monto total de cada reserva llegará automáticamente a tu cuenta de Mercado Pago.</p>
+                          <p className="text-sm">Tu cuenta está lista para recibir pagos. El monto de cada reserva llegará automáticamente a tu cuenta de Mercado Pago, descontada la comisión fija de la plataforma.</p>
                         </AlertDescription>
                       </Alert>
 
