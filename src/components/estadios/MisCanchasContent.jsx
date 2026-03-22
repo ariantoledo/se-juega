@@ -5,10 +5,13 @@ import { createPageUrl } from "@/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PlusCircle, TrendingUp, Calendar, DollarSign, MapPin } from "lucide-react";
+import { PlusCircle, TrendingUp, Calendar, DollarSign, MapPin, Pencil, Trash2 } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export default function MisCanchasContent() {
   const [user, setUser] = useState(null);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
@@ -52,6 +55,26 @@ export default function MisCanchasContent() {
   const monthIncome = monthReservations
     .filter(r => r.payment_status === "paid")
     .reduce((sum, r) => sum + (r.owner_amount || 0), 0);
+
+  const deleteEstablishmentMutation = useMutation({
+    mutationFn: async (id) => {
+      await base44.entities.Establishment.delete(id);
+    },
+    onSuccess: () => {
+      toast.success("Establecimiento eliminado");
+      queryClient.invalidateQueries(["my-establishments"]);
+    }
+  });
+
+  const deleteFieldMutation = useMutation({
+    mutationFn: async (id) => {
+      await base44.entities.FieldNew.delete(id);
+    },
+    onSuccess: () => {
+      toast.success("Cancha eliminada");
+      queryClient.invalidateQueries(["my-fields"]);
+    }
+  });
 
   return (
     <div className="min-h-screen bg-background p-3 md:p-6 pb-20 md:pb-6">
@@ -191,9 +214,28 @@ export default function MisCanchasContent() {
                                     <span className="truncate">ARS ${field.precio_total.toLocaleString()}</span>
                                   </div>
                                 </div>
-                                <Button variant="outline" size="sm" className="w-full text-xs" asChild>
-                                  <a href={createPageUrl(`GestionarCancha?id=${field.id}`)}>Gestionar</a>
-                                </Button>
+                                <div className="flex flex-col gap-1.5">
+                                  <Button variant="outline" size="sm" className="w-full text-xs" asChild>
+                                    <a href={createPageUrl(`GestionarCancha?id=${field.id}`)}>Gestionar</a>
+                                  </Button>
+                                  <Button variant="outline" size="sm" className="w-full text-xs" asChild>
+                                    <a href={createPageUrl(`EditarCancha?id=${field.id}`)}>
+                                      <Pencil className="w-3 h-3 mr-1" />Editar
+                                    </a>
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="w-full text-xs text-destructive hover:bg-destructive/10"
+                                    onClick={() => {
+                                      if (confirm(`¿Eliminar la cancha "${field.name}"? Esta acción no se puede deshacer.`)) {
+                                        deleteFieldMutation.mutate(field.id);
+                                      }
+                                    }}
+                                  >
+                                    <Trash2 className="w-3 h-3 mr-1" />Eliminar
+                                  </Button>
+                                </div>
                               </div>
                             ))}
                           </div>
@@ -258,6 +300,18 @@ export default function MisCanchasContent() {
                       <div className="flex gap-2">
                         <Button variant="outline" size="sm" className="flex-1 text-xs md:text-sm" asChild>
                           <a href={createPageUrl(`EditarEstablecimiento?id=${est.id}`)}>Editar</a>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-destructive hover:bg-destructive/10 px-3"
+                          onClick={() => {
+                            if (confirm(`¿Eliminar "${est.name}"? Se perderán todos sus datos.`)) {
+                              deleteEstablishmentMutation.mutate(est.id);
+                            }
+                          }}
+                        >
+                          <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
                     </CardContent>
