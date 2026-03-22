@@ -122,14 +122,14 @@ export default function MatchDetail() {
         updateData.missing_positions = match.missing_positions.filter(p => p !== request.position);
       }
       await base44.entities.Match.update(matchId, updateData);
-      // Notificación in-app al jugador aceptado
-      await base44.functions.invoke("createNotification", {
-        user_email: request.player_email,
-        title: "✅ ¡Fuiste aceptado!",
-        message: `Sos parte del partido en ${match.field_name}. ¡Nos vemos en la cancha!`,
-        type: "match",
-        link: `/MatchDetail?id=${matchId}`,
-      });
+       // Notificar al jugador que fue aceptado
+       await base44.functions.invoke("sendMatchRequestResponse", {
+         player_email: request.player_email,
+         player_name: request.player_name,
+         match_id: matchId,
+         accepted: true,
+         field_name: match.field_name
+       });
     },
     onMutate: async (request) => {
       await queryClient.cancelQueries({ queryKey: ["match_requests", matchId] });
@@ -162,6 +162,14 @@ export default function MatchDetail() {
   const rejectMutation = useMutation({
     mutationFn: async (request) => {
       await base44.entities.MatchRequest.update(request.id, { status: "rejected" });
+      // Notificar al solicitante que fue rechazado
+      await base44.functions.invoke("sendMatchRequestResponse", {
+        player_email: request.player_email,
+        player_name: request.player_name,
+        match_id: matchId,
+        accepted: false,
+        field_name: match.field_name
+      });
     },
     onMutate: async (request) => {
       await queryClient.cancelQueries({ queryKey: ["match_requests", matchId] });
