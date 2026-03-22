@@ -45,6 +45,16 @@ export default function EditarCancha() {
     mutationFn: async (data) => {
       await base44.entities.FieldNew.update(fieldId, data);
     },
+    onMutate: async (data) => {
+      await queryClient.cancelQueries(["fieldnew-edit"]);
+      const prev = queryClient.getQueryData(["fieldnew-edit", fieldId]);
+      queryClient.setQueryData(["fieldnew-edit", fieldId], (old) => ({ ...old, ...data }));
+      return { prev };
+    },
+    onError: (_e, _v, ctx) => {
+      queryClient.setQueryData(["fieldnew-edit", fieldId], ctx?.prev);
+      toast.error("Error al actualizar cancha");
+    },
     onSuccess: () => {
       toast.success("Cancha actualizada correctamente");
       queryClient.invalidateQueries(["my-fields"]);
