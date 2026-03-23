@@ -110,6 +110,7 @@ export default function Home() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-10"
+                aria-label="Buscar partidos por cancha o dirección"
               />
             </div>
             <button

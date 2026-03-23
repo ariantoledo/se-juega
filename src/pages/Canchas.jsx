@@ -45,9 +45,10 @@ export default function Canchas() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
+              aria-label="Buscar canchas por nombre o ubicación"
             />
           </div>
-          <MobileSelect value={typeFilter} onValueChange={setTypeFilter} id="cancha-type-filter" className="w-full md:w-48">
+          <MobileSelect value={typeFilter} onValueChange={setTypeFilter} id="cancha-type-filter" className="w-full md:w-48" placeholder="Todos los tipos">
             <option value="all">Todos los tipos</option>
             <option value="futbol5">Fútbol 5</option>
             <option value="futbol7">Fútbol 7</option>

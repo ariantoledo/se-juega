@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createPageUrl } from "@/utils";
 import { useNavigate } from "react-router-dom";
 import { goBack } from "@/lib/nav-history";
+import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -197,7 +198,7 @@ export default function CanchaDetail() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Fecha</label>
+                  <Label htmlFor="booking-calendar" className="mb-2 block">Fecha</Label>
                   <Calendar
                     mode="single"
                     selected={selectedDate}
@@ -209,9 +210,7 @@ export default function CanchaDetail() {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-2 block">
-                    Horarios disponibles
-                  </label>
+                  <Label className="mb-2 block">Horarios disponibles</Label>
                   {availableSlots.length === 0 ? (
                     <p className="text-sm text-muted-foreground text-center py-4">
                       No hay horarios disponibles para esta fecha
@@ -284,7 +283,7 @@ export default function CanchaDetail() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-3 block">Tipo de pago</label>
+              <Label className="mb-3 block">Tipo de pago</Label>
               <div className="space-y-2">
                 <button
                   onClick={() => setPaymentType("sena")}
