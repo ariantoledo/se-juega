@@ -23,6 +23,7 @@ const MercadoPagoCallback = lazy(() => import('./pages/MercadoPagoCallback'));
 const PaymentResult = lazy(() => import('./pages/PaymentResult'));
 const EditarCancha = lazy(() => import('./pages/EditarCancha'));
 const Help = lazy(() => import('./pages/Help'));
+const CanchaDetail = lazy(() => import('./pages/CanchaDetail'));
 
 // Loading fallback
 const PageLoader = () => (
@@ -127,6 +128,7 @@ const AuthenticatedApp = () => {
       <Route path="/PaymentResult" element={<LazyPageWrapper element={<PaymentResult />} currentPageName="PaymentResult" />} />
       <Route path="/EditarCancha" element={<LazyPageWrapper element={<EditarCancha />} currentPageName="EditarCancha" />} />
       <Route path="/Help" element={<LazyPageWrapper element={<Help />} currentPageName="Help" />} />
+      <Route path="/CanchaDetail" element={<LazyPageWrapper element={<CanchaDetail />} currentPageName="CanchaDetail" />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
