@@ -27,7 +27,6 @@ export default function MatchDetail() {
 
   const [user, setUser] = useState(null);
   const [selectedPosition, setSelectedPosition] = useState("");
-  const [actionLoading, setActionLoading] = useState(false);
   const [showPositionSheet, setShowPositionSheet] = useState(false);
 
   useEffect(() => {
@@ -356,7 +355,7 @@ export default function MatchDetail() {
                 disabled={joinMutation.isPending || !selectedPosition} 
                 className="bg-primary hover:bg-primary/90 sm:min-w-[180px]"
               >
-                {actionLoading ? (
+                {joinMutation.isPending ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin mr-2" />
                     Enviando...
@@ -424,7 +423,7 @@ export default function MatchDetail() {
                             size="sm"
                             variant={p.attended === "yes" ? "default" : "outline"}
                             onClick={() => handleMarkAttendance(p, "yes")}
-                            disabled={actionLoading}
+                            disabled={attendanceMutation.isPending}
                             className={p.attended === "yes" ? "bg-primary" : ""}
                           >
                             <CheckCircle2 className="w-4 h-4" />
@@ -433,7 +432,7 @@ export default function MatchDetail() {
                             size="sm"
                             variant={p.attended === "no" ? "destructive" : "outline"}
                             onClick={() => handleMarkAttendance(p, "no")}
-                            disabled={actionLoading}
+                            disabled={attendanceMutation.isPending}
                           >
                             <XCircle className="w-4 h-4" />
                           </Button>
@@ -444,7 +443,7 @@ export default function MatchDetail() {
                   <Button
                     onClick={handleFinishMatch}
                     className="w-full mt-4 bg-primary hover:bg-primary/90"
-                    disabled={actionLoading}
+                    disabled={finishMatchMutation.isPending}
                   >
                     Finalizar partido y registrar asistencia
                   </Button>
