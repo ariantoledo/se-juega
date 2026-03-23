@@ -22,7 +22,7 @@ export default function IntroAnimation({ onComplete }) {
   return (
     <div
       className="fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-hidden"
-      style={{ background: "linear-gradient(160deg, #0D3B5C 0%, #1565C0 40%, #1B8A3E 80%, #0D5C2A 100%)" }}
+      style={{ background: "linear-gradient(160deg, #0D2B52 0%, #1A3A6B 35%, #1B5C28 70%, #2E8B35 100%)" }}
     >
       {/* Light sweep */}
       <motion.div
@@ -153,7 +153,7 @@ export default function IntroAnimation({ onComplete }) {
 
       {/* Fade to app */}
       <motion.div
-        className="absolute inset-0 bg-[#1E90FF] pointer-events-none"
+        className="absolute inset-0 bg-[#1A3A6B] pointer-events-none"
         initial={{ opacity: 0 }}
         animate={{ opacity: [0, 0, 1] }}
         transition={{ duration: 0.8, delay: 7.2, times: [0, 0.4, 1] }}
