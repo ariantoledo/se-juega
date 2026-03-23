@@ -3,13 +3,16 @@ import ReactDOM from 'react-dom/client'
 import App from '@/App.jsx'
 import '@/index.css'
 
+// Eliminar delay táctil de 300ms
+document.addEventListener('touchstart', () => {}, { passive: true });
+
 // Deshabilitar zoom (pinch, doble tap)
 let lastTouchEnd = 0;
 document.addEventListener('touchend', (e) => {
   const now = Date.now();
   if (now - lastTouchEnd <= 300) e.preventDefault();
   lastTouchEnd = now;
-}, false);
+}, { passive: false });
 
 // Bloquear pinch-zoom
 document.addEventListener('gesturestart', (e) => e.preventDefault(), false);
