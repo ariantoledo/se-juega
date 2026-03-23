@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useNavigate } from "react-router-dom";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createPageUrl } from "@/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,7 +22,7 @@ const SPORT_TABS = [
 export default function CreateMatch() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
-  const [saving, setSaving] = useState(false);
+  const saving = createMatchMutation?.isPending ?? false;
   const [sportType, setSportType] = useState("futbol");
   const [reserveField, setReserveField] = useState(false);
   const [selectedEstablishmentId, setSelectedEstablishmentId] = useState("");
@@ -40,6 +41,8 @@ export default function CreateMatch() {
     missing_positions: [],
     level: "intermedio",
   });
+
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     base44.auth.me().then(setUser);
@@ -89,10 +92,46 @@ export default function CreateMatch() {
 
   const handleChange = (field, value) => setForm(prev => ({ ...prev, [field]: value }));
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSaving(true);
+  const createMatchMutation = useMutation({
+    mutationFn: async (matchData) => {
+      const created = await base44.entities.Match.create(matchData);
+      if (reserveField && selectedSlot) {
+        const field = allFields.find(f => f.id === selectedFieldId);
+        const res = await base44.functions.invoke("createMPPayment", {
+          field: { id: selectedFieldId, ...field },
+          slot: selectedSlot,
+          payment_type: "sena",
+          app_base_url: window.location.origin,
+          match_id: created.id,
+        });
+        if (res.data?.init_point) return { redirect: res.data.init_point };
+      }
+      return { matchId: created.id };
+    },
+    onMutate: async (matchData) => {
+      await queryClient.cancelQueries({ queryKey: ["matches"] });
+      const prev = queryClient.getQueryData(["matches"]);
+      queryClient.setQueryData(["matches"], (old = []) => [
+        { id: "optimistic-" + Date.now(), ...matchData },
+        ...old,
+      ]);
+      return { prev };
+    },
+    onError: (_e, _v, ctx) => {
+      queryClient.setQueryData(["matches"], ctx?.prev);
+    },
+    onSuccess: (result) => {
+      queryClient.invalidateQueries({ queryKey: ["matches"] });
+      if (result.redirect) {
+        window.location.href = result.redirect;
+      } else {
+        navigate(createPageUrl("MatchDetail") + `?id=${result.matchId}`);
+      }
+    },
+  });
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
     const matchData = {
       ...form,
       sport_type: sportType,
@@ -102,30 +141,10 @@ export default function CreateMatch() {
       status: "open",
       creator_email: user?.email,
       creator_name: user?.full_name,
-      // Only include football_type for futbol
       football_type: sportType === "futbol" ? form.football_type : undefined,
-      // Only include level for padel
       level: sportType === "padel" ? form.level : undefined,
     };
-
-    const created = await base44.entities.Match.create(matchData);
-
-    if (reserveField && selectedSlot) {
-      const field = allFields.find(f => f.id === selectedFieldId);
-      const res = await base44.functions.invoke("createMPPayment", {
-        field: { id: selectedFieldId, ...field },
-        slot: selectedSlot,
-        payment_type: "sena",
-        app_base_url: window.location.origin,
-        match_id: created.id,
-      });
-      if (res.data?.init_point) {
-        window.location.href = res.data.init_point;
-        return;
-      }
-    }
-
-    navigate(createPageUrl("MatchDetail") + `?id=${created.id}`);
+    createMatchMutation.mutate(matchData);
   };
 
   return (

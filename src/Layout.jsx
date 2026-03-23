@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
 import { Home, PlusCircle, CalendarDays, User, Menu, X, Sun, Moon, MapPin, ArrowLeft, HelpCircle } from "lucide-react";
@@ -55,34 +55,13 @@ export default function Layout({ children, currentPageName }) {
     }
   }, [location, currentPageName, isChildScreen]);
 
-  // Maintain an in-memory stack depth counter (no sessionStorage race conditions)
-  const stackDepthRef = React.useRef(0);
-
-  // Track each navigation by pushing a sentinel state
-  useEffect(() => {
-    const currentPath = location.pathname + location.search;
-    // Push a history entry so the browser always has something to pop
-    window.history.pushState({ seJuega: true }, "", currentPath);
-    stackDepthRef.current += 1;
-  }, [location.pathname, location.search]);
-
+  // Prevent accidental browser exit when already at a root tab
   useEffect(() => {
     const isRoot = TAB_ROOTS.includes(location.pathname);
-
-    const handlePopState = (e) => {
-      if (stackDepthRef.current > 1) {
-        stackDepthRef.current -= 1;
-        // Let React Router handle actual back navigation
-        navigate(-1);
-      } else if (isRoot) {
-        // At root: re-push to prevent app exit
-        window.history.pushState({ seJuega: true }, "", location.pathname + location.search);
-      }
-    };
-
-    window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
-  }, [location.pathname, navigate])
+    if (!isRoot) return;
+    // Push a duplicate entry so there is always one entry to pop back to
+    window.history.pushState(null, "");
+  }, [location.pathname]);
 
   // Listen to OS dark mode changes (only if user hasn't set a manual preference)
   useEffect(() => {
