@@ -97,10 +97,9 @@ export default function AvailabilityEditor({ initialSlots = [], notifyEnabled = 
                     key={di}
                     type="button"
                     onClick={() => toggle(day, block)}
+                    aria-label={`${isOn ? "Quitar" : "Agregar"} disponibilidad ${block.label} los ${day}`}
+                    aria-pressed={isOn}
                     className={`h-10 rounded-lg border-2 text-xs font-semibold transition-all ${
-                      isOn ? SELECTED_COLOR : "border-border bg-card hover:border-primary/30 text-muted-foreground"
-                    }`}
-                  >
                     {isOn ? "✓" : ""}
                   </button>
                 );

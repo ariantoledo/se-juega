@@ -24,6 +24,7 @@ export default function RequestCard({ request, onAccept, onReject, loading }) {
               variant="outline"
               onClick={() => onReject(request)}
               disabled={loading}
+              aria-label={`Rechazar solicitud de ${request.player_name}`}
               className="border-destructive/30 text-destructive hover:bg-destructive/10"
             >
               <X className="w-4 h-4" />
@@ -32,6 +33,7 @@ export default function RequestCard({ request, onAccept, onReject, loading }) {
               size="sm"
               onClick={() => onAccept(request)}
               disabled={loading}
+              aria-label={`Aceptar solicitud de ${request.player_name}`}
               className="bg-primary hover:bg-primary/90"
             >
               <Check className="w-4 h-4" />

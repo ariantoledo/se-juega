@@ -302,17 +302,18 @@ export default function MisCanchasContent() {
                           <a href={createPageUrl(`EditarEstablecimiento?id=${est.id}`)}>Editar</a>
                         </Button>
                         <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-destructive hover:bg-destructive/10 px-3"
-                          onClick={() => {
-                            if (confirm(`¿Eliminar "${est.name}"? Se perderán todos sus datos.`)) {
-                              deleteEstablishmentMutation.mutate(est.id);
-                            }
-                          }}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
+                           variant="ghost"
+                           size="sm"
+                           aria-label={`Eliminar establecimiento ${est.name}`}
+                           className="text-destructive hover:bg-destructive/10 px-3"
+                           onClick={() => {
+                             if (confirm(`¿Eliminar "${est.name}"? Se perderán todos sus datos.`)) {
+                               deleteEstablishmentMutation.mutate(est.id);
+                             }
+                           }}
+                         >
+                           <Trash2 className="w-4 h-4" />
+                         </Button>
                       </div>
                     </CardContent>
                   </Card>
