@@ -33,7 +33,9 @@ export function goBack(navigate) {
     _stack.pop();
     navigate(_stack[_stack.length - 1], { replace: true });
   } else {
-    navigate(-1);
+    // Never use navigate(-1) — it would load a stale cached browser entry.
+    // Instead go home, which is always the current updated version.
+    navigate("/", { replace: true });
   }
 }
 
@@ -66,21 +68,30 @@ export function useNavDirection() {
  */
 export function useAndroidBackHandler(navigate) {
   useEffect(() => {
-    // Push a sentinel state so the first back press fires popstate instead of
-    // immediately closing the app / going to the browser's previous page.
-    window.history.pushState({ navGuard: true }, "");
+    // Ensure the browser history stack has exactly one entry at the current URL.
+    // This collapses any stale history entries (old cached pages) so the physical
+    // back button can never reach them.
+    if (window.history.length > 1) {
+      window.history.replaceState({ __sejuega: true }, "", window.location.href);
+    }
+    // Push a sentinel entry so we can catch the popstate before it leaves the app.
+    window.history.pushState({ __sejuega: true }, "", window.location.href);
 
-    const handler = () => {
-      if (canGoBack()) {
-        // Navigate within the app and re-push the sentinel so the next press
-        // is also caught.
-        goBack(navigate);
-        window.history.pushState({ navGuard: true }, "");
-      }
-      // If no history in stack, let the OS handle it (app minimise / exit).
+    const handlePopState = (e) => {
+      // Immediately push another sentinel so the browser never actually navigates away.
+      window.history.pushState({ __sejuega: true }, "", window.location.href);
+      // Use our internal stack to go back within the SPA.
+      goBack(navigate);
     };
 
-    window.addEventListener("popstate", handler);
-    return () => window.removeEventListener("popstate", handler);
+    // Legacy custom event (kept for compatibility)
+    const handleCustomBack = () => goBack(navigate);
+
+    window.addEventListener("popstate", handlePopState);
+    window.addEventListener("androidBackPressed", handleCustomBack);
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+      window.removeEventListener("androidBackPressed", handleCustomBack);
+    };
   }, [navigate]);
 }
