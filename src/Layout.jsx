@@ -151,7 +151,7 @@ export default function Layout({ children, currentPageName }) {
 
           <a href={createPageUrl("Home")} className="flex items-center gap-2">
             <img
-              src="https://media.base44.com/images/public/69af676714ee0899079240af/b369c31da_fc25c6634_logo.png"
+              src="https://media.base44.com/images/public/69af676714ee0899079240af/47ec2bfc5_Logodeportivoconp.png"
               alt="Se Juega"
               className="w-8 h-8 md:w-9 md:h-9 rounded-xl object-cover shadow-md"
             />
