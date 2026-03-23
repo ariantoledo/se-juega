@@ -156,11 +156,11 @@ export default function EditarCancha() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label>Precio total (ARS) *</Label>
-                  <Input type="number" value={form.precio_total} onChange={e => setForm(f => ({ ...f, precio_total: e.target.value }))} placeholder="Ej: 10000" required />
+                  <Input type="number" inputMode="numeric" pattern="[0-9]*" value={form.precio_total} onChange={e => setForm(f => ({ ...f, precio_total: e.target.value }))} placeholder="Ej: 10000" required />
                 </div>
                 <div>
                   <Label>Seña (ARS) *</Label>
-                  <Input type="number" value={form.precio_sena} onChange={e => setForm(f => ({ ...f, precio_sena: e.target.value }))} placeholder="Ej: 3000" required />
+                  <Input type="number" inputMode="numeric" pattern="[0-9]*" value={form.precio_sena} onChange={e => setForm(f => ({ ...f, precio_sena: e.target.value }))} placeholder="Ej: 3000" required />
                 </div>
               </div>
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createPageUrl } from "@/utils";
 import { useNavigate } from "react-router-dom";
 import { goBack } from "@/lib/nav-history";
@@ -22,6 +22,8 @@ export default function EditarEstablecimiento() {
     phone: "",
     images: []
   });
+
+  const queryClient = useQueryClient();
 
   const { data: establishment, isLoading } = useQuery({
     queryKey: ["establishment", establishmentId],
@@ -47,6 +49,15 @@ export default function EditarEstablecimiento() {
   const updateEstablishmentMutation = useMutation({
     mutationFn: async () => {
       await base44.entities.Establishment.update(establishmentId, formData);
+    },
+    onMutate: async () => {
+      const prev = queryClient?.getQueryData(["establishment", establishmentId]);
+      queryClient?.setQueryData(["establishment", establishmentId], (old) => old ? { ...old, ...formData } : old);
+      return { prev };
+    },
+    onError: (_e, _v, ctx) => {
+      queryClient?.setQueryData(["establishment", establishmentId], ctx?.prev);
+      toast.error("Error al actualizar establecimiento");
     },
     onSuccess: () => {
       toast.success("Establecimiento actualizado exitosamente");
@@ -138,6 +149,8 @@ export default function EditarEstablecimiento() {
               <div>
                 <Label>Teléfono</Label>
                 <Input
+                  type="tel"
+                  inputMode="tel"
                   value={formData.phone}
                   onChange={(e) => setFormData({...formData, phone: e.target.value})}
                   placeholder="+54 11 1234 5678"

@@ -138,9 +138,11 @@ export default function RegistrarEstablecimiento() {
               <div>
                 <Label>Teléfono</Label>
                 <Input
+                  type="tel"
+                  inputMode="tel"
                   value={formData.phone}
                   onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                  placeholder="+56 9 1234 5678"
+                  placeholder="+54 11 1234 5678"
                 />
               </div>
 

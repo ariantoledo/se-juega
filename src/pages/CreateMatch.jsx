@@ -292,6 +292,8 @@ export default function CreateMatch() {
                     type="number"
                     min="1"
                     max="22"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     value={form.players_needed}
                     onChange={e => handleChange("players_needed", e.target.value)}
                     required
@@ -302,6 +304,8 @@ export default function CreateMatch() {
                   <Input
                     type="number"
                     min="0"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     value={form.cost_per_player}
                     onChange={e => handleChange("cost_per_player", e.target.value)}
                   />
@@ -315,6 +319,8 @@ export default function CreateMatch() {
                 <Input
                   type="number"
                   min="0"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   value={form.cost_per_player}
                   onChange={e => handleChange("cost_per_player", e.target.value)}
                 />

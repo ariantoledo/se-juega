@@ -183,6 +183,8 @@ export default function RegistrarCancha() {
                   <Label>Precio total por hora *</Label>
                   <Input
                     type="number"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     value={formData.precio_total}
                     onChange={(e) => setFormData({...formData, precio_total: e.target.value})}
                     placeholder="40000"
@@ -193,6 +195,8 @@ export default function RegistrarCancha() {
                   <Label>Precio seña *</Label>
                   <Input
                     type="number"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     value={formData.precio_sena}
                     onChange={(e) => setFormData({...formData, precio_sena: e.target.value})}
                     placeholder="9000"

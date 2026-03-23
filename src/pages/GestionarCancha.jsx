@@ -117,6 +117,18 @@ export default function GestionarCancha() {
     mutationFn: async (slotId) => {
       await base44.entities.FieldNewTimeSlot.delete(slotId);
     },
+    onMutate: async (slotId) => {
+      await queryClient.cancelQueries(["field-slots"]);
+      const prev = queryClient.getQueryData(["field-slots", fieldId, selectedDate]);
+      queryClient.setQueryData(["field-slots", fieldId, selectedDate], (old = []) =>
+        old.filter(s => s.id !== slotId)
+      );
+      return { prev };
+    },
+    onError: (_e, _v, ctx) => {
+      queryClient.setQueryData(["field-slots", fieldId, selectedDate], ctx?.prev);
+      toast.error("Error al eliminar horario");
+    },
     onSuccess: () => {
       toast.success("Horario eliminado");
       queryClient.invalidateQueries(["field-slots"]);
