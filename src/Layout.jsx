@@ -45,15 +45,11 @@ export default function Layout({ children, currentPageName }) {
     base44.auth.me().then(setUser).catch(() => {});
   }, []);
 
-  // Sync current path into per-tab storage
+  // Sync current path into per-tab storage (only for main/tab pages, never child screens)
   useEffect(() => {
-    const activeTab = BOTTOM_TABS.find(t => {
-      const root = createPageUrl(t.page);
-      return location.pathname === root || (isChildScreen && location.pathname.startsWith("/"));
-    });
-    if (activeTab && currentPageName) {
-      saveTabPath(activeTab.page, location.pathname + location.search);
-    }
+    if (isChildScreen) return;
+    const tab = BOTTOM_TABS.find(t => t.page === currentPageName);
+    if (tab) saveTabPath(tab.page, location.pathname + location.search);
   }, [location, currentPageName, isChildScreen]);
 
   // Prevent accidental browser exit when already at a root tab
