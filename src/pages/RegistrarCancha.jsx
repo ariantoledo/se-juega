@@ -210,6 +210,7 @@ export default function RegistrarCancha() {
                       <button
                         type="button"
                         onClick={() => removeImage(idx)}
+                        aria-label={`Eliminar imagen ${idx + 1}`}
                         className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1"
                       >
                         <X className="w-3 h-3" />
