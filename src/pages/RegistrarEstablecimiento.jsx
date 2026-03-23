@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useMutation } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
 import { createPageUrl } from "@/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -147,8 +148,10 @@ export default function RegistrarEstablecimiento() {
                 <Button type="button" variant="outline" asChild className="flex-1">
                   <a href={createPageUrl("MisCanchas")}>Cancelar</a>
                 </Button>
-                <Button type="submit" className="flex-1">
-                  Crear establecimiento
+                <Button type="submit" className="flex-1" disabled={createEstablishmentMutation.isPending}>
+                  {createEstablishmentMutation.isPending
+                    ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Creando...</>
+                    : "Crear establecimiento"}
                 </Button>
               </div>
             </form>

@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CheckCircle2, XCircle, Clock, User, MapPin, Phone, FileText, TrendingUp } from "lucide-react";
+import { CheckCircle2, XCircle, Clock, User, MapPin, Phone, FileText, TrendingUp, Loader2 } from "lucide-react";
 import FinanceDashboard from "../components/admin/FinanceDashboard";
 import CommissionManager from "../components/admin/CommissionManager";
 import { toast } from "sonner";
@@ -54,6 +54,18 @@ export default function AdminPanel() {
         link: "/Estadios",
       });
     },
+    onMutate: async (request) => {
+      await queryClient.cancelQueries(["owner-requests"]);
+      const prev = queryClient.getQueryData(["owner-requests"]);
+      queryClient.setQueryData(["owner-requests"], (old = []) =>
+        old.map(r => r.id === request.id ? { ...r, status: "approved" } : r)
+      );
+      return { prev };
+    },
+    onError: (_e, _v, ctx) => {
+      queryClient.setQueryData(["owner-requests"], ctx?.prev);
+      toast.error("Error al aprobar solicitud");
+    },
     onSuccess: () => {
       toast.success("Dueño aprobado y notificado");
       queryClient.invalidateQueries(["owner-requests"]);
@@ -79,6 +91,18 @@ export default function AdminPanel() {
         message: `Tu solicitud para "${request.establishment_name}" fue rechazada. Contactanos si creés que hay un error.`,
         type: "system",
       });
+    },
+    onMutate: async (request) => {
+      await queryClient.cancelQueries(["owner-requests"]);
+      const prev = queryClient.getQueryData(["owner-requests"]);
+      queryClient.setQueryData(["owner-requests"], (old = []) =>
+        old.map(r => r.id === request.id ? { ...r, status: "rejected" } : r)
+      );
+      return { prev };
+    },
+    onError: (_e, _v, ctx) => {
+      queryClient.setQueryData(["owner-requests"], ctx?.prev);
+      toast.error("Error al rechazar solicitud");
     },
     onSuccess: () => {
       toast.success("Solicitud rechazada");
@@ -177,9 +201,11 @@ export default function AdminPanel() {
                   className="flex-1"
                   size="sm"
                   onClick={() => approveMutation.mutate(request)}
-                  disabled={approveMutation.isPending}
+                  disabled={approveMutation.isPending || rejectMutation.isPending}
                 >
-                  <CheckCircle2 className="w-4 h-4 mr-1" />
+                  {approveMutation.isPending
+                    ? <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                    : <CheckCircle2 className="w-4 h-4 mr-1" />}
                   Aprobar
                 </Button>
                 <Button
@@ -187,9 +213,11 @@ export default function AdminPanel() {
                   size="sm"
                   variant="destructive"
                   onClick={() => rejectMutation.mutate(request)}
-                  disabled={rejectMutation.isPending}
+                  disabled={rejectMutation.isPending || approveMutation.isPending}
                 >
-                  <XCircle className="w-4 h-4 mr-1" />
+                  {rejectMutation.isPending
+                    ? <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                    : <XCircle className="w-4 h-4 mr-1" />}
                   Rechazar
                 </Button>
               </div>
