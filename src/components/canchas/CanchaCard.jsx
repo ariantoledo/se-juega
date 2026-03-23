@@ -12,7 +12,7 @@ const typeLabels = {
 
 export default function CanchaCard({ field }) {
   return (
-    <a href={createPageUrl(`CanchaDetail?id=${field.id}`)}>
+    <a href={createPageUrl(`CanchaDetail?id=${field.id}`)} aria-label={`Ver detalles de ${field.name}`}>
       <Card className="hover:shadow-lg transition-all duration-300 cursor-pointer h-full">
         <CardHeader className="p-0">
           {field.images && field.images.length > 0 ? (

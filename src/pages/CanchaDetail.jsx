@@ -287,6 +287,8 @@ export default function CanchaDetail() {
               <div className="space-y-2">
                 <button
                   onClick={() => setPaymentType("sena")}
+                  aria-label={`Pagar seña: ARS ${field.precio_sena.toLocaleString()}`}
+                  aria-pressed={paymentType === "sena"}
                   className={`w-full p-4 rounded-lg border-2 transition-all ${
                     paymentType === "sena"
                       ? "border-primary bg-primary/10"
@@ -306,6 +308,8 @@ export default function CanchaDetail() {
 
                 <button
                   onClick={() => setPaymentType("total")}
+                  aria-label={`Pagar total: ARS ${field.precio_total.toLocaleString()}`}
+                  aria-pressed={paymentType === "total"}
                   className={`w-full p-4 rounded-lg border-2 transition-all ${
                     paymentType === "total"
                       ? "border-primary bg-primary/10"
