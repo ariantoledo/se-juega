@@ -191,20 +191,49 @@ export default function MatchDetail() {
 
   const handleReject = (request) => rejectMutation.mutate(request);
 
-  const handleMarkAttendance = async (player, attended) => {
-    setActionLoading(true);
-    await base44.entities.MatchPlayer.update(player.id, { attended });
-    queryClient.invalidateQueries({ queryKey: ["match_players", matchId] });
-    setActionLoading(false);
-  };
+  const attendanceMutation = useMutation({
+    mutationFn: async ({ player, attended }) => {
+      await base44.entities.MatchPlayer.update(player.id, { attended });
+    },
+    onMutate: async ({ player, attended }) => {
+      await queryClient.cancelQueries({ queryKey: ["match_players", matchId] });
+      const prev = queryClient.getQueryData(["match_players", matchId]);
+      queryClient.setQueryData(["match_players", matchId], (old = []) =>
+        old.map(p => p.id === player.id ? { ...p, attended } : p)
+      );
+      return { prev };
+    },
+    onError: (_e, _v, ctx) => {
+      queryClient.setQueryData(["match_players", matchId], ctx?.prev);
+      toast.error("Error al marcar asistencia");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["match_players", matchId] });
+    },
+  });
 
-  const handleFinishMatch = async () => {
-    setActionLoading(true);
-    await base44.entities.Match.update(matchId, { status: "played" });
-    queryClient.invalidateQueries({ queryKey: ["match", matchId] });
-    toast.success("Partido marcado como jugado");
-    setActionLoading(false);
-  };
+  const finishMatchMutation = useMutation({
+    mutationFn: async () => {
+      await base44.entities.Match.update(matchId, { status: "played" });
+    },
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ["match", matchId] });
+      const prev = queryClient.getQueryData(["match", matchId]);
+      queryClient.setQueryData(["match", matchId], (old) => old ? { ...old, status: "played" } : old);
+      return { prev };
+    },
+    onError: (_e, _v, ctx) => {
+      queryClient.setQueryData(["match", matchId], ctx?.prev);
+      toast.error("Error al finalizar el partido");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["match", matchId] });
+      toast.success("Partido marcado como jugado");
+    },
+  });
+
+  const handleMarkAttendance = (player, attended) => attendanceMutation.mutate({ player, attended });
+  const handleFinishMatch = () => finishMatchMutation.mutate();
 
   if (matchLoading || !match) {
     return (

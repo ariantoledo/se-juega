@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import MobileSelect from "@/components/ui/mobile-select";
 import { MapPin, Search } from "lucide-react";
 import CanchaCard from "../components/canchas/CanchaCard";
 
@@ -47,17 +47,12 @@ export default function Canchas() {
               className="pl-10"
             />
           </div>
-          <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="w-full md:w-48">
-              <SelectValue placeholder="Tipo de cancha" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos los tipos</SelectItem>
-              <SelectItem value="futbol5">Fútbol 5</SelectItem>
-              <SelectItem value="futbol7">Fútbol 7</SelectItem>
-              <SelectItem value="futbol11">Fútbol 11</SelectItem>
-            </SelectContent>
-          </Select>
+          <MobileSelect value={typeFilter} onValueChange={setTypeFilter} id="cancha-type-filter" className="w-full md:w-48">
+            <option value="all">Todos los tipos</option>
+            <option value="futbol5">Fútbol 5</option>
+            <option value="futbol7">Fútbol 7</option>
+            <option value="futbol11">Fútbol 11</option>
+          </MobileSelect>
         </div>
 
         {/* Results */}

@@ -55,42 +55,34 @@ export default function Layout({ children, currentPageName }) {
     }
   }, [location, currentPageName, isChildScreen]);
 
-  // Stack-aware navigation: Android back button support with hardened loop prevention
+  // Maintain an in-memory stack depth counter (no sessionStorage race conditions)
+  const stackDepthRef = React.useRef(0);
+
+  // Track each navigation by pushing a sentinel state
   useEffect(() => {
-    const navigationStack = JSON.parse(sessionStorage.getItem('navigationStack') || '[]');
     const currentPath = location.pathname + location.search;
-    
-    // Prevent duplicate entries and sync stack on navigation
-    if (!navigationStack.length || navigationStack[navigationStack.length - 1] !== currentPath) {
-      navigationStack.push(currentPath);
-      sessionStorage.setItem('navigationStack', JSON.stringify(navigationStack));
-    }
+    // Push a history entry so the browser always has something to pop
+    window.history.pushState({ seJuega: true }, "", currentPath);
+    stackDepthRef.current += 1;
   }, [location.pathname, location.search]);
 
   useEffect(() => {
     const isRoot = TAB_ROOTS.includes(location.pathname);
-    let isProcessing = false; // Flag to prevent concurrent popstate handlers
-    
-    const handlePopState = () => {
-      if (isProcessing) return; // Ignore concurrent popstate events
-      isProcessing = true;
-      
-      const navigationStack = JSON.parse(sessionStorage.getItem('navigationStack') || '[]');
-      
-      if (navigationStack.length > 1) {
-        navigationStack.pop();
-        sessionStorage.setItem('navigationStack', JSON.stringify(navigationStack));
+
+    const handlePopState = (e) => {
+      if (stackDepthRef.current > 1) {
+        stackDepthRef.current -= 1;
+        // Let React Router handle actual back navigation
+        navigate(-1);
       } else if (isRoot) {
-        // At root level: re-push to prevent browser exit
-        window.history.pushState(null, "");
+        // At root: re-push to prevent app exit
+        window.history.pushState({ seJuega: true }, "", location.pathname + location.search);
       }
-      
-      setTimeout(() => { isProcessing = false; }, 100); // Reset flag after event completes
     };
-    
+
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
-  }, [location.pathname])
+  }, [location.pathname, navigate])
 
   // Listen to OS dark mode changes (only if user hasn't set a manual preference)
   useEffect(() => {
