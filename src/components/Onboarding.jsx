@@ -127,7 +127,7 @@ export default function Onboarding({ onClose }) {
           >
             <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-primary to-[#1B5EA8] flex items-center justify-center shadow-2xl shadow-primary/30 mb-4 mx-auto">
               <img
-                src="https://media.base44.com/images/public/69af676714ee0899079240af/b369c31da_fc25c6634_logo.png"
+                src="https://media.base44.com/images/public/69af676714ee0899079240af/47ec2bfc5_Logodeportivoconp.png"
                 alt="Se Juega"
                 className="w-16 h-16 rounded-2xl object-cover"
               />
