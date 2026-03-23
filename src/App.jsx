@@ -130,7 +130,8 @@ const AuthenticatedApp = () => {
 
 
 function App() {
-  const [showSplash, setShowSplash] = useState(true);
+  const alreadySeen = sessionStorage.getItem('intro_seen');
+  const [showSplash, setShowSplash] = useState(!alreadySeen);
   const [showIntro, setShowIntro] = useState(false);
 
   const handleSplashDone = () => {
@@ -139,6 +140,7 @@ function App() {
   };
 
   const handleIntroDone = () => {
+    sessionStorage.setItem('intro_seen', '1');
     setShowIntro(false);
   };
 
