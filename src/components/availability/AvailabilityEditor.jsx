@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import { Save, Loader2, Bell, BellOff } from "lucide-react";
-import { toast } from "sonner";
 
 const DAYS = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"];
 const DAY_SHORT = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
@@ -21,7 +19,6 @@ function slotKey(day, block) {
 }
 
 export default function AvailabilityEditor({ initialSlots = [], notifyEnabled = true, onSave, saving }) {
-  // Convert slots array to a Set of keys for quick lookup
   const [selected, setSelected] = useState(() => {
     const s = new Set();
     initialSlots.forEach(slot => {
@@ -99,10 +96,22 @@ export default function AvailabilityEditor({ initialSlots = [], notifyEnabled = 
                     onClick={() => toggle(day, block)}
                     aria-label={`${isOn ? "Quitar" : "Agregar"} disponibilidad ${block.label} los ${day}`}
                     aria-pressed={isOn}
-                    className={`h-10 rounded-lg border-2 text-xs font-semibold transition-all ${
-                      isOn ? SELECTED_COLOR : "border-border bg-card hover:border-primary/30 text-muted-foreground"
-                    }`}
+                    className={`h-10 rounded-lg border-2 text-xs font-semibold transition-all ${isOn ? SELECTED_COLOR : "border-border bg-card hover:border-primary/30 text-muted-foreground"}`}
                   >
+                    {isOn ? "✓" : ""}
+                  </button>
+                );
+              })}
+            </React.Fragment>
+          ))}
+        </div>
+      </div>
+
+      <Button
+        onClick={handleSave}
+        disabled={saving}
+        className="w-full bg-primary hover:bg-primary/90"
+      >
         {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
         Guardar disponibilidad
       </Button>
