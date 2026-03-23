@@ -100,20 +100,9 @@ export default function AvailabilityEditor({ initialSlots = [], notifyEnabled = 
                     aria-label={`${isOn ? "Quitar" : "Agregar"} disponibilidad ${block.label} los ${day}`}
                     aria-pressed={isOn}
                     className={`h-10 rounded-lg border-2 text-xs font-semibold transition-all ${
-                    {isOn ? "✓" : ""}
-                  </button>
-                );
-              })}
-            </React.Fragment>
-          ))}
-        </div>
-      </div>
-
-      <Button
-        onClick={handleSave}
-        disabled={saving}
-        className="w-full bg-primary hover:bg-primary/90"
-      >
+                      isOn ? SELECTED_COLOR : "border-border bg-card hover:border-primary/30 text-muted-foreground"
+                    }`}
+                  >
         {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
         Guardar disponibilidad
       </Button>
