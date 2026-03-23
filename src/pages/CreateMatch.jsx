@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { goBack } from "@/lib/nav-history";
 import { createPageUrl } from "@/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -153,8 +154,8 @@ export default function CreateMatch() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-6 pb-24 md:pb-6">
       <button
-        onClick={() => navigate(-1)}
-        className="flex items-center gap-2 text-muted-foreground hover:text-foreground text-sm mb-6 transition-colors"
+        onClick={() => goBack(navigate)}
+        className="flex items-center gap-2 text-muted-foreground hover:text-foreground text-sm mb-6 transition-colors min-h-[44px]"
       >
         <ArrowLeft className="w-4 h-4" />
         Volver

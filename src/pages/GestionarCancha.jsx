@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import { goBack } from "@/lib/nav-history";
 import { createPageUrl } from "@/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,6 +19,7 @@ import { es } from "date-fns/locale";
 import { exportFieldDayStats } from "@/utils/excelExport";
 
 export default function GestionarCancha() {
+  const navigate = useNavigate();
   const urlParams = new URLSearchParams(window.location.search);
   const fieldId = urlParams.get("id");
   const dialogInputRef = useRef(null);
@@ -68,6 +71,17 @@ export default function GestionarCancha() {
         status: "available"
       });
     },
+    onMutate: async () => {
+      await queryClient.cancelQueries(["field-slots"]);
+      const prev = queryClient.getQueryData(["field-slots", fieldId, selectedDate]);
+      const optimistic = { id: "opt-" + Date.now(), field_new_id: fieldId, date: format(selectedDate, "yyyy-MM-dd"), start_time: newSlot.start_time, end_time: newSlot.end_time, status: "available" };
+      queryClient.setQueryData(["field-slots", fieldId, selectedDate], (old = []) => [...old, optimistic]);
+      return { prev };
+    },
+    onError: (_e, _v, ctx) => {
+      queryClient.setQueryData(["field-slots", fieldId, selectedDate], ctx?.prev);
+      toast.error("Error al agregar horario");
+    },
     onSuccess: () => {
       toast.success("Horario agregado");
       queryClient.invalidateQueries(["field-slots"]);
@@ -79,6 +93,18 @@ export default function GestionarCancha() {
   const blockSlotMutation = useMutation({
     mutationFn: async (slotId) => {
       await base44.entities.FieldNewTimeSlot.update(slotId, { status: "blocked" });
+    },
+    onMutate: async (slotId) => {
+      await queryClient.cancelQueries(["field-slots"]);
+      const prev = queryClient.getQueryData(["field-slots", fieldId, selectedDate]);
+      queryClient.setQueryData(["field-slots", fieldId, selectedDate], (old = []) =>
+        old.map(s => s.id === slotId ? { ...s, status: "blocked" } : s)
+      );
+      return { prev };
+    },
+    onError: (_e, _v, ctx) => {
+      queryClient.setQueryData(["field-slots", fieldId, selectedDate], ctx?.prev);
+      toast.error("Error al bloquear horario");
     },
     onSuccess: () => {
       toast.success("Horario bloqueado");
@@ -266,8 +292,8 @@ Si pagaste, el reembolso será procesado en los próximos días.`
             <p className="text-muted-foreground">{field.field_type}</p>
           </div>
           <div className="flex flex-col sm:flex-row gap-2">
-            <Button variant="outline" asChild className="flex-1 sm:flex-initial">
-              <a href={createPageUrl("MisCanchas")}>Volver</a>
+            <Button variant="outline" className="flex-1 sm:flex-initial" onClick={() => goBack(navigate)}>
+              Volver
             </Button>
             <Button 
               variant="destructive" 

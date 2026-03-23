@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createPageUrl } from "@/utils";
+import { useNavigate } from "react-router-dom";
+import { goBack } from "@/lib/nav-history";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -101,9 +103,19 @@ export default function CanchaDetail() {
 
   const availableSlots = slots.filter(s => s.status === "available");
 
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen bg-background p-4 md:p-6 pb-28 md:pb-6">
       <div className="max-w-5xl mx-auto">
+        <button
+          onClick={() => goBack(navigate)}
+          className="flex items-center gap-2 text-muted-foreground hover:text-foreground text-sm mb-4 transition-colors min-h-[44px]"
+          aria-label="Volver"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+          Volver
+        </button>
         {/* Header */}
         <div className="mb-6">
           <Badge variant="secondary" className="mb-3">{typeLabels[field.field_type]}</Badge>
