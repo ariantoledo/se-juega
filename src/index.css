@@ -13,55 +13,54 @@
 
     --radius: 0.75rem;
 
-    /* Light mode colors — Se Juega palette (from logo) */
-    /* Primary blue: #29ABE2, Green: #4CB648, Dark blue: #1B5EA8 */
-    --background: 200 20% 97%;
-    --foreground: 214 60% 12%;
+    /* Se Juega palette — azul deportivo + verde lima */
+    --background: 214 30% 96%;
+    --foreground: 214 60% 10%;
     --card: 0 0% 100%;
-    --card-foreground: 214 60% 12%;
+    --card-foreground: 214 60% 10%;
     --popover: 0 0% 100%;
-    --popover-foreground: 214 60% 12%;
-    --primary: 199 75% 52%;
+    --popover-foreground: 214 60% 10%;
+    --primary: 213 72% 45%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 116 45% 92%;
-    --secondary-foreground: 116 40% 20%;
-    --muted: 199 20% 92%;
-    --muted-foreground: 199 15% 45%;
-    --accent: 116 45% 50%;
+    --secondary: 88 60% 90%;
+    --secondary-foreground: 88 50% 18%;
+    --muted: 213 20% 92%;
+    --muted-foreground: 213 18% 42%;
+    --accent: 88 65% 42%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
-    --border: 199 20% 86%;
-    --input: 199 20% 86%;
-    --ring: 199 75% 52%;
+    --border: 213 18% 85%;
+    --input: 213 18% 85%;
+    --ring: 213 72% 45%;
 
-    --chart-1: 199 75% 52%;
-    --chart-2: 116 45% 50%;
-    --chart-3: 213 72% 38%;
-    --chart-4: 280 60% 50%;
-    --chart-5: 340 60% 50%;
+    --chart-1: 213 72% 45%;
+    --chart-2: 88 65% 42%;
+    --chart-3: 213 55% 30%;
+    --chart-4: 88 55% 28%;
+    --chart-5: 213 72% 65%;
   }
 
   .dark {
-    --background: 214 40% 8%;
-    --foreground: 199 20% 95%;
-    --card: 214 35% 12%;
-    --card-foreground: 199 20% 95%;
-    --popover: 214 35% 12%;
-    --popover-foreground: 199 20% 95%;
-    --primary: 199 75% 55%;
+    --background: 214 45% 7%;
+    --foreground: 210 20% 94%;
+    --card: 213 38% 11%;
+    --card-foreground: 210 20% 94%;
+    --popover: 213 38% 11%;
+    --popover-foreground: 210 20% 94%;
+    --primary: 213 72% 52%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 214 30% 18%;
-    --secondary-foreground: 199 20% 90%;
-    --muted: 214 25% 20%;
-    --muted-foreground: 199 15% 55%;
-    --accent: 116 45% 46%;
+    --secondary: 213 30% 17%;
+    --secondary-foreground: 210 20% 88%;
+    --muted: 213 28% 18%;
+    --muted-foreground: 213 16% 52%;
+    --accent: 88 60% 42%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
-    --border: 214 25% 22%;
-    --input: 214 25% 22%;
-    --ring: 199 75% 55%;
+    --border: 213 25% 20%;
+    --input: 213 25% 20%;
+    --ring: 213 72% 52%;
   }
 }
 
