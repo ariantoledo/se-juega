@@ -22,7 +22,6 @@ const SPORT_TABS = [
 export default function CreateMatch() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
-  const saving = createMatchMutation?.isPending ?? false;
   const [sportType, setSportType] = useState("futbol");
   const [reserveField, setReserveField] = useState(false);
   const [selectedEstablishmentId, setSelectedEstablishmentId] = useState("");
@@ -450,9 +449,9 @@ export default function CreateMatch() {
             <Button
               type="submit"
               className="w-full bg-primary hover:bg-primary/90 h-12 text-base"
-              disabled={saving}
+              disabled={createMatchMutation.isPending}
             >
-              {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+              {createMatchMutation.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
               Crear Partido
             </Button>
           </form>
