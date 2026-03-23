@@ -80,10 +80,18 @@
     padding-top: env(safe-area-inset-top, 0px);
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
-  button, [role="tab"] {
+  button, [role="tab"], a, [role="button"] {
     user-select: none;
     -webkit-user-select: none;
     min-height: 44px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    cursor: pointer;
+  }
+  button:active, [role="tab"]:active, [role="button"]:active {
+    opacity: 0.75;
+    transform: scale(0.97);
+    transition: opacity 0.05s, transform 0.05s;
   }
   /* Smaller icon-only buttons keep their size */
   button[data-size="icon"] {
