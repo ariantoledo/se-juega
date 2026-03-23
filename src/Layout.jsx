@@ -4,6 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { Home, PlusCircle, CalendarDays, User, Menu, X, Sun, Moon, MapPin, ArrowLeft, HelpCircle } from "lucide-react";
 import NotificationBell from "./components/NotificationBell";
 import { useNavigate, useLocation } from "react-router-dom";
+import { goBack } from "@/lib/nav-history";
 
 const navItems = [
 { name: "Partidos", page: "Home", icon: Home },
@@ -107,7 +108,7 @@ export default function Layout({ children, currentPageName }) {
           <div className="flex items-center gap-2 md:hidden">
             {isChildScreen ?
             <button
-              onClick={() => navigate(-1)}
+              onClick={() => goBack(navigate)}
               className="p-2 rounded-lg hover:bg-secondary min-h-[44px] min-w-[44px] flex items-center justify-center"
               aria-label="Volver">
               
@@ -156,8 +157,8 @@ export default function Layout({ children, currentPageName }) {
             <NotificationBell userEmail={user?.email} />
             <button
               onClick={toggleTheme}
-              className="flex items-center justify-center w-9 h-9 rounded-lg hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
-              title={dark ? "Modo claro" : "Modo oscuro"}>
+              className="flex items-center justify-center w-11 h-11 rounded-lg hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+              aria-label={dark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}>
             
             {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </button>
@@ -168,12 +169,14 @@ export default function Layout({ children, currentPageName }) {
             <NotificationBell userEmail={user?.email} />
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-lg hover:bg-secondary transition-colors text-muted-foreground">
+              className="p-2 rounded-lg hover:bg-secondary transition-colors text-muted-foreground min-h-[44px] min-w-[44px] flex items-center justify-center"
+              aria-label={dark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}>
               
               {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </button>
             <button
-              className="p-2 rounded-lg hover:bg-secondary"
+              className="p-2 rounded-lg hover:bg-secondary min-h-[44px] min-w-[44px] flex items-center justify-center"
+              aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
               onClick={() => setMenuOpen(!menuOpen)}>
               
               {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}

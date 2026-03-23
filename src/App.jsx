@@ -10,6 +10,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
+import { useNavDirection } from '@/lib/nav-history';
 
 // Lazy load pages for code-splitting
 const RegistrarCancha = lazy(() => import('./pages/RegistrarCancha'));
@@ -34,17 +35,21 @@ const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
 const MainPage = mainPageKey ? Pages[mainPageKey] : <></>;
 
-const PageTransition = ({ children, pageKey }) => (
-  <motion.div
-    key={pageKey}
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    exit={{ opacity: 0 }}
-    transition={{ duration: 0.15, ease: "easeOut" }}
-  >
-    {children}
-  </motion.div>
-);
+const PageTransition = ({ children, pageKey }) => {
+  const direction = useNavDirection();
+  return (
+    <motion.div
+      key={pageKey}
+      initial={{ x: direction === "back" ? -28 : 28, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.22, ease: [0.25, 0.46, 0.45, 0.94] }}
+      style={{ willChange: "transform, opacity", overflow: "hidden" }}
+    >
+      {children}
+    </motion.div>
+  );
+};
 
 const LayoutWrapper = ({ children, currentPageName }) => {
   const content = <PageTransition pageKey={currentPageName}>{children}</PageTransition>;

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { goBack } from "@/lib/nav-history";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -245,8 +246,9 @@ export default function MatchDetail() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-6 pb-24 md:pb-6">
       <button
-        onClick={() => navigate(-1)}
-        className="flex items-center gap-2 text-muted-foreground hover:text-foreground text-sm mb-6 transition-colors"
+        onClick={() => goBack(navigate)}
+        aria-label="Volver"
+        className="flex items-center gap-2 text-muted-foreground hover:text-foreground text-sm mb-6 transition-colors min-h-[44px]"
       >
         <ArrowLeft className="w-4 h-4" />
         Volver
@@ -424,7 +426,8 @@ export default function MatchDetail() {
                             variant={p.attended === "yes" ? "default" : "outline"}
                             onClick={() => handleMarkAttendance(p, "yes")}
                             disabled={attendanceMutation.isPending}
-                            className={p.attended === "yes" ? "bg-primary" : ""}
+                            aria-label={`Confirmar asistencia de ${p.player_name}`}
+                            className={`min-h-[44px] min-w-[44px] ${p.attended === "yes" ? "bg-primary" : ""}`}
                           >
                             <CheckCircle2 className="w-4 h-4" />
                           </Button>
@@ -433,6 +436,8 @@ export default function MatchDetail() {
                             variant={p.attended === "no" ? "destructive" : "outline"}
                             onClick={() => handleMarkAttendance(p, "no")}
                             disabled={attendanceMutation.isPending}
+                            aria-label={`Marcar inasistencia de ${p.player_name}`}
+                            className="min-h-[44px] min-w-[44px]"
                           >
                             <XCircle className="w-4 h-4" />
                           </Button>

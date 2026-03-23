@@ -132,7 +132,8 @@ export default function NotificationBell({ userEmail }) {
               )}
               <button
                 onClick={() => setOpen(false)}
-                className="p-1 rounded hover:bg-secondary text-muted-foreground"
+                className="p-1 rounded hover:bg-secondary text-muted-foreground min-h-[44px] min-w-[44px] flex items-center justify-center"
+                aria-label="Cerrar notificaciones"
               >
                 <X className="w-4 h-4" />
               </button>
