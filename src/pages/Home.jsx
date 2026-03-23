@@ -7,10 +7,18 @@ import { createPageUrl } from "@/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
-import { Search, PlusCircle, CalendarDays, Filter } from "lucide-react";
+import { Search, PlusCircle, CalendarDays, Filter, Navigation, MapPin } from "lucide-react";
 import MatchCard from "../components/matches/MatchCard";
 import PullToRefresh from "../components/PullToRefresh";
 import EmptyState from "../components/matches/EmptyState";
+
+function getDistanceKm(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
 
 export default function Home() {
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -18,15 +26,29 @@ export default function Home() {
   const [typeFilter, setTypeFilter] = useState("all");
   const [genderFilter, setGenderFilter] = useState("all");
   const [showFilterSheet, setShowFilterSheet] = useState(false);
+  const [radiusFilter, setRadiusFilter] = useState(null); // km o null
+  const [userLocation, setUserLocation] = useState(null);
+  const [geoLoading, setGeoLoading] = useState(false);
 
-  useEffect(() => {
-    const seen = localStorage.getItem("onboarding_seen");
-    if (!seen) setShowOnboarding(true);
-  }, []);
+  const requestLocation = () => {
+    if (!navigator.geolocation) return;
+    setGeoLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        setGeoLoading(false);
+      },
+      () => setGeoLoading(false)
+    );
+  };
 
-  const handleCloseOnboarding = () => {
-    localStorage.setItem("onboarding_seen", "1");
-    setShowOnboarding(false);
+  const handleRadiusChange = (km) => {
+    if (km === null) {
+      setRadiusFilter(null);
+    } else {
+      setRadiusFilter(km);
+      if (!userLocation) requestLocation();
+    }
   };
 
   const { data: matches = [], isLoading, refetch } = useQuery({
@@ -40,6 +62,11 @@ export default function Home() {
     .filter((m) => {
       if (typeFilter !== "all" && m.football_type !== typeFilter) return false;
       if (genderFilter !== "all" && m.match_type !== genderFilter) return false;
+      if (radiusFilter !== null && userLocation) {
+        if (!m.latitude || !m.longitude) return false;
+        const dist = getDistanceKm(userLocation.lat, userLocation.lng, m.latitude, m.longitude);
+        if (dist > radiusFilter) return false;
+      }
       if (search) {
         const s = search.toLowerCase();
         return (
@@ -49,7 +76,15 @@ export default function Home() {
       }
       return true;
     })
-    .sort((a, b) => new Date(a.date) - new Date(b.date));
+    .sort((a, b) => {
+      // Si hay filtro de radio, ordenar por cercanía
+      if (radiusFilter !== null && userLocation) {
+        const distA = (a.latitude && a.longitude) ? getDistanceKm(userLocation.lat, userLocation.lng, a.latitude, a.longitude) : Infinity;
+        const distB = (b.latitude && b.longitude) ? getDistanceKm(userLocation.lat, userLocation.lng, b.latitude, b.longitude) : Infinity;
+        return distA - distB;
+      }
+      return new Date(a.date) - new Date(b.date);
+    });
 
   return (
     <>
@@ -83,9 +118,9 @@ export default function Home() {
             >
               <Filter className="w-4 h-4" />
               Filtros
-              {(typeFilter !== "all" || genderFilter !== "all") && (
+              {(typeFilter !== "all" || genderFilter !== "all" || radiusFilter !== null) && (
                 <span className="ml-1 w-5 h-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center">
-                  {[typeFilter !== "all", genderFilter !== "all"].filter(Boolean).length}
+                  {[typeFilter !== "all", genderFilter !== "all", radiusFilter !== null].filter(Boolean).length}
                 </span>
               )}
             </button>
@@ -122,6 +157,35 @@ export default function Home() {
                         onClick={() => setGenderFilter(val)}
                         className={`p-3 rounded-xl border-2 text-sm font-medium transition-all ${
                           genderFilter === val ? "border-primary bg-primary/10 text-primary" : "border-border hover:border-primary/30"
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold mb-2 flex items-center gap-2">
+                    <Navigation className="w-4 h-4 text-primary" />
+                    Distancia máxima
+                  </p>
+                  {!userLocation && radiusFilter !== null && (
+                    <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
+                      {geoLoading ? "Obteniendo ubicación..." : "No se pudo obtener tu ubicación"}
+                    </p>
+                  )}
+                  {userLocation && (
+                    <p className="text-xs text-primary mb-2 flex items-center gap-1">
+                      <MapPin className="w-3 h-3" /> Ubicación obtenida
+                    </p>
+                  )}
+                  <div className="grid grid-cols-4 gap-2">
+                    {[[null,"Todos"],[5,"5 km"],[10,"10 km"],[20,"20 km"],[30,"30 km"]].map(([val, label]) => (
+                      <button
+                        key={String(val)}
+                        onClick={() => handleRadiusChange(val)}
+                        className={`p-2.5 rounded-xl border-2 text-xs font-medium transition-all ${
+                          radiusFilter === val ? "border-primary bg-primary/10 text-primary" : "border-border hover:border-primary/30"
                         }`}
                       >
                         {label}

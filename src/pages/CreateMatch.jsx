@@ -131,6 +131,7 @@ export default function CreateMatch() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const selectedField = reserveField && selectedFieldId ? allFields.find(f => f.id === selectedFieldId) : null;
     const matchData = {
       ...form,
       sport_type: sportType,
@@ -142,6 +143,9 @@ export default function CreateMatch() {
       creator_name: user?.full_name,
       football_type: sportType === "futbol" ? form.football_type : undefined,
       level: sportType === "padel" ? form.level : undefined,
+      field_new_id: selectedField?.id,
+      latitude: selectedField?.latitude,
+      longitude: selectedField?.longitude,
     };
     createMatchMutation.mutate(matchData);
   };

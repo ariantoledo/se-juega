@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { MapPin, AlertTriangle } from "lucide-react";
 
 export default function RegistrarEstablecimiento() {
   const [formData, setFormData] = useState({
@@ -19,9 +20,24 @@ export default function RegistrarEstablecimiento() {
   });
 
   const [user, setUser] = useState(null);
+  const [coords, setCoords] = useState(null);
+  const [geoStatus, setGeoStatus] = useState("pending"); // pending | granted | denied
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
+    // Capturar GPS automáticamente al abrir la página
+    if (navigator.geolocation) {
+      setGeoStatus("pending");
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          setCoords({ latitude: pos.coords.latitude, longitude: pos.coords.longitude });
+          setGeoStatus("granted");
+        },
+        () => setGeoStatus("denied")
+      );
+    } else {
+      setGeoStatus("denied");
+    }
   }, []);
 
   const createEstablishmentMutation = useMutation({
@@ -29,7 +45,9 @@ export default function RegistrarEstablecimiento() {
       const created = await base44.entities.Establishment.create({
         ...formData,
         owner_email: user.email,
-        is_active: true
+        is_active: true,
+        latitude: coords?.latitude,
+        longitude: coords?.longitude,
       });
       return created;
     },
@@ -52,6 +70,33 @@ export default function RegistrarEstablecimiento() {
     <div className="min-h-screen bg-background p-4 md:p-6">
       <div className="max-w-2xl mx-auto">
         <h1 className="text-3xl font-bold mb-6">Registrar Establecimiento</h1>
+
+        {/* Recordatorio de ubicación GPS */}
+        <div className={`mb-4 p-4 rounded-xl border-2 flex items-start gap-3 ${
+          geoStatus === "granted" ? "border-primary/40 bg-primary/5" :
+          geoStatus === "denied" ? "border-destructive/40 bg-destructive/5" :
+          "border-accent/40 bg-accent/5"
+        }`}>
+          {geoStatus === "granted" ? (
+            <MapPin className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+          ) : (
+            <AlertTriangle className="w-5 h-5 text-accent shrink-0 mt-0.5" />
+          )}
+          <div>
+            <p className="text-sm font-semibold">
+              {geoStatus === "granted" ? "✅ Ubicación GPS capturada" :
+               geoStatus === "denied" ? "⚠️ Ubicación no disponible" :
+               "📍 Capturando tu ubicación..."}
+            </p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {geoStatus === "granted"
+                ? `La ubicación actual de tu dispositivo se guardará como las coordenadas del establecimiento. Asegurate de estar físicamente en el lugar al registrarlo.`
+                : geoStatus === "denied"
+                ? "No pudimos obtener tu ubicación GPS. El establecimiento no tendrá coordenadas y no aparecerá en búsquedas por cercanía. Podés habilitarlas desde la configuración de tu navegador."
+                : "Por favor esperá mientras obtenemos tu ubicación GPS actual..."}
+            </p>
+          </div>
+        </div>
 
         <Card>
           <CardHeader>

@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import MobileSelect from "@/components/ui/mobile-select";
 import { toast } from "sonner";
-import { Upload, X } from "lucide-react";
+import { Upload, X, MapPin } from "lucide-react";
 
 export default function RegistrarCancha() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -53,7 +53,10 @@ export default function RegistrarCancha() {
         precio_sena: parseFloat(formData.precio_sena),
         images: formData.images,
         owner_email: user.email,
-        is_active: true
+        is_active: true,
+        // Hereda las coordenadas del establecimiento
+        latitude: establishment.latitude,
+        longitude: establishment.longitude,
       });
     },
     onSuccess: () => {
@@ -110,7 +113,19 @@ export default function RegistrarCancha() {
     <div className="min-h-screen bg-background p-4 md:p-6">
       <div className="max-w-2xl mx-auto">
         <h1 className="text-3xl font-bold mb-2">Registrar Cancha</h1>
-        <p className="text-muted-foreground mb-6">Establecimiento: {establishment.name}</p>
+        <p className="text-muted-foreground mb-4">Establecimiento: {establishment.name}</p>
+
+        {/* Info de coordenadas heredadas */}
+        <div className={`mb-4 p-3 rounded-xl border flex items-start gap-2 ${
+          establishment.latitude ? "border-primary/30 bg-primary/5" : "border-accent/30 bg-accent/5"
+        }`}>
+          <MapPin className={`w-4 h-4 shrink-0 mt-0.5 ${establishment.latitude ? "text-primary" : "text-accent"}`} />
+          <p className="text-xs text-muted-foreground">
+            {establishment.latitude
+              ? `Esta cancha heredará las coordenadas GPS del establecimiento (${establishment.latitude.toFixed(4)}, ${establishment.longitude.toFixed(4)}). Aparecerá en búsquedas por cercanía.`
+              : "El establecimiento no tiene coordenadas GPS. Esta cancha no aparecerá en búsquedas por cercanía. Para habilitarlo, editá el establecimiento desde un dispositivo con ubicación activa."}
+          </p>
+        </div>
 
         <Card>
           <CardHeader>
