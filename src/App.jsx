@@ -12,10 +12,7 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import { useNavDirection } from '@/lib/nav-history';
 
-// Lazy load pages for code-splitting
-const RegistrarCancha = lazy(() => import('./pages/RegistrarCancha'));
-const GestionarCancha = lazy(() => import('./pages/GestionarCancha'));
-const ConfigurarStripe = lazy(() => import('./pages/ConfigurarStripe'));
+// Lazy load pages NOT already in pages.config.js
 const Estadios = lazy(() => import('./pages/Estadios'));
 const RegistrarDueno = lazy(() => import('./pages/RegistrarDueno'));
 const AdminPanel = lazy(() => import('./pages/AdminPanel'));
@@ -23,7 +20,6 @@ const MercadoPagoCallback = lazy(() => import('./pages/MercadoPagoCallback'));
 const PaymentResult = lazy(() => import('./pages/PaymentResult'));
 const EditarCancha = lazy(() => import('./pages/EditarCancha'));
 const Help = lazy(() => import('./pages/Help'));
-const CanchaDetail = lazy(() => import('./pages/CanchaDetail'));
 
 // Loading fallback
 const PageLoader = () => (
@@ -118,9 +114,7 @@ const AuthenticatedApp = () => {
           }
         />
       ))}
-      <Route path="/RegistrarCancha" element={<LazyPageWrapper element={<RegistrarCancha />} currentPageName="RegistrarCancha" />} />
-      <Route path="/GestionarCancha" element={<LazyPageWrapper element={<GestionarCancha />} currentPageName="GestionarCancha" />} />
-      <Route path="/ConfigurarStripe" element={<LazyPageWrapper element={<ConfigurarStripe />} currentPageName="ConfigurarStripe" />} />
+      {/* Pages NOT in pages.config.js - need explicit routes */}
       <Route path="/Estadios" element={<LazyPageWrapper element={<Estadios />} currentPageName="Estadios" />} />
       <Route path="/RegistrarDueno" element={<LazyPageWrapper element={<RegistrarDueno />} currentPageName="RegistrarDueno" />} />
       <Route path="/AdminPanel" element={<LazyPageWrapper element={<AdminPanel />} currentPageName="AdminPanel" />} />
@@ -128,7 +122,6 @@ const AuthenticatedApp = () => {
       <Route path="/PaymentResult" element={<LazyPageWrapper element={<PaymentResult />} currentPageName="PaymentResult" />} />
       <Route path="/EditarCancha" element={<LazyPageWrapper element={<EditarCancha />} currentPageName="EditarCancha" />} />
       <Route path="/Help" element={<LazyPageWrapper element={<Help />} currentPageName="Help" />} />
-      <Route path="/CanchaDetail" element={<LazyPageWrapper element={<CanchaDetail />} currentPageName="CanchaDetail" />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
