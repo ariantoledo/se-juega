@@ -60,6 +60,18 @@ export default function MisCanchasContent() {
     mutationFn: async (id) => {
       await base44.entities.Establishment.delete(id);
     },
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: ["my-establishments", user?.email] });
+      const prev = queryClient.getQueryData(["my-establishments", user?.email]);
+      queryClient.setQueryData(["my-establishments", user?.email], (old = []) =>
+        old.filter(e => e.id !== id)
+      );
+      return { prev };
+    },
+    onError: (_e, _v, ctx) => {
+      queryClient.setQueryData(["my-establishments", user?.email], ctx?.prev);
+      toast.error("Error al eliminar establecimiento");
+    },
     onSuccess: () => {
       toast.success("Establecimiento eliminado");
       queryClient.invalidateQueries(["my-establishments"]);
@@ -69,6 +81,18 @@ export default function MisCanchasContent() {
   const deleteFieldMutation = useMutation({
     mutationFn: async (id) => {
       await base44.entities.FieldNew.delete(id);
+    },
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: ["my-fields", user?.email] });
+      const prev = queryClient.getQueryData(["my-fields", user?.email]);
+      queryClient.setQueryData(["my-fields", user?.email], (old = []) =>
+        old.filter(f => f.id !== id)
+      );
+      return { prev };
+    },
+    onError: (_e, _v, ctx) => {
+      queryClient.setQueryData(["my-fields", user?.email], ctx?.prev);
+      toast.error("Error al eliminar cancha");
     },
     onSuccess: () => {
       toast.success("Cancha eliminada");

@@ -4,7 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { Home, PlusCircle, CalendarDays, User, Menu, X, Sun, Moon, MapPin, ArrowLeft, HelpCircle } from "lucide-react";
 import NotificationBell from "./components/NotificationBell";
 import { useNavigate, useLocation } from "react-router-dom";
-import { goBack } from "@/lib/nav-history";
+import { goBack, pushPath, useAndroidBackHandler } from "@/lib/nav-history";
 
 const navItems = [
 { name: "Partidos", page: "Home", icon: Home },
@@ -45,6 +45,11 @@ export default function Layout({ children, currentPageName }) {
     base44.auth.me().then(setUser).catch(() => {});
   }, []);
 
+  // Push every location change onto the internal navigation stack
+  useEffect(() => {
+    pushPath(location.pathname + location.search);
+  }, [location.pathname, location.search]);
+
   // Sync current path into per-tab storage (only for main/tab pages, never child screens)
   useEffect(() => {
     if (isChildScreen) return;
@@ -52,13 +57,8 @@ export default function Layout({ children, currentPageName }) {
     if (tab) saveTabPath(tab.page, location.pathname + location.search);
   }, [location, currentPageName, isChildScreen]);
 
-  // Prevent accidental browser exit when already at a root tab
-  useEffect(() => {
-    const isRoot = TAB_ROOTS.includes(location.pathname);
-    if (!isRoot) return;
-    // Push a duplicate entry so there is always one entry to pop back to
-    window.history.pushState(null, "");
-  }, [location.pathname]);
+  // Hook the Android hardware back button into our internal navigation stack
+  useAndroidBackHandler(navigate);
 
   // Listen to OS dark mode changes (only if user hasn't set a manual preference)
   useEffect(() => {
