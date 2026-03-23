@@ -1,163 +1,224 @@
-import React, { useEffect } from "react";
-import { motion } from "framer-motion";
+import React, { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import ReactDOM from "react-dom";
 
-function Sparkle({ x, y, delay, size = 3 }) {
-  return (
-    <motion.div
-      className="absolute rounded-full bg-white/70 pointer-events-none"
-      style={{ left: `${x}%`, top: `${y}%`, width: size, height: size }}
-      initial={{ opacity: 0, scale: 0 }}
-      animate={{ opacity: [0, 1, 0], scale: [0, 1.4, 0] }}
-      transition={{ duration: 1, delay, repeat: 2, repeatDelay: 2 }}
+// Crowd silhouette SVG path
+const CrowdSilhouette = ({ flip = false, className = "" }) => (
+  <svg
+    viewBox="0 0 800 180"
+    className={`absolute bottom-0 w-full ${className}`}
+    style={{ transform: flip ? "scaleX(-1)" : undefined }}
+    preserveAspectRatio="xMidYMax meet"
+  >
+    <path
+      d="M0 180 L0 120 Q20 100 40 115 Q60 130 80 110 Q100 90 120 105 Q140 120 160 100
+         Q180 80 200 95 Q220 110 240 90 Q260 70 280 88 Q300 106 320 85
+         Q340 64 360 80 Q380 96 400 78 Q420 60 440 76 Q460 92 480 72
+         Q500 52 520 70 Q540 88 560 68 Q580 48 600 65 Q620 82 640 62
+         Q660 42 680 60 Q700 78 720 58 Q740 38 760 56 Q780 74 800 55
+         L800 180 Z"
+      fill="rgba(0,20,60,0.85)"
     />
-  );
-}
+    {/* Raised arms */}
+    {[80, 160, 240, 320, 400, 480, 560, 640, 720].map((x, i) => (
+      <g key={i}>
+        <line x1={x} y1={i % 2 === 0 ? 105 : 90} x2={x - 15} y2={i % 2 === 0 ? 75 : 62} stroke="rgba(0,20,60,0.85)" strokeWidth="6" strokeLinecap="round" />
+        <line x1={x} y1={i % 2 === 0 ? 105 : 90} x2={x + 15} y2={i % 2 === 0 ? 80 : 68} stroke="rgba(0,20,60,0.85)" strokeWidth="6" strokeLinecap="round" />
+      </g>
+    ))}
+  </svg>
+);
+
+// Sparkle dots
+const Sparkles = () => (
+  <>
+    {[
+      { cx: "15%", cy: "20%" }, { cx: "80%", cy: "15%" }, { cx: "50%", cy: "10%" },
+      { cx: "30%", cy: "35%" }, { cx: "70%", cy: "30%" }, { cx: "90%", cy: "45%" },
+      { cx: "10%", cy: "55%" }, { cx: "60%", cy: "18%" }, { cx: "40%", cy: "45%" },
+      { cx: "85%", cy: "60%" }, { cx: "25%", cy: "60%" },
+    ].map((s, i) => (
+      <motion.div
+        key={i}
+        className="absolute rounded-full bg-white"
+        style={{ left: s.cx, top: s.cy, width: i % 3 === 0 ? 3 : 2, height: i % 3 === 0 ? 3 : 2 }}
+        animate={{ opacity: [0.1, 0.9, 0.1], scale: [1, 1.6, 1] }}
+        transition={{ duration: 1.8 + (i % 4) * 0.4, repeat: Infinity, delay: i * 0.25 }}
+      />
+    ))}
+  </>
+);
+
+// Grass glow at bottom
+const GrassGlow = () => (
+  <div
+    className="absolute bottom-0 left-0 right-0 h-24"
+    style={{
+      background: "radial-gradient(ellipse 80% 60% at 50% 100%, rgba(34,197,94,0.28) 0%, transparent 80%)",
+    }}
+  />
+);
 
 export default function IntroAnimation({ onComplete }) {
+  const [scene, setScene] = useState(0);
+  // scene 0 = dark bg
+  // scene 1 = ball rolls in
+  // scene 2 = padel enters
+  // scene 3 = pin drops
+  // scene 4 = all group center
+  // scene 5 = "Se Juega" text + zoom out → done
+
   useEffect(() => {
-    const timer = setTimeout(() => onComplete?.(), 8000);
-    return () => clearTimeout(timer);
-  }, [onComplete]);
+    const timings = [600, 1000, 1000, 900, 900, 1800];
+    let t = 0;
+    const timers = timings.map((delay, i) => {
+      t += delay;
+      return setTimeout(() => setScene(i + 1), t);
+    });
+    const exit = setTimeout(onComplete, t + 200);
+    return () => { timers.forEach(clearTimeout); clearTimeout(exit); };
+  }, []);
 
-  return (
-    <div
-      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-hidden"
-      style={{ background: "linear-gradient(160deg, #0D2B52 0%, #1A3A6B 35%, #1B5C28 70%, #2E8B35 100%)" }}
+  const showBall = scene >= 1;
+  const showPadel = scene >= 2;
+  const showPin = scene >= 3;
+  const grouped = scene >= 4;
+  const showText = scene >= 5;
+  const zoomOut = scene >= 5;
+
+  return ReactDOM.createPortal(
+    <motion.div
+      className="fixed inset-0 z-[9999] overflow-hidden flex items-center justify-center"
+      style={{
+        background: "linear-gradient(160deg, #0a1a3a 0%, #0d2b4a 40%, #0a3320 100%)",
+      }}
+      animate={zoomOut ? { scale: 1.08, opacity: 0 } : { scale: 1, opacity: 1 }}
+      transition={zoomOut ? { duration: 1.6, ease: "easeInOut" } : { duration: 0.3 }}
     >
-      {/* Light sweep */}
-      <motion.div
-        className="absolute inset-0 pointer-events-none"
-        style={{ background: "linear-gradient(90deg, transparent 20%, rgba(255,255,255,0.1) 50%, transparent 80%)" }}
-        initial={{ x: "-100%" }}
-        animate={{ x: "200%" }}
-        transition={{ duration: 2.2, ease: "easeInOut" }}
-      />
+      <Sparkles />
+      <GrassGlow />
+      <CrowdSilhouette />
 
-      {/* Audience silhouettes */}
-      <motion.div
-        className="absolute bottom-0 left-0 right-0 pointer-events-none"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 0.2, y: 0 }}
-        transition={{ duration: 1.8, delay: 0.3 }}
-      >
-        <svg viewBox="0 0 400 80" className="w-full" preserveAspectRatio="none">
-          {[20,55,90,125,160,195,230,265,300,335,370].map((x, i) => (
-            <g key={i} transform={`translate(${x}, ${i % 2 === 0 ? 5 : 18})`}>
-              <ellipse cx="10" cy="68" rx="10" ry="32" fill="black" />
-              <circle cx="10" cy="28" r="9" fill="black" />
-              {i % 3 === 0 && (
-                <line x1="10" y1="38" x2="26" y2="18" stroke="black" strokeWidth="5" strokeLinecap="round" />
-              )}
-            </g>
-          ))}
-        </svg>
-      </motion.div>
+      {/* Stage area */}
+      <div className="relative w-full max-w-lg h-64 flex items-end justify-center pb-8">
 
-      {/* Sparkles */}
-      {[
-        { x: 10, y: 15, d: 0.6 }, { x: 85, y: 10, d: 1.0 }, { x: 20, y: 65, d: 1.4 },
-        { x: 75, y: 55, d: 0.8 }, { x: 50, y: 6,  d: 1.7 }, { x: 92, y: 40, d: 1.1 },
-        { x: 6,  y: 45, d: 2.0 }, { x: 62, y: 72, d: 0.5 }, { x: 42, y: 25, d: 2.2 },
-      ].map((s, i) => (
-        <Sparkle key={i} x={s.x} y={s.y} delay={s.d} size={i % 3 === 0 ? 4 : 2} />
-      ))}
+        {/* ⚽ Soccer Ball */}
+        <AnimatePresence>
+          {showBall && (
+            <motion.div
+              className="absolute text-7xl select-none"
+              initial={grouped ? undefined : { x: -320, rotate: -360 }}
+              animate={
+                grouped
+                  ? { x: -90, y: 0, rotate: 0, scale: 1 }
+                  : { x: -90, rotate: 0, scale: 1 }
+              }
+              transition={
+                grouped
+                  ? { duration: 0.7, ease: "easeInOut" }
+                  : { duration: 0.9, ease: [0.25, 0.46, 0.45, 0.94] }
+              }
+              style={{ bottom: 0 }}
+            >
+              ⚽
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-      {/* ── Elementos deportivos (2–4.5s): entran y se quedan ── */}
+        {/* 🎾 Padel Racket */}
+        <AnimatePresence>
+          {showPadel && (
+            <motion.div
+              className="absolute text-6xl select-none"
+              initial={grouped ? undefined : { x: 340, rotate: 30 }}
+              animate={
+                grouped
+                  ? { x: 90, y: 0, rotate: -15, scale: 1 }
+                  : { x: 90, rotate: -15, scale: 1 }
+              }
+              transition={
+                grouped
+                  ? { duration: 0.7, ease: "easeInOut" }
+                  : {
+                      x: { duration: 0.7, ease: [0.34, 1.56, 0.64, 1] },
+                      rotate: { duration: 0.7 },
+                    }
+              }
+              style={{ bottom: 0 }}
+            >
+              🎾
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-      {/* ⚽ Pelota desde la izquierda */}
-      <motion.div
-        className="absolute select-none"
-        style={{ top: "38%", left: "15%" }}
-        initial={{ x: -280, rotate: 0, opacity: 0 }}
-        animate={{ x: 0, rotate: 540, opacity: 1 }}
-        transition={{ duration: 1.2, delay: 2, ease: [0.34, 1.2, 0.64, 1] }}
-      >
-        <span style={{ fontSize: 72 }}>⚽</span>
-      </motion.div>
+        {/* 📍 Green Pin with Star */}
+        <AnimatePresence>
+          {showPin && (
+            <motion.div
+              className="absolute text-6xl select-none"
+              initial={grouped ? undefined : { y: -300, scale: 1.4 }}
+              animate={
+                grouped
+                  ? { x: 0, y: -60, scale: 1.1 }
+                  : { x: 0, y: -60, scale: 1.1 }
+              }
+              transition={
+                grouped
+                  ? { duration: 0.7, ease: "easeInOut" }
+                  : {
+                      y: { duration: 0.6, ease: [0.34, 1.56, 0.64, 1] },
+                      scale: { duration: 0.6 },
+                    }
+              }
+              style={{ bottom: 0 }}
+            >
+              📍
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-      {/* 🏸 Paleta desde la derecha */}
-      <motion.div
-        className="absolute select-none"
-        style={{ top: "36%", right: "12%" }}
-        initial={{ x: 280, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ duration: 1.1, delay: 2.5, ease: [0.34, 1.4, 0.64, 1] }}
-      >
-        <span style={{ fontSize: 64 }}>🏸</span>
-      </motion.div>
+        {/* Green glow pulse when grouped */}
+        <AnimatePresence>
+          {grouped && (
+            <motion.div
+              className="absolute inset-0 rounded-full pointer-events-none"
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: [0, 0.35, 0], scale: [0.5, 1.5, 2] }}
+              transition={{ duration: 1, ease: "easeOut" }}
+              style={{
+                background: "radial-gradient(circle, rgba(74,222,128,0.5) 0%, transparent 70%)",
+                bottom: 0,
+                top: "auto",
+                height: 160,
+              }}
+            />
+          )}
+        </AnimatePresence>
+      </div>
 
-      {/* 📍 Pin desde arriba, al centro */}
-      <motion.div
-        className="absolute select-none"
-        style={{ top: "22%", left: "50%", transform: "translateX(-50%)" }}
-        initial={{ y: -280, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 1, delay: 3, ease: [0.22, 1.4, 0.36, 1] }}
-      >
-        <span style={{ fontSize: 72 }}>📍</span>
-      </motion.div>
-
-      {/* ── Glow central (4s+) ── */}
-      <motion.div
-        className="absolute rounded-full pointer-events-none"
-        style={{
-          width: 280, height: 280,
-          top: "50%", left: "50%",
-          transform: "translate(-50%, -50%)",
-          background: "radial-gradient(circle, rgba(76,175,80,0.22) 0%, transparent 70%)",
-        }}
-        initial={{ opacity: 0, scale: 0.5 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1.2, delay: 4 }}
-      />
-
-      {/* Destellos orbitales */}
-      {[...Array(10)].map((_, i) => {
-        const angle = (i / 10) * Math.PI * 2;
-        const r = 110;
-        return (
+      {/* "Se Juega" Text */}
+      <AnimatePresence>
+        {showText && (
           <motion.div
-            key={`ring-${i}`}
-            className="absolute w-1.5 h-1.5 bg-white rounded-full pointer-events-none"
-            style={{
-              left: `calc(50% + ${Math.cos(angle) * r}px)`,
-              top: `calc(50% + ${Math.sin(angle) * r}px)`,
-            }}
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: [0, 1, 0], scale: [0, 1.2, 0] }}
-            transition={{ duration: 0.5, delay: 4.5 + i * 0.08 }}
-          />
-        );
-      })}
-
-      {/* ── Texto "Se Juega" (5.5s+) ── */}
-      <motion.div
-        className="absolute flex flex-col items-center text-center px-6 w-full"
-        style={{ bottom: "18%" }}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.9, delay: 5.5 }}
-      >
-        <h1 className="text-5xl font-black text-white tracking-tight drop-shadow-xl">
-          Se Juega
-        </h1>
-        <motion.p
-          className="text-base text-white/75 mt-2 font-medium tracking-widest uppercase"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 6.2 }}
-        >
-          Encontrá tu partido
-        </motion.p>
-      </motion.div>
-
-      {/* Fade to app */}
-      <motion.div
-        className="absolute inset-0 bg-[#1A3A6B] pointer-events-none"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: [0, 0, 1] }}
-        transition={{ duration: 0.8, delay: 7.2, times: [0, 0.4, 1] }}
-      />
-    </div>
+            className="absolute"
+            style={{ bottom: "22%" }}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+          >
+            <h1
+              className="text-5xl md:text-6xl font-black tracking-wide text-white"
+              style={{
+                textShadow: "0 0 40px rgba(74,222,128,0.7), 0 2px 12px rgba(0,0,0,0.8)",
+                letterSpacing: "0.06em",
+              }}
+            >
+              Se Juega
+            </h1>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>,
+    document.body
   );
 }
