@@ -22,6 +22,7 @@ const typeLabels = {
 };
 
 export default function CanchaDetail() {
+  const navigate = useNavigate();
   const urlParams = new URLSearchParams(window.location.search);
   const fieldId = urlParams.get("id");
 
@@ -103,8 +104,6 @@ export default function CanchaDetail() {
   }
 
   const availableSlots = slots.filter(s => s.status === "available");
-
-  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-6 pb-28 md:pb-6">
