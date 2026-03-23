@@ -1,47 +1,80 @@
 import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 
-const LOGO_URL = "https://media.base44.com/images/public/69af676714ee0899079240af/514321eb2_Logodeportivoconp.png";
-
-// Sparkle dot component
 function Sparkle({ x, y, delay, size = 3 }) {
   return (
     <motion.div
-      className="absolute rounded-full bg-white"
+      className="absolute rounded-full bg-white/80"
       style={{ left: `${x}%`, top: `${y}%`, width: size, height: size }}
       initial={{ opacity: 0, scale: 0 }}
       animate={{ opacity: [0, 1, 0], scale: [0, 1.5, 0] }}
-      transition={{ duration: 0.8, delay, repeat: Infinity, repeatDelay: 2 }}
+      transition={{ duration: 0.9, delay, repeat: 2, repeatDelay: 1.8 }}
     />
   );
 }
 
-// Audience silhouette row
 function Audience() {
   return (
-    <motion.div
-      className="absolute bottom-0 left-0 right-0 flex items-end justify-center overflow-hidden"
-      initial={{ opacity: 0, y: 60 }}
-      animate={{ opacity: 0.35, y: 0 }}
-      transition={{ duration: 1.5, delay: 0.3, ease: "easeOut" }}
+    <motion.svg
+      viewBox="0 0 400 100"
+      className="absolute bottom-0 left-0 right-0 w-full opacity-0"
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 0.25, y: 0 }}
+      transition={{ duration: 1.8, delay: 0.3, ease: "easeOut" }}
+      preserveAspectRatio="none"
     >
-      <svg viewBox="0 0 400 120" className="w-full" fill="black">
-        {/* Crowd silhouettes */}
-        {[20,50,80,110,140,170,200,230,260,290,320,350,380].map((x, i) => (
-          <g key={i} transform={`translate(${x}, ${i % 2 === 0 ? 20 : 35})`}>
-            <ellipse cx="10" cy="80" rx="12" ry="40" />
-            <circle cx="10" cy="28" r="10" />
-            {i % 3 === 0 && (
-              <>
-                <line x1="10" y1="40" x2="-8" y2="20" stroke="black" strokeWidth="5" strokeLinecap="round"/>
-                <line x1="10" y1="40" x2="28" y2="18" stroke="black" strokeWidth="5" strokeLinecap="round"/>
-              </>
-            )}
-          </g>
-        ))}
-        <rect x="0" y="100" width="400" height="20" />
-      </svg>
-    </motion.div>
+      {[15,45,75,105,135,165,195,225,255,285,315,345,375].map((x, i) => (
+        <g key={i} transform={`translate(${x}, ${i % 2 === 0 ? 10 : 25})`}>
+          <ellipse cx="10" cy="70" rx="12" ry="35" fill="black" />
+          <circle cx="10" cy="25" r="9" fill="black" />
+          {i % 3 === 0 && (
+            <>
+              <line x1="10" y1="35" x2="-6" y2="15" stroke="black" strokeWidth="5" strokeLinecap="round" />
+              <line x1="10" y1="35" x2="26" y2="13" stroke="black" strokeWidth="5" strokeLinecap="round" />
+            </>
+          )}
+        </g>
+      ))}
+      <rect x="0" y="85" width="400" height="15" fill="black" />
+    </motion.svg>
+  );
+}
+
+// SVG sport elements for crisp rendering
+function Football({ className, ...props }) {
+  return (
+    <motion.svg viewBox="0 0 64 64" className={className} width="72" height="72" {...props}>
+      <circle cx="32" cy="32" r="30" fill="white" stroke="#333" strokeWidth="1.5" />
+      <path d="M32 2 L38 15 L52 15 L41 24 L45 38 L32 29 L19 38 L23 24 L12 15 L26 15Z" fill="#333" />
+      <path d="M32 62 L38 49 L52 49 L41 40 L45 26 L32 35 L19 26 L23 40 L12 49 L26 49Z" fill="#333" opacity="0.5" />
+    </motion.svg>
+  );
+}
+
+function PadelRacket({ className, ...props }) {
+  return (
+    <motion.svg viewBox="0 0 64 80" className={className} width="60" height="75" {...props}>
+      <rect x="26" y="48" width="12" height="28" rx="4" fill="#1565C0" />
+      <ellipse cx="32" cy="28" rx="22" ry="28" fill="#1E88E5" stroke="#0D47A1" strokeWidth="1.5" />
+      <circle cx="24" cy="20" r="2" fill="#0D47A1" opacity="0.4" />
+      <circle cx="32" cy="18" r="2" fill="#0D47A1" opacity="0.4" />
+      <circle cx="40" cy="20" r="2" fill="#0D47A1" opacity="0.4" />
+      <circle cx="24" cy="30" r="2" fill="#0D47A1" opacity="0.4" />
+      <circle cx="32" cy="28" r="2" fill="#0D47A1" opacity="0.4" />
+      <circle cx="40" cy="30" r="2" fill="#0D47A1" opacity="0.4" />
+      <circle cx="28" cy="38" r="2" fill="#0D47A1" opacity="0.4" />
+      <circle cx="36" cy="38" r="2" fill="#0D47A1" opacity="0.4" />
+      <circle cx="50" cy="10" r="6" fill="#C6FF00" stroke="#8BC34A" strokeWidth="1" />
+    </motion.svg>
+  );
+}
+
+function LocationPin({ className, ...props }) {
+  return (
+    <motion.svg viewBox="0 0 48 64" className={className} width="56" height="74" {...props}>
+      <path d="M24 0 C10.7 0 0 10.7 0 24 C0 42 24 64 24 64 C24 64 48 42 48 24 C48 10.7 37.3 0 24 0Z" fill="#4CAF50" />
+      <polygon points="24,12 27,20 36,20 29,25.5 31.5,34 24,28.5 16.5,34 19,25.5 12,20 21,20" fill="white" />
+    </motion.svg>
   );
 }
 
@@ -51,138 +84,140 @@ export default function IntroAnimation({ onComplete }) {
     return () => clearTimeout(timer);
   }, [onComplete]);
 
+  // Center reference point
+  const centerY = "42%";
+
   return (
-    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-hidden"
+    <div
+      className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden"
       style={{ background: "linear-gradient(160deg, #0D3B5C 0%, #1565C0 35%, #1B8A3E 75%, #0D5C2A 100%)" }}
     >
-      {/* ── Escena 1: Light sweep (0–2s) ── */}
+      {/* ── Scene 1 (0-2s): Background, sweep, audience ── */}
       <motion.div
         className="absolute inset-0 pointer-events-none"
-        style={{ background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%)" }}
-        initial={{ x: "-120%" }}
-        animate={{ x: "220%" }}
-        transition={{ duration: 2.2, ease: "easeInOut", delay: 0 }}
+        style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent)" }}
+        initial={{ x: "-100%" }}
+        animate={{ x: "200%" }}
+        transition={{ duration: 2, ease: "easeInOut" }}
       />
 
-      {/* Audience */}
       <Audience />
 
-      {/* Background sparkles (scattered) */}
+      {/* Sparkles scattered */}
       {[
-        {x:15,y:20,d:0.5},{x:85,y:15,d:0.8},{x:30,y:70,d:1.2},{x:70,y:65,d:0.6},
-        {x:50,y:10,d:1.5},{x:90,y:50,d:0.9},{x:10,y:50,d:1.8},{x:60,y:80,d:0.4},
-        {x:40,y:35,d:2.0},{x:75,y:30,d:1.1},
-      ].map((s,i) => <Sparkle key={i} x={s.x} y={s.y} delay={s.d} size={i%3===0?4:2} />)}
+        { x: 12, y: 18, d: 0.5 }, { x: 88, y: 12, d: 0.9 }, { x: 25, y: 72, d: 1.3 },
+        { x: 72, y: 68, d: 0.7 }, { x: 50, y: 8, d: 1.6 }, { x: 92, y: 45, d: 1.0 },
+        { x: 8, y: 48, d: 1.9 }, { x: 65, y: 82, d: 0.4 }, { x: 38, y: 32, d: 2.1 },
+      ].map((s, i) => (
+        <Sparkle key={i} x={s.x} y={s.y} delay={s.d} size={i % 3 === 0 ? 4 : 2} />
+      ))}
 
-      {/* ── Escena 2: Elementos deportivos (2–4s) ── */}
+      {/* ── Scene 2 (2-4s): Sport elements enter individually ── */}
 
-      {/* ⚽ Pelota fútbol - entra desde izquierda */}
+      {/* ⚽ Football rolls from left */}
       <motion.div
-        className="absolute text-6xl select-none"
-        style={{ top: "52%", left: 0 }}
-        initial={{ x: -120, rotate: 0, opacity: 0 }}
-        animate={{ x: [-120, 0, -60], rotate: [0, -360, -360], opacity: [0, 1, 0] }}
-        transition={{ duration: 2, delay: 2, ease: "easeInOut" }}
+        className="absolute"
+        style={{ top: centerY, left: "50%", marginLeft: -110 }}
+        initial={{ x: -300, rotate: 0, opacity: 0 }}
+        animate={{ x: 0, rotate: 720, opacity: 1 }}
+        transition={{ duration: 1.2, delay: 2, ease: [0.34, 1.56, 0.64, 1] }}
       >
-        ⚽
+        <Football />
       </motion.div>
 
-      {/* 🎾 Paleta pádel - entra desde derecha */}
+      {/* 🎾 Padel racket bounces from right */}
       <motion.div
-        className="absolute text-5xl select-none"
-        style={{ top: "50%", right: 0 }}
-        initial={{ x: 120, opacity: 0 }}
-        animate={{ x: [120, 0, 60], opacity: [0, 1, 0] }}
-        transition={{ duration: 2, delay: 2.3, ease: "easeInOut" }}
+        className="absolute"
+        style={{ top: centerY, left: "50%", marginLeft: 40 }}
+        initial={{ x: 300, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 1, delay: 2.4, ease: [0.34, 1.56, 0.64, 1] }}
       >
-        🎾
+        <PadelRacket />
       </motion.div>
 
-      {/* 📍 Pin - cae desde arriba */}
+      {/* 📍 Pin drops from above */}
       <motion.div
-        className="absolute text-5xl select-none"
-        style={{ top: 0, left: "50%", transform: "translateX(-50%)" }}
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: [-100, 0, -40], opacity: [0, 1, 0] }}
-        transition={{ duration: 2, delay: 2.6, ease: "easeOut" }}
+        className="absolute"
+        style={{ top: centerY, left: "50%", marginLeft: -28, marginTop: -60 }}
+        initial={{ y: -400, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.9, delay: 2.8, ease: [0.22, 1, 0.36, 1] }}
       >
-        📍
-      </motion.div>
-
-      {/* ── Escena 3 + 4: Logo completo + texto (4–8s) ── */}
-      <motion.div
-        className="relative z-10 flex flex-col items-center"
-        initial={{ opacity: 0, scale: 0.5 }}
-        animate={{ opacity: 1, scale: [0.5, 1.08, 1] }}
-        transition={{ duration: 1.2, delay: 4, ease: "easeOut" }}
-      >
-        {/* Glow behind logo */}
         <motion.div
-          className="absolute rounded-full"
-          style={{
-            width: 220, height: 220,
-            background: "radial-gradient(circle, rgba(255,255,255,0.18) 0%, transparent 70%)",
-            top: "50%", left: "50%", transform: "translate(-50%,-50%)"
-          }}
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: [0, 1, 0.6], scale: [0.5, 1.3, 1.1] }}
-          transition={{ duration: 1.5, delay: 4.2 }}
-        />
-
-        <motion.img
-          src={LOGO_URL}
-          alt="Se Juega"
-          className="w-44 h-44 drop-shadow-2xl relative z-10"
-          animate={{ y: [0, -8, 0] }}
-          transition={{ duration: 2.5, delay: 5.5, repeat: Infinity, ease: "easeInOut" }}
-        />
-
-        {/* Destellos alrededor del logo */}
-        {[...Array(10)].map((_, i) => {
-          const angle = (i / 10) * Math.PI * 2;
-          const r = 110;
-          return (
-            <motion.div
-              key={i}
-              className="absolute w-2 h-2 bg-white rounded-full"
-              style={{
-                left: `calc(50% + ${Math.cos(angle) * r}px)`,
-                top: `calc(50% + ${Math.sin(angle) * r}px)`,
-              }}
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: [0, 1, 0], scale: [0, 1.4, 0] }}
-              transition={{ duration: 0.7, delay: 5 + i * 0.1 }}
-            />
-          );
-        })}
-
-        {/* Texto "Se Juega" */}
-        <motion.div
-          className="mt-6 text-center relative z-10"
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 5.5 }}
+          animate={{ y: [0, -6, 0] }}
+          transition={{ duration: 0.3, delay: 3.7 }}
         >
-          <h1 className="text-5xl font-black text-white tracking-tight drop-shadow-xl">
-            Se Juega
-          </h1>
-          <motion.p
-            className="text-lg text-white/85 mt-2 font-semibold tracking-wide"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 6.1 }}
-          >
-            Encontrá tu partido
-          </motion.p>
+          <LocationPin />
         </motion.div>
       </motion.div>
 
-      {/* Fade out final */}
+      {/* ── Scene 3 (4-5.5s): Elements glow together ── */}
+      <motion.div
+        className="absolute rounded-full pointer-events-none"
+        style={{
+          width: 280, height: 280,
+          top: centerY, left: "50%",
+          marginLeft: -140, marginTop: -80,
+          background: "radial-gradient(circle, rgba(76,175,80,0.2) 0%, transparent 70%)"
+        }}
+        initial={{ opacity: 0, scale: 0.6 }}
+        animate={{ opacity: 1, scale: [0.6, 1.15, 1] }}
+        transition={{ duration: 1.2, delay: 4 }}
+      />
+
+      {/* Ring of sparkles around assembled elements */}
+      {[...Array(12)].map((_, i) => {
+        const angle = (i / 12) * Math.PI * 2;
+        const r = 130;
+        return (
+          <motion.div
+            key={`ring-${i}`}
+            className="absolute w-2 h-2 bg-white rounded-full"
+            style={{
+              left: `calc(50% + ${Math.cos(angle) * r}px)`,
+              top: `calc(${centerY} + ${Math.sin(angle) * r - 40}px)`,
+            }}
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: [0, 1, 0], scale: [0, 1.3, 0] }}
+            transition={{ duration: 0.6, delay: 4.5 + i * 0.08 }}
+          />
+        );
+      })}
+
+      {/* ── Scene 4 (5.5-8s): "Se Juega" text ── */}
+      <motion.div
+        className="absolute z-20 text-center"
+        style={{ top: "68%", left: "50%", transform: "translateX(-50%)" }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 5.5 }}
+      >
+        <h1 className="text-5xl md:text-6xl font-black text-white tracking-tight drop-shadow-xl whitespace-nowrap">
+          Se Juega
+        </h1>
+        <motion.p
+          className="text-lg text-white/80 mt-2 font-semibold tracking-wide"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 6.2 }}
+        >
+          Encontrá tu partido
+        </motion.p>
+      </motion.div>
+
+      {/* Zoom-out + fade to app */}
+      <motion.div
+        className="absolute inset-0 pointer-events-none"
+        initial={{ scale: 1 }}
+        animate={{ scale: [1, 1, 1.05] }}
+        transition={{ duration: 1, delay: 7 }}
+      />
       <motion.div
         className="absolute inset-0 bg-background pointer-events-none"
         initial={{ opacity: 0 }}
-        animate={{ opacity: [0, 0, 0, 1] }}
-        transition={{ duration: 1, delay: 7, times: [0, 0.5, 0.7, 1] }}
+        animate={{ opacity: [0, 0, 1] }}
+        transition={{ duration: 0.8, delay: 7.2, times: [0, 0.3, 1] }}
       />
     </div>
   );
