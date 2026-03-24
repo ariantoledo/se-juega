@@ -1,7 +1,13 @@
 import React, { useEffect } from "react";
-import { motion } from "framer-motion";
 
 export default function SplashScreen({ onDone }) {
+  useEffect(() => {
+    const timer = setTimeout(onDone, 1000);
+    return () => clearTimeout(timer);
+  }, [onDone]);
+
+  return <div style={{ backgroundColor: "black", width: "100%", height: "100vh" }} />;
+}) {
   useEffect(() => {
     const timer = setTimeout(onDone, 700);
     return () => clearTimeout(timer);

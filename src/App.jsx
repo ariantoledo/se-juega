@@ -125,9 +125,7 @@ const AuthenticatedApp = () => {
 
 
 function App() {
-  const alreadySeen = sessionStorage.getItem('intro_seen');
-  const [showSplash, setShowSplash] = useState(!alreadySeen);
-  const [showIntro, setShowIntro] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
 
   const handleSplashDone = () => {
     setShowSplash(false);
