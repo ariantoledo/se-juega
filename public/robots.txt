@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /AdminPanel
+Disallow: /MercadoPagoCallback
+Disallow: /PaymentResult
+
+Sitemap: https://sejuega.base44.app/sitemap.xml
