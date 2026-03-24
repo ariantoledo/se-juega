@@ -42,6 +42,15 @@ export default function GestionarCancha() {
     enabled: !!fieldId
   });
 
+  const { data: establishment } = useQuery({
+    queryKey: ["establishment", field?.establishment_id],
+    queryFn: async () => {
+      const all = await base44.entities.Establishment.list();
+      return all.find(e => e.id === field.establishment_id);
+    },
+    enabled: !!field?.establishment_id
+  });
+
   const { data: reservations = [] } = useQuery({
     queryKey: ["field-reservations", fieldId],
     queryFn: async () => {
@@ -290,6 +299,26 @@ Si pagaste, el reembolso será procesado en los próximos días.`
           <Button asChild>
             <a href={createPageUrl("MisCanchas")}>Volver</a>
           </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (establishment && !establishment.mercadopago_account_id) {
+    return (
+      <div className="min-h-screen bg-background p-4 flex items-center justify-center">
+        <div className="max-w-md w-full">
+          <div className="p-6 bg-destructive/10 border border-destructive/30 rounded-xl text-center space-y-4">
+            <AlertCircle className="w-12 h-12 text-destructive mx-auto" />
+            <h2 className="text-xl font-bold">Mercado Pago no conectado</h2>
+            <p className="text-muted-foreground text-sm">Para gestionar este establecimiento, primero conecte una cuenta de Mercado Pago.</p>
+            <div className="flex flex-col gap-2">
+              <Button asChild>
+                <a href={createPageUrl("ConfigurarStripe")}>Conectar Mercado Pago</a>
+              </Button>
+              <Button variant="outline" onClick={() => goBack(navigate)}>Volver</Button>
+            </div>
+          </div>
         </div>
       </div>
     );
