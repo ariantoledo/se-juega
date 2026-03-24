@@ -61,31 +61,46 @@ export function useNavDirection() {
 
 /**
  * Hook that intercepts the Android hardware back button (and browser back gesture).
- * When the internal stack has history, it navigates within the app instead of
- * exiting. When at the root with no history, the default OS behavior runs (app exit).
+ *
+ * Strategy:
+ * - A sentinel history entry is pushed and continuously re-pushed after every
+ *   popstate so the browser can NEVER exit the SPA.
+ * - When our internal stack has history we navigate back within the app.
+ * - When already at the root ("/") with no back-stack we silently stay — the
+ *   app is never exited, not even via a navigate("/") call.
+ * - React Router creates new browser-history entries on every navigate(); we
+ *   re-push the sentinel inside each popstate handler so it always sits on top.
  *
  * Call once in the root Layout component.
  */
 export function useAndroidBackHandler(navigate) {
   useEffect(() => {
-    // Ensure the browser history stack has exactly one entry at the current URL.
-    // This collapses any stale history entries (old cached pages) so the physical
-    // back button can never reach them.
-    if (window.history.length > 1) {
-      window.history.replaceState({ __sejuega: true }, "", window.location.href);
-    }
-    // Push a sentinel entry so we can catch the popstate before it leaves the app.
-    window.history.pushState({ __sejuega: true }, "", window.location.href);
+    // Replace any stale entry with a tagged one, then push our sentinel on top.
+    // Result: [tagged-current, sentinel]  — popstate from sentinel lands on tagged-current.
+    window.history.replaceState({ __sejuega: true }, "", window.location.href);
+    window.history.pushState({ __sejuega: true, sentinel: true }, "", window.location.href);
 
-    const handlePopState = (e) => {
-      // Immediately push another sentinel so the browser never actually navigates away.
-      window.history.pushState({ __sejuega: true }, "", window.location.href);
-      // Use our internal stack to go back within the SPA.
-      goBack(navigate);
+    const handlePopState = () => {
+      // Immediately restore the sentinel so the browser never navigates further back.
+      window.history.pushState({ __sejuega: true, sentinel: true }, "", window.location.href);
+
+      const isAtRoot = window.location.pathname === "/" && !window.location.search;
+
+      if (canGoBack()) {
+        // Navigate back within the SPA using our internal stack.
+        goBack(navigate);
+      } else if (!isAtRoot) {
+        // We have no back-stack but we're not at home — go home as a safe fallback.
+        _direction = "back";
+        emit();
+        _stack = ["/"];
+        navigate("/", { replace: true });
+      }
+      // If already at root with no history: do nothing — stay silently on home.
     };
 
-    // Legacy custom event (kept for compatibility)
-    const handleCustomBack = () => goBack(navigate);
+    // Legacy custom event (Capacitor / WebView bridge)
+    const handleCustomBack = () => handlePopState();
 
     window.addEventListener("popstate", handlePopState);
     window.addEventListener("androidBackPressed", handleCustomBack);
