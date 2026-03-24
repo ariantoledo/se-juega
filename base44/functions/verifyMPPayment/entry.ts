@@ -15,6 +15,11 @@ Deno.serve(async (req) => {
     const reservation = await base44.asServiceRole.entities.FieldNewReservation.get(reservation_id);
     if (!reservation) return Response.json({ error: 'Reservation not found' }, { status: 404 });
 
+    // Validate the reservation belongs to the requesting user
+    if (reservation.user_email !== user.email) {
+      return Response.json({ error: 'No tiene permisos para realizar esta acción.' }, { status: 403 });
+    }
+
     let paymentStatus = status;
 
     // If we have a real MP payment_id, verify it against the API

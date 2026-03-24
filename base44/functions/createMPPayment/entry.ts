@@ -8,6 +8,21 @@ Deno.serve(async (req) => {
 
     const { field, slot, payment_type, app_base_url, match_id } = await req.json();
 
+    // Validate slot belongs to the field and is still available
+    const slotRecord = await base44.asServiceRole.entities.FieldNewTimeSlot.get(slot.id);
+    if (!slotRecord || slotRecord.field_new_id !== field.id) {
+      return Response.json({ error: 'El horario no corresponde a esta cancha.' }, { status: 403 });
+    }
+    if (slotRecord.status !== 'available') {
+      return Response.json({ error: 'El horario ya no está disponible.' }, { status: 409 });
+    }
+
+    // Validate field exists and establishment matches
+    const fieldRecord = await base44.asServiceRole.entities.FieldNew.get(field.id);
+    if (!fieldRecord || fieldRecord.establishment_id !== field.establishment_id) {
+      return Response.json({ error: 'No tiene permisos para realizar esta acción.' }, { status: 403 });
+    }
+
     // Get owner's MP access token from establishment
     const establishment = await base44.asServiceRole.entities.Establishment.filter({ id: field.establishment_id });
     const ownerAccessToken = establishment[0]?.mercadopago_account_id;

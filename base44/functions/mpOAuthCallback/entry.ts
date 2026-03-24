@@ -34,10 +34,18 @@ Deno.serve(async (req) => {
 
     const tokenData = await tokenRes.json();
 
-    // If establishment_id is 'admin_account', save to the admin user entity
+    // If establishment_id is 'admin_account', only admins can connect the platform account
     if (establishment_id === 'admin_account') {
+      if (user.role !== 'admin') {
+        return Response.json({ error: 'No tiene permisos para realizar esta acción.' }, { status: 403 });
+      }
       await base44.auth.updateMe({ mp_admin_token: tokenData.access_token, mp_admin_user_id: String(tokenData.user_id) });
     } else {
+      // Validate the establishment belongs to the requesting user
+      const estRecord = await base44.asServiceRole.entities.Establishment.get(establishment_id);
+      if (!estRecord || estRecord.owner_email !== user.email) {
+        return Response.json({ error: 'No tiene permisos para realizar esta acción.' }, { status: 403 });
+      }
       await base44.asServiceRole.entities.Establishment.update(establishment_id, {
         mercadopago_account_id: tokenData.access_token,
         mercadopago_user_id: String(tokenData.user_id)
