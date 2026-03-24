@@ -75,13 +75,19 @@ export default function MobileSelect({
     );
   }
 
-  // Desktop: standard Radix Select
+  // Desktop: standard Radix Select — map <option> children to <SelectItem>
   return (
     <Select value={value} onValueChange={onValueChange} disabled={disabled}>
       <SelectTrigger className={`h-9 ${className}`}>
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
-      <SelectContent>{children}</SelectContent>
+      <SelectContent>
+        {React.Children.map(children, (child) => (
+          <SelectItem key={child.props.value} value={child.props.value}>
+            {child.props.children}
+          </SelectItem>
+        ))}
+      </SelectContent>
     </Select>
   );
 }
