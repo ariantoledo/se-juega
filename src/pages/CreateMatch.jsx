@@ -155,6 +155,7 @@ export default function CreateMatch() {
     <div className="max-w-2xl mx-auto px-4 py-6 pb-24 md:pb-6">
       <button
         onClick={() => goBack(navigate)}
+        aria-label="Volver"
         className="flex items-center gap-2 text-muted-foreground hover:text-foreground text-sm mb-6 transition-colors min-h-[44px]"
       >
         <ArrowLeft className="w-4 h-4" />

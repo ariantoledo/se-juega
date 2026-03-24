@@ -140,7 +140,9 @@ export default function Profile() {
                   <UserIcon className="w-8 h-8 text-primary" />
                 </div>
               )}
-              <label className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-primary flex items-center justify-center cursor-pointer shadow-md hover:bg-primary/90 transition-colors">
+              <label
+                aria-label="Cambiar foto de perfil"
+                className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-primary flex items-center justify-center cursor-pointer shadow-md hover:bg-primary/90 transition-colors">
                 {uploadingAvatar
                   ? <Loader2 className="w-3 h-3 text-white animate-spin" />
                   : <Camera className="w-3 h-3 text-white" />}
@@ -215,6 +217,7 @@ export default function Profile() {
       <Card className="border-border/50 mb-6">
         <CardContent className="pt-5 pb-5">
           <button
+            aria-label={showAvailability ? "Cerrar disponibilidad" : "Ver o editar disponibilidad"}
             className="flex items-center justify-between w-full"
             onClick={() => setShowAvailability(v => !v)}
           >

@@ -47,22 +47,24 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
-import CanchaDetail from './pages/CanchaDetail';
-import Canchas from './pages/Canchas';
-import ConfigurarStripe from './pages/ConfigurarStripe';
-import CreateMatch from './pages/CreateMatch';
-import EditarEstablecimiento from './pages/EditarEstablecimiento';
-import FieldDetail from './pages/FieldDetail';
-import FieldOwnerDashboard from './pages/FieldOwnerDashboard';
-import Fields from './pages/Fields';
-import GestionarCancha from './pages/GestionarCancha';
-import Home from './pages/Home';
-import MatchDetail from './pages/MatchDetail';
-import MisCanchas from './pages/MisCanchas';
-import MyMatches from './pages/MyMatches';
-import Profile from './pages/Profile';
-import RegistrarCancha from './pages/RegistrarCancha';
-import RegistrarEstablecimiento from './pages/RegistrarEstablecimiento';
+import { lazy } from 'react';
+
+const CanchaDetail = lazy(() => import('./pages/CanchaDetail'));
+const Canchas = lazy(() => import('./pages/Canchas'));
+const ConfigurarStripe = lazy(() => import('./pages/ConfigurarStripe'));
+const CreateMatch = lazy(() => import('./pages/CreateMatch'));
+const EditarEstablecimiento = lazy(() => import('./pages/EditarEstablecimiento'));
+const FieldDetail = lazy(() => import('./pages/FieldDetail'));
+const FieldOwnerDashboard = lazy(() => import('./pages/FieldOwnerDashboard'));
+const Fields = lazy(() => import('./pages/Fields'));
+const GestionarCancha = lazy(() => import('./pages/GestionarCancha'));
+const Home = lazy(() => import('./pages/Home'));
+const MatchDetail = lazy(() => import('./pages/MatchDetail'));
+const MisCanchas = lazy(() => import('./pages/MisCanchas'));
+const MyMatches = lazy(() => import('./pages/MyMatches'));
+const Profile = lazy(() => import('./pages/Profile'));
+const RegistrarCancha = lazy(() => import('./pages/RegistrarCancha'));
+const RegistrarEstablecimiento = lazy(() => import('./pages/RegistrarEstablecimiento'));
 import __Layout from './Layout.jsx';
 
 

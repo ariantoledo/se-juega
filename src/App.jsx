@@ -99,18 +99,14 @@ const AuthenticatedApp = () => {
   return (
     <Routes>
       <Route path="/" element={
-        <LayoutWrapper currentPageName={mainPageKey}>
-          <MainPage />
-        </LayoutWrapper>
+        <LazyPageWrapper element={<MainPage />} currentPageName={mainPageKey} />
       } />
       {Object.entries(Pages).map(([path, Page]) => (
         <Route
           key={path}
           path={`/${path}`}
           element={
-            <LayoutWrapper currentPageName={path}>
-              <Page />
-            </LayoutWrapper>
+            <LazyPageWrapper element={<Page />} currentPageName={path} />
           }
         />
       ))}
