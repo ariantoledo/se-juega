@@ -5,7 +5,7 @@ import { createPageUrl } from "@/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PlusCircle, TrendingUp, Calendar, DollarSign, MapPin, Pencil, Trash2 } from "lucide-react";
+import { PlusCircle, TrendingUp, Calendar, DollarSign, MapPin, Pencil, Trash2, AlertCircle } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -210,13 +210,28 @@ export default function MisCanchasContent() {
                             <CardTitle className="text-lg md:text-xl truncate">{est.name}</CardTitle>
                             <p className="text-xs md:text-sm text-muted-foreground mt-1 line-clamp-1">{est.address}</p>
                           </div>
-                          <Button size="sm" className="w-full sm:w-auto shrink-0" asChild>
-                            <a href={createPageUrl(`RegistrarCancha?establishment_id=${est.id}`)}>
-                              <PlusCircle className="w-4 h-4 mr-1" />
-                              Agregar Cancha
-                            </a>
-                          </Button>
+                          {est.mercadopago_account_id ? (
+                            <Button size="sm" className="w-full sm:w-auto shrink-0" asChild>
+                              <a href={createPageUrl(`RegistrarCancha?establishment_id=${est.id}`)}>
+                                <PlusCircle className="w-4 h-4 mr-1" />
+                                Agregar Cancha
+                              </a>
+                            </Button>
+                          ) : (
+                            <Button size="sm" variant="outline" className="w-full sm:w-auto shrink-0 border-destructive/50 text-destructive" asChild>
+                              <a href={createPageUrl("ConfigurarStripe")}>
+                                <AlertCircle className="w-4 h-4 mr-1" />
+                                Conectar Mercado Pago
+                              </a>
+                            </Button>
+                          )}
                         </div>
+                        {!est.mercadopago_account_id && (
+                          <div className="mt-2 p-3 bg-destructive/10 rounded-lg border border-destructive/20 flex items-start gap-2">
+                            <AlertCircle className="w-4 h-4 text-destructive mt-0.5 shrink-0" />
+                            <p className="text-xs text-destructive font-medium">Para gestionar este establecimiento, primero conecte una cuenta de Mercado Pago.</p>
+                          </div>
+                        )}
                       </CardHeader>
                       <CardContent className="pt-0">
                         {estFields.length === 0 ? (
@@ -239,26 +254,32 @@ export default function MisCanchasContent() {
                                   </div>
                                 </div>
                                 <div className="flex flex-col gap-1.5">
-                                  <Button variant="outline" size="sm" className="w-full text-xs" asChild>
-                                    <a href={createPageUrl(`GestionarCancha?id=${field.id}`)}>Gestionar</a>
-                                  </Button>
-                                  <Button variant="outline" size="sm" className="w-full text-xs" asChild>
-                                    <a href={createPageUrl(`EditarCancha?id=${field.id}`)}>
-                                      <Pencil className="w-3 h-3 mr-1" />Editar
-                                    </a>
-                                  </Button>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="w-full text-xs text-destructive hover:bg-destructive/10"
-                                    onClick={() => {
-                                      if (confirm(`¿Eliminar la cancha "${field.name}"? Esta acción no se puede deshacer.`)) {
-                                        deleteFieldMutation.mutate(field.id);
-                                      }
-                                    }}
-                                  >
-                                    <Trash2 className="w-3 h-3 mr-1" />Eliminar
-                                  </Button>
+                                  {est.mercadopago_account_id ? (
+                                    <>
+                                      <Button variant="outline" size="sm" className="w-full text-xs" asChild>
+                                        <a href={createPageUrl(`GestionarCancha?id=${field.id}`)}>Gestionar</a>
+                                      </Button>
+                                      <Button variant="outline" size="sm" className="w-full text-xs" asChild>
+                                        <a href={createPageUrl(`EditarCancha?id=${field.id}`)}>
+                                          <Pencil className="w-3 h-3 mr-1" />Editar
+                                        </a>
+                                      </Button>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="w-full text-xs text-destructive hover:bg-destructive/10"
+                                        onClick={() => {
+                                          if (confirm(`¿Eliminar la cancha "${field.name}"? Esta acción no se puede deshacer.`)) {
+                                            deleteFieldMutation.mutate(field.id);
+                                          }
+                                        }}
+                                      >
+                                        <Trash2 className="w-3 h-3 mr-1" />Eliminar
+                                      </Button>
+                                    </>
+                                  ) : (
+                                    <p className="text-xs text-muted-foreground text-center py-2">Conectá Mercado Pago para gestionar esta cancha</p>
+                                  )}
                                 </div>
                               </div>
                             ))}
