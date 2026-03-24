@@ -53,6 +53,7 @@ export default function Canchas() {
             <option value="futbol5">Fútbol 5</option>
             <option value="futbol7">Fútbol 7</option>
             <option value="futbol11">Fútbol 11</option>
+            <option value="padel">Pádel</option>
           </MobileSelect>
         </div>
 

@@ -18,7 +18,8 @@ import { es } from "date-fns/locale";
 const typeLabels = {
   futbol5: "Fútbol 5",
   futbol7: "Fútbol 7",
-  futbol11: "Fútbol 11"
+  futbol11: "Fútbol 11",
+  padel: "Pádel"
 };
 
 export default function CanchaDetail() {
