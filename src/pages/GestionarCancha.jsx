@@ -285,7 +285,7 @@ Si pagaste, el reembolso será procesado en los próximos días.`
     }
   });
 
-  const pendingReservations = reservations.filter(r => r.reservation_status === "pending");
+  const pendingReservations = reservations.filter(r => r.reservation_status === "pending" && r.payment_status === "paid");
   const confirmedReservations = reservations.filter(r => r.reservation_status === "confirmed");
   const totalIncome = reservations
     .filter(r => r.payment_status === "paid")
@@ -398,55 +398,6 @@ Si pagaste, el reembolso será procesado en los próximos días.`
           </TabsList>
 
           <TabsContent value="reservas" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Reservas pendientes</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {pendingReservations.length === 0 ? (
-                  <p className="text-center text-muted-foreground py-8">No hay reservas pendientes</p>
-                ) : (
-                  <div className="space-y-3">
-                    {pendingReservations.map(res => (
-                      <div key={res.id} className="p-4 bg-secondary rounded-lg space-y-3">
-                        <div>
-                          <p className="font-semibold">{res.user_name}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {format(new Date(res.date), "PPP", { locale: es })}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            {res.start_time} - {res.end_time}
-                          </p>
-                          <p className="text-sm font-medium mt-2">
-                            ${res.amount_paid.toLocaleString()} ({res.payment_type === "sena" ? "Seña" : "Total"})
-                          </p>
-                        </div>
-                        <div className="flex flex-col sm:flex-row gap-2">
-                          <Button 
-                            size="sm" 
-                            className="flex-1"
-                            onClick={() => confirmReservationMutation.mutate(res.id)}
-                          >
-                            <CheckCircle2 className="w-4 h-4 mr-1" />
-                            Confirmar
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            variant="destructive" 
-                            className="flex-1"
-                            onClick={() => cancelReservationMutation.mutate(res.id)}
-                          >
-                            <XCircle className="w-4 h-4 mr-1" />
-                            Rechazar
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
             <Card>
               <CardHeader>
                 <CardTitle>Reservas confirmadas</CardTitle>

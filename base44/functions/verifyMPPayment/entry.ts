@@ -52,6 +52,14 @@ Deno.serve(async (req) => {
       return Response.json({ verified: true, payment_status: "rejected" });
 
     } else {
+      // Pending or unknown = not paid → cancel and free slot
+      if (reservation.timeslot_id) {
+        await base44.asServiceRole.entities.FieldNewTimeSlot.update(reservation.timeslot_id, { status: "available" });
+      }
+      await base44.asServiceRole.entities.FieldNewReservation.update(reservation_id, {
+        reservation_status: "cancelled",
+        payment_status: "pending"
+      });
       return Response.json({ verified: true, payment_status: "pending" });
     }
   } catch (error) {

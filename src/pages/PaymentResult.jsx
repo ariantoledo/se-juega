@@ -79,13 +79,13 @@ export default function PaymentResult() {
             </>
           ) : (
             <>
-              <Clock className="w-14 h-14 text-accent mx-auto" />
-              <h2 className="text-2xl font-bold">Pago pendiente</h2>
+              <AlertCircle className="w-14 h-14 text-destructive mx-auto" />
+              <h2 className="text-2xl font-bold">Pago no completado</h2>
               <p className="text-muted-foreground">
-                Tu pago está siendo procesado. Una vez aprobado, tu reserva se confirmará automáticamente.
+                El pago no fue completado. El turno fue liberado y no quedó reservado.
               </p>
               <Button className="w-full" asChild>
-                <a href={createPageUrl("Home")}>Ir al inicio</a>
+                <a href={createPageUrl("Canchas")}>Volver a canchas</a>
               </Button>
             </>
           )}
