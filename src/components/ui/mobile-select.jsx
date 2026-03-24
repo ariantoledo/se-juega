@@ -82,11 +82,13 @@ export default function MobileSelect({
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
-        {React.Children.map(children, (child) => (
-          <SelectItem key={child.props.value} value={child.props.value}>
-            {child.props.children}
-          </SelectItem>
-        ))}
+        {React.Children.toArray(children)
+          .filter((child) => child?.props?.value !== undefined && child?.props?.value !== "")
+          .map((child) => (
+            <SelectItem key={child.props.value} value={child.props.value}>
+              {child.props.children}
+            </SelectItem>
+          ))}
       </SelectContent>
     </Select>
   );
