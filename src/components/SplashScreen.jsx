@@ -12,7 +12,7 @@ export default function SplashScreen({ onDone }) {
       initial={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
-      className="fixed inset-0 z-[100] bg-[#1A3A6B]"
+      className="fixed inset-0 z-[100] bg-black"
     />
   );
 }

@@ -131,18 +131,11 @@ function App() {
 
   const handleSplashDone = () => {
     setShowSplash(false);
-    setShowIntro(true);
-  };
-
-  const handleIntroDone = () => {
-    sessionStorage.setItem('intro_seen', '1');
-    setShowIntro(false);
   };
 
   return (
     <>
       {showSplash && <SplashScreen onDone={handleSplashDone} />}
-      {!showSplash && showIntro && <IntroAnimation onComplete={handleIntroDone} />}
       <AuthProvider>
         <QueryClientProvider client={queryClientInstance}>
           <Router>
