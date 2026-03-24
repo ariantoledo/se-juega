@@ -345,6 +345,7 @@ export default function MatchDetail() {
             <div className="flex flex-col sm:flex-row gap-3">
               <button
                 onClick={() => setShowPositionSheet(true)}
+                aria-label="Elegir posición para unirte al partido"
                 className="flex-1 flex items-center justify-between px-4 h-9 rounded-md border border-input bg-background text-sm hover:bg-secondary transition-colors"
               >
                 <span className={selectedPosition ? "text-foreground" : "text-muted-foreground"}>
@@ -485,7 +486,7 @@ export default function MatchDetail() {
                   request={req}
                   onAccept={handleAccept}
                   onReject={handleReject}
-                  loading={actionLoading}
+                  loading={acceptMutation.isPending || rejectMutation.isPending}
                 />
               ))}
             </div>

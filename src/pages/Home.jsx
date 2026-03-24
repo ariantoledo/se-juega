@@ -115,6 +115,7 @@ export default function Home() {
             </div>
             <button
               onClick={() => setShowFilterSheet(true)}
+              aria-label="Abrir filtros de partidos"
               className="flex items-center gap-2 px-4 h-9 rounded-md border border-input bg-background text-sm font-medium hover:bg-secondary transition-colors"
             >
               <Filter className="w-4 h-4" />

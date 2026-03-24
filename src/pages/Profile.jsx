@@ -102,14 +102,23 @@ export default function Profile() {
     e.target.value = "";
   };
 
-  const handleSave = async () => {
-    setSaving(true);
-    await base44.auth.updateMe({ phone, positions, avatar_url: avatarUrl });
-    setUser((prev) => ({ ...prev, phone, positions, avatar_url: avatarUrl }));
-    setEditing(false);
-    setSaving(false);
-    toast.success("Perfil actualizado");
-  };
+  const saveProfileMutation = useMutation({
+    mutationFn: () => base44.auth.updateMe({ phone, positions, avatar_url: avatarUrl }),
+    onMutate: () => {
+      // Optimistic: update local user state immediately
+      setUser(prev => ({ ...prev, phone, positions, avatar_url: avatarUrl }));
+      setEditing(false);
+    },
+    onError: () => {
+      // Rollback: re-fetch real user state
+      base44.auth.me().then(setUser);
+      setEditing(true);
+      toast.error("Error al guardar perfil");
+    },
+    onSuccess: () => {
+      toast.success("Perfil actualizado");
+    },
+  });
 
   if (!user) {
     return (
@@ -184,8 +193,8 @@ export default function Profile() {
                 <Button variant="outline" onClick={() => setEditing(false)} className="flex-1">
                   Cancelar
                 </Button>
-                <Button onClick={handleSave} disabled={saving} className="flex-1 bg-primary hover:bg-primary/90">
-                  {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
+                <Button onClick={() => saveProfileMutation.mutate()} disabled={saveProfileMutation.isPending} className="flex-1 bg-primary hover:bg-primary/90">
+                  {saveProfileMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
                   Guardar
                 </Button>
               </div>
