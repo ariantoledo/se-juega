@@ -111,7 +111,7 @@ export default function Layout({ children, currentPageName }) {
                 <ArrowLeft className="w-5 h-5" />
               </button> :
 
-            <a href="/Profile" className="p-2 rounded-lg hover:bg-secondary min-h-[44px] min-w-[44px] flex items-center justify-center">
+            <a href="/Profile" aria-label="Mi perfil" className="p-2 rounded-lg hover:bg-secondary min-h-[44px] min-w-[44px] flex items-center justify-center">
                 <User className="w-5 h-5" />
               </a>
             }

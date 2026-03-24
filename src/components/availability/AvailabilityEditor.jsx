@@ -62,7 +62,7 @@ export default function AvailabilityEditor({ initialSlots = [], notifyEnabled = 
             <p className="text-xs text-muted-foreground">Te avisamos cuando hay un partido en tu horario</p>
           </div>
         </div>
-        <Switch checked={notify} onCheckedChange={setNotify} />
+        <Switch checked={notify} onCheckedChange={setNotify} aria-label={notify ? 'Desactivar notificaciones de partidos' : 'Activar notificaciones de partidos'} />
       </div>
 
       <div className="flex flex-wrap gap-2 text-xs">

@@ -87,6 +87,7 @@ export default function CommissionManager() {
                     </Badge>
                     <Switch
                       checked={enabled}
+                      aria-label={`${enabled ? 'Desactivar' : 'Activar'} comisión para ${est.name}`}
                       onCheckedChange={(val) => toggleMutation.mutate({ id: est.id, value: val })}
                     />
                   </div>
