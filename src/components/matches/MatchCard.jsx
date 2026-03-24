@@ -10,7 +10,7 @@ import { es } from "date-fns/locale";
 const typeLabels = { "5": "Fútbol 5", "7": "Fútbol 7", "11": "Fútbol 11" };
 const levelLabels = { principiante: "Principiante", intermedio: "Intermedio", avanzado: "Avanzado" };
 
-export default function MatchCard({ match }) {
+const MatchCard = React.memo(function MatchCard({ match }) {
   const spotsLeft = match.players_needed - (match.current_players || 0);
   const matchDate = new Date(match.date);
   const isPast = matchDate < new Date();
@@ -99,4 +99,6 @@ export default function MatchCard({ match }) {
       </Card>
     </Link>
   );
-}
+});
+
+export default MatchCard;

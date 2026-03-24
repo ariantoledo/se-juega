@@ -2,7 +2,7 @@ import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { User, Crown } from "lucide-react";
 
-export default function PlayerList({ players, creatorEmail }) {
+const PlayerList = React.memo(function PlayerList({ players, creatorEmail }) {
   return (
     <div className="space-y-2">
       {players.map((player) => (
@@ -27,4 +27,6 @@ export default function PlayerList({ players, creatorEmail }) {
       ))}
     </div>
   );
-}
+});
+
+export default PlayerList;

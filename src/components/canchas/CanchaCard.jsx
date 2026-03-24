@@ -10,7 +10,7 @@ const typeLabels = {
   futbol11: "Fútbol 11"
 };
 
-export default function CanchaCard({ field }) {
+const CanchaCard = React.memo(function CanchaCard({ field }) {
   return (
     <a href={createPageUrl(`CanchaDetail?id=${field.id}`)} aria-label={`Ver detalles de ${field.name}`}>
       <Card className="hover:shadow-lg transition-all duration-300 cursor-pointer h-full">
@@ -56,4 +56,6 @@ export default function CanchaCard({ field }) {
       </Card>
     </a>
   );
-}
+});
+
+export default CanchaCard;

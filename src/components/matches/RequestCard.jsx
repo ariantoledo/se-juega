@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check, X, User } from "lucide-react";
 
-export default function RequestCard({ request, onAccept, onReject, loading }) {
+const RequestCard = React.memo(function RequestCard({ request, onAccept, onReject, loading }) {
   return (
     <Card className="p-4 border-border/50">
       <div className="flex items-center justify-between">
@@ -49,4 +49,6 @@ export default function RequestCard({ request, onAccept, onReject, loading }) {
       </div>
     </Card>
   );
-}
+});
+
+export default RequestCard;
