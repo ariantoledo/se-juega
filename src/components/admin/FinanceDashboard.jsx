@@ -32,7 +32,8 @@ export default function FinanceDashboard({ user }) {
     ? paidReservations.filter(r => new Date(r.created_date) >= periodStart)
     : paidReservations;
 
-  const totalCommissions = filtered.length * APP_COMMISSION;
+  // Use actual stored commission_amount from each reservation (respects commission_enabled flag)
+  const totalCommissions = filtered.reduce((s, r) => s + (r.commission_amount || 0), 0);
   const totalVolume = filtered.reduce((s, r) => s + (r.amount_paid || 0), 0);
   const avgPerDay = period === "all" && filtered.length > 0
     ? Math.round(totalCommissions / Math.max(1, Math.ceil((now - new Date(reservations[reservations.length - 1]?.created_date)) / 86400000)))
@@ -173,11 +174,11 @@ export default function FinanceDashboard({ user }) {
                       <p className="text-xs text-muted-foreground">Total pagado</p>
                     </div>
                     <div className="text-right">
-                      <Badge variant="default" className="bg-primary text-xs">${APP_COMMISSION.toLocaleString()}</Badge>
+                      <Badge variant="default" className="bg-primary text-xs">${(r.commission_amount || 0).toLocaleString()}</Badge>
                       <p className="text-xs text-muted-foreground">comisión</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-medium text-muted-foreground">${((r.amount_paid || 0) - APP_COMMISSION).toLocaleString()}</p>
+                      <p className="font-medium text-muted-foreground">${(r.owner_amount || 0).toLocaleString()}</p>
                       <p className="text-xs text-muted-foreground">al dueño</p>
                     </div>
                   </div>

@@ -30,7 +30,9 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'El dueño no tiene Mercado Pago configurado' }, { status: 400 });
     }
 
-    const COMMISSION = 2000;
+    // Respect the commission_enabled flag set per establishment by admin
+    const commissionEnabled = establishment[0]?.commission_enabled !== false;
+    const COMMISSION = commissionEnabled ? 2000 : 0;
     const amount = payment_type === "sena" ? field.precio_sena : field.precio_total;
     const ownerAmount = amount - COMMISSION;
 
