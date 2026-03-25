@@ -1,0 +1,17 @@
+{
+  "name": "Se Juega",
+  "short_name": "Se Juega",
+  "description": "Armá y unite a partidos de fútbol y pádel en Argentina.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "https://media.base44.com/images/public/69af676714ee0899079240af/0c99155b3_VibrantLogoforSeJuegaApp512x512px.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
