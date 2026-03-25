@@ -118,6 +118,7 @@ export default function Layout({ children, currentPageName }) {
           </div>
 
           <a href={createPageUrl("Home")} className="flex items-center gap-2">
+            <img src="https://media.base44.com/images/public/69af676714ee0899079240af/0c99155b3_VibrantLogoforSeJuegaApp512x512px.png" alt="Se Juega" className="w-8 h-8 rounded-lg" />
             <span className="font-bold text-lg md:text-xl text-foreground tracking-tight">Se Juega</span>
           </a>
 
