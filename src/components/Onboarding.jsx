@@ -125,11 +125,12 @@ export default function Onboarding({ onClose }) {
             transition={{ delay: 0.1, duration: 0.4 }}
             className="mb-6"
           >
-            <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-primary to-[#1B5EA8] flex items-center justify-center shadow-2xl shadow-primary/30 mb-4 mx-auto">
+            <div className="w-24 h-24 rounded-3xl bg-black flex items-center justify-center shadow-2xl mb-4 mx-auto overflow-hidden">
               <img
-                src="https://media.base44.com/images/public/69af676714ee0899079240af/47ec2bfc5_Logodeportivoconp.png"
+                src="https://media.base44.com/images/public/69af676714ee0899079240af/0c99155b3_VibrantLogoforSeJuegaApp512x512px.png"
                 alt="Se Juega"
-                className="w-16 h-16 rounded-2xl object-cover"
+                className="w-full h-full object-cover"
+                style={{ mixBlendMode: 'screen' }}
               />
             </div>
           </motion.div>
