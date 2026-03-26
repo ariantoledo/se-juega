@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Bell, Loader2, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
@@ -11,6 +11,7 @@ export default function NotifyPlayersCard({ matchId }) {
   const [sent, setSent] = useState(false);
   const [customMsg, setCustomMsg] = useState("");
   const [showMsg, setShowMsg] = useState(false);
+  const [notifiedCount, setNotifiedCount] = useState(0);
 
   const handleSend = async () => {
     setSending(true);
@@ -24,6 +25,7 @@ export default function NotifyPlayersCard({ matchId }) {
     } else {
       toast.success(`Aviso enviado a ${res.data?.sent} jugador${res.data?.sent !== 1 ? "es" : ""}`);
       setSent(true);
+      setNotifiedCount(res.data?.sent || 0);
     }
   };
 
@@ -38,11 +40,12 @@ export default function NotifyPlayersCard({ matchId }) {
           El sistema identifica jugadores cuya disponibilidad coincide con la fecha y hora del partido.
         </p>
       </CardHeader>
+
       <CardContent className="space-y-3">
         {sent ? (
           <div className="flex items-center gap-2 text-primary text-sm font-medium py-2">
             <CheckCircle2 className="w-4 h-4" />
-            Avisos enviados correctamente
+            Avisos enviados correctamente ({notifiedCount} jugadores notificados)
           </div>
         ) : (
           <>
@@ -63,19 +66,32 @@ export default function NotifyPlayersCard({ matchId }) {
                 className="resize-none text-sm"
               />
             )}
-
-            <Button
-              onClick={handleSend}
-              disabled={sending}
-              className="w-full bg-primary hover:bg-primary/90"
-            >
-              {sending
-                ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Enviando...</>
-                : <><Bell className="w-4 h-4 mr-2" />Enviar aviso</>}
-            </Button>
           </>
         )}
       </CardContent>
+
+      {!sent && (
+        <CardFooter>
+          <Button
+            onClick={handleSend}
+            disabled={sending || sent}
+            aria-label="Enviar aviso a jugadores disponibles"
+            className="w-full bg-primary hover:bg-primary/90"
+          >
+            {sending ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Enviando...
+              </>
+            ) : (
+              <>
+                <Bell className="w-4 h-4 mr-2" />
+                Enviar aviso
+              </>
+            )}
+          </Button>
+        </CardFooter>
+      )}
     </Card>
   );
 }
