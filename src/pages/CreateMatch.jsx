@@ -212,19 +212,7 @@ export default function CreateMatch() {
                   <Label htmlFor="match-type-padel">Tipo de partido</Label>
                   <MobileSelect value={form.match_type} onValueChange={v => handleChange("match_type", v)} id="match-type-padel">
                     <option value="dobles">Dobles</option>
-                    <option value="dobles_mixto">Dobles mixto</option>
                     <option value="singles">Singles</option>
-                  </MobileSelect>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="players-needed">Jugadores necesarios</Label>
-                  <MobileSelect
-                    value={String(form.players_needed)}
-                    onValueChange={v => handleChange("players_needed", Number(v))}
-                    id="players-needed"
-                  >
-                    <option value="2">2 jugadores</option>
-                    <option value="4">4 jugadores</option>
                   </MobileSelect>
                 </div>
                 <div className="space-y-2 sm:col-span-2">
@@ -329,6 +317,22 @@ export default function CreateMatch() {
                 max={6}
                 label="Posiciones que necesitás"
               />
+            )}
+
+            {sportType === "padel" && (
+              <div className="space-y-2">
+                <Label htmlFor="players-needed-padel">Jugadores necesarios</Label>
+                <MobileSelect
+                  value={String(form.players_needed)}
+                  onValueChange={v => handleChange("players_needed", Number(v))}
+                  id="players-needed-padel"
+                  placeholder="Jugadores necesarios"
+                >
+                  <option value="1">1 jugador</option>
+                  <option value="2">2 jugadores</option>
+                  <option value="3">3 jugadores</option>
+                </MobileSelect>
+              </div>
             )}
 
             {sportType === "padel" && (
