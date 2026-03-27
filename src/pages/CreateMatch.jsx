@@ -172,6 +172,7 @@ export default function CreateMatch() {
           <p className="text-muted-foreground text-sm">Completá los datos y armá tu equipo</p>
 
           <div className="mt-3">
+            <p className="text-sm font-medium text-foreground mb-1.5">Elegí tu deporte</p>
             <button
               type="button"
               onClick={() => setSportMenuOpen(true)}
