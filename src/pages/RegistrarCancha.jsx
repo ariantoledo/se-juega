@@ -110,7 +110,7 @@ export default function RegistrarCancha() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-4 md:p-6">
+    <div className="min-h-screen bg-background p-4 md:p-6 pb-24 md:pb-6">
       <div className="max-w-2xl mx-auto">
         <h1 className="text-3xl font-bold mb-2">Registrar Cancha</h1>
         <p className="text-muted-foreground mb-4">Establecimiento: {establishment.name}</p>
