@@ -1,17 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useNavigate } from "react-router-dom";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { goBack } from "@/lib/nav-history";
-import { createPageUrl } from "@/utils";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import MobileSelect from "@/components/ui/mobile-select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
-import { Loader2, ArrowLeft, Building2, CheckCircle2 } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import PositionSelector from "../components/matches/PositionSelector";
 import PadelPositionSelector from "../components/matches/PadelPositionSelector";
 
