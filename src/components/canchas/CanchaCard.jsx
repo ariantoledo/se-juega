@@ -9,10 +9,12 @@ const typeLabels = {
   futbol5: "Fútbol 5",
   futbol7: "Fútbol 7",
   futbol11: "Fútbol 11",
-  padel: "Pádel"
+  padel: "Pádel",
+  tenis: "Tenis",
+  ping_pong: "Ping Pong"
 };
 
-const CanchaCard = React.memo(function CanchaCard({ field }) {
+const CanchaCard = React.memo(function CanchaCard({ field, establishmentName }) {
   return (
     <a
       href={createPageUrl(`CanchaDetail?id=${field.id}`)}
@@ -35,14 +37,19 @@ const CanchaCard = React.memo(function CanchaCard({ field }) {
         </CardHeader>
         <CardContent className="p-3 sm:p-4">
           <div className="flex items-start justify-between mb-2">
-            <h3 className="font-semibold text-base sm:text-lg truncate">{field.name}</h3>
-            <Badge variant="secondary">{typeLabels[field.field_type]}</Badge>
+            <div className="min-w-0">
+              <h3 className="font-semibold text-base sm:text-lg truncate">{field.name}</h3>
+              {establishmentName && (
+                <p className="text-xs text-muted-foreground truncate">{establishmentName}</p>
+              )}
+            </div>
+            <Badge variant="secondary" className="ml-2 shrink-0">{typeLabels[field.field_type] || field.field_type}</Badge>
           </div>
 
-          {field.address && (
+          {(field.localidad || field.address) && (
             <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground mb-3">
               <MapPin className="w-4 h-4 shrink-0" />
-              <span className="truncate">{field.address}</span>
+              <span className="truncate">{[field.localidad, field.address].filter(Boolean).join(" — ")}</span>
             </div>
           )}
 

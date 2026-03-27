@@ -26,6 +26,10 @@
       "type": "string",
       "description": "Descripci\u00f3n de la cancha"
     },
+    "localidad": {
+      "type": "string",
+      "description": "Localidad donde se encuentra la cancha"
+    },
     "address": {
       "type": "string",
       "description": "Direcci\u00f3n"
@@ -76,7 +80,8 @@
     "establishment_id",
     "name",
     "field_type",
-    "owner_email"
+    "owner_email",
+    "localidad"
   ],
   "rls": {
     "create": {

@@ -9,22 +9,32 @@ import CanchaCard from "../components/canchas/CanchaCard";
 export default function Canchas() {
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
+  const [localidadFilter, setLocalidadFilter] = useState("");
 
   const { data: fields = [], isLoading } = useQuery({
     queryKey: ["fieldsnew"],
     queryFn: () => base44.entities.FieldNew.list(),
   });
 
+  const { data: establishments = [] } = useQuery({
+    queryKey: ["establishments"],
+    queryFn: () => base44.entities.Establishment.list(),
+  });
+
+  const establishmentMap = Object.fromEntries(establishments.map(e => [e.id, e.name]));
+
+  const localidades = [...new Set(fields.filter(f => f.localidad).map(f => f.localidad))].sort();
+
   const activeFields = fields.filter(f => f.is_active);
 
   const filteredFields = activeFields.filter(field => {
-    const matchesSearch = 
+    const matchesSearch =
       field.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      field.address?.toLowerCase().includes(searchQuery.toLowerCase());
-    
+      field.address?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      field.localidad?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesType = typeFilter === "all" || field.field_type === typeFilter;
-    
-    return matchesSearch && matchesType;
+    const matchesLocalidad = !localidadFilter || field.localidad === localidadFilter;
+    return matchesSearch && matchesType && matchesLocalidad;
   });
 
   return (
@@ -41,11 +51,11 @@ export default function Canchas() {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
-              placeholder="Buscar por nombre o ubicación..."
+              placeholder="Buscar por nombre, localidad o dirección..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
-              aria-label="Buscar canchas por nombre o ubicación"
+              aria-label="Buscar canchas"
             />
           </div>
           <MobileSelect value={typeFilter} onValueChange={setTypeFilter} id="cancha-type-filter" className="w-full md:w-48" placeholder="Todos los tipos">
@@ -54,6 +64,14 @@ export default function Canchas() {
             <option value="futbol7">Fútbol 7</option>
             <option value="futbol11">Fútbol 11</option>
             <option value="padel">Pádel</option>
+            <option value="tenis">Tenis</option>
+            <option value="ping_pong">Ping Pong</option>
+          </MobileSelect>
+          <MobileSelect value={localidadFilter} onValueChange={setLocalidadFilter} id="localidad-filter" className="w-full md:w-48" placeholder="Todas las localidades">
+            <option value="">Todas las localidades</option>
+            {localidades.map(loc => (
+              <option key={loc} value={loc}>{loc}</option>
+            ))}
           </MobileSelect>
         </div>
 
@@ -73,7 +91,7 @@ export default function Canchas() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredFields.map(field => (
-              <CanchaCard key={field.id} field={field} />
+              <CanchaCard key={field.id} field={field} establishmentName={establishmentMap[field.establishment_id]} />
             ))}
           </div>
         )}

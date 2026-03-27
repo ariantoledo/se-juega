@@ -33,6 +33,7 @@ export default function EditarCancha() {
         name: field.name || "",
         field_type: field.field_type || "futbol5",
         description: field.description || "",
+        localidad: field.localidad || "",
         address: field.address || "",
         precio_total: field.precio_total || "",
         precio_sena: field.precio_sena || "",
@@ -144,6 +145,11 @@ export default function EditarCancha() {
                   <option value="tenis">Tenis</option>
                   <option value="ping_pong">Ping Pong</option>
                 </MobileSelect>
+              </div>
+
+              <div>
+                <Label>Localidad *</Label>
+                <Input value={form.localidad || ""} onChange={e => setForm(f => ({ ...f, localidad: e.target.value }))} placeholder="Ej: La Plata, CABA, Quilmes..." required />
               </div>
 
               <div>

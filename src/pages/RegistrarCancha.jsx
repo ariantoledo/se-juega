@@ -22,6 +22,7 @@ export default function RegistrarCancha() {
     name: "",
     field_type: "futbol5",
     description: "",
+    localidad: "",
     address: "",
     precio_total: "",
     precio_sena: "",
@@ -48,6 +49,7 @@ export default function RegistrarCancha() {
         name: formData.name,
         field_type: formData.field_type,
         description: formData.description,
+        localidad: formData.localidad,
         address: formData.address || establishment.address,
         precio_total: parseFloat(formData.precio_total),
         precio_sena: parseFloat(formData.precio_sena),
@@ -89,7 +91,7 @@ export default function RegistrarCancha() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.precio_total || !formData.precio_sena) {
+    if (!formData.name || !formData.precio_total || !formData.precio_sena || !formData.localidad) {
       toast.error("Completa los campos obligatorios");
       return;
     }
@@ -157,6 +159,16 @@ export default function RegistrarCancha() {
                   <option value="tenis">Tenis</option>
                   <option value="ping_pong">Ping Pong</option>
                 </MobileSelect>
+              </div>
+
+              <div>
+                <Label>Localidad *</Label>
+                <Input
+                  value={formData.localidad}
+                  onChange={(e) => setFormData({...formData, localidad: e.target.value})}
+                  placeholder="Ej: La Plata, CABA, Quilmes..."
+                  required
+                />
               </div>
 
               <div>
