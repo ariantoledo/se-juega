@@ -3,6 +3,21 @@ import { base44 } from '@/api/base44Client';
 import { appParams } from '@/lib/app-params';
 import { createAxiosClient } from '@base44/sdk/dist/utils/axios-client';
 
+// Read token fresh from URL or localStorage on each call (needed for Android OAuth return)
+function getFreshToken() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const urlToken = urlParams.get('access_token');
+  if (urlToken) {
+    localStorage.setItem('base44_access_token', urlToken);
+    // Remove from URL
+    urlParams.delete('access_token');
+    const newUrl = `${window.location.pathname}${urlParams.toString() ? `?${urlParams.toString()}` : ''}${window.location.hash}`;
+    window.history.replaceState({}, document.title, newUrl);
+    return urlToken;
+  }
+  return localStorage.getItem('base44_access_token') || appParams.token;
+}
+
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -15,6 +30,15 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     checkAppState();
+
+    // Re-check auth when app regains focus (critical for Android WebView OAuth return)
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        checkAppState();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, []);
 
   const checkAppState = async () => {
@@ -22,6 +46,8 @@ export const AuthProvider = ({ children }) => {
       setIsLoadingPublicSettings(true);
       setAuthError(null);
       
+      const freshToken = getFreshToken();
+
       // First, check app public settings (with token if available)
       // This will tell us if auth is required, user not registered, etc.
       const appClient = createAxiosClient({
@@ -29,7 +55,7 @@ export const AuthProvider = ({ children }) => {
         headers: {
           'X-App-Id': appParams.appId
         },
-        token: appParams.token, // Include token if available
+        token: freshToken,
         interceptResponses: true
       });
       
@@ -38,7 +64,7 @@ export const AuthProvider = ({ children }) => {
         setAppPublicSettings(publicSettings);
         
         // If we got the app public settings successfully, check if user is authenticated
-        if (appParams.token) {
+        if (freshToken) {
           await checkUserAuth();
         } else {
           setIsLoadingAuth(false);
