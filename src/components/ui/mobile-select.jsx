@@ -54,7 +54,7 @@ export default function MobileSelect({
             <DrawerHeader>
               <DrawerTitle>{placeholder}</DrawerTitle>
             </DrawerHeader>
-            <div className="px-4 pb-8 space-y-2">
+            <div className="px-4 pb-8 space-y-2 overflow-y-auto max-h-[60vh]">
               {React.Children.toArray(children).map((child) => (
                 <button
                   key={child.props.value}
