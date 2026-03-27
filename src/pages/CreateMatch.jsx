@@ -2,6 +2,15 @@ import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
+import { goBack } from "@/lib/nav-history";
+import { createPageUrl } from "@/utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import MobileSelect from "@/components/ui/mobile-select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
+import { Loader2, ArrowLeft, Building2, CheckCircle2 } from "lucide-react";
 import PositionSelector from "../components/matches/PositionSelector";
 import PadelPositionSelector from "../components/matches/PadelPositionSelector";
 
@@ -38,7 +47,6 @@ export default function CreateMatch() {
     base44.auth.me().then(setUser);
   }, []);
 
-  // Reset sport-specific fields when switching sport
   useEffect(() => {
     if (sportType === "futbol") {
       setForm(f => ({ ...f, match_type: "hombres", players_needed: 10, missing_positions: [] }));
@@ -157,7 +165,6 @@ export default function CreateMatch() {
           <CardTitle className="text-2xl">Crear Partido</CardTitle>
           <p className="text-muted-foreground text-sm">Completá los datos y armá tu equipo</p>
 
-          {/* Sport selector */}
           <div className="flex gap-2 mt-3">
             {SPORT_TABS.map(tab => (
               <button
@@ -179,49 +186,47 @@ export default function CreateMatch() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-5">
 
-            {/* FÚTBOL FIELDS */}
             {sportType === "futbol" && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                   <Label htmlFor="football-type">Tipo de fútbol</Label>
-                   <MobileSelect value={form.football_type} onValueChange={v => handleChange("football_type", v)} id="football-type">
-                     <option value="5">Fútbol 5</option>
-                     <option value="7">Fútbol 7</option>
-                     <option value="11">Fútbol 11</option>
-                   </MobileSelect>
-                 </div>
+                  <Label htmlFor="football-type">Tipo de fútbol</Label>
+                  <MobileSelect value={form.football_type} onValueChange={v => handleChange("football_type", v)} id="football-type">
+                    <option value="5">Fútbol 5</option>
+                    <option value="7">Fútbol 7</option>
+                    <option value="11">Fútbol 11</option>
+                  </MobileSelect>
+                </div>
                 <div className="space-y-2">
-                   <Label htmlFor="match-type-futbol">Tipo de partido</Label>
-                   <MobileSelect value={form.match_type} onValueChange={v => handleChange("match_type", v)} id="match-type-futbol">
-                     <option value="hombres">Hombres</option>
-                     <option value="mixto">Mixto</option>
-                   </MobileSelect>
-                 </div>
+                  <Label htmlFor="match-type-futbol">Tipo de partido</Label>
+                  <MobileSelect value={form.match_type} onValueChange={v => handleChange("match_type", v)} id="match-type-futbol">
+                    <option value="hombres">Hombres</option>
+                    <option value="mixto">Mixto</option>
+                  </MobileSelect>
+                </div>
               </div>
             )}
 
-            {/* PÁDEL FIELDS */}
             {sportType === "padel" && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                   <Label htmlFor="match-type-padel">Tipo de partido</Label>
-                   <MobileSelect value={form.match_type} onValueChange={v => handleChange("match_type", v)} id="match-type-padel">
-                     <option value="dobles">Dobles</option>
-                     <option value="dobles_mixto">Dobles mixto</option>
-                     <option value="singles">Singles</option>
-                   </MobileSelect>
-                 </div>
+                  <Label htmlFor="match-type-padel">Tipo de partido</Label>
+                  <MobileSelect value={form.match_type} onValueChange={v => handleChange("match_type", v)} id="match-type-padel">
+                    <option value="dobles">Dobles</option>
+                    <option value="dobles_mixto">Dobles mixto</option>
+                    <option value="singles">Singles</option>
+                  </MobileSelect>
+                </div>
                 <div className="space-y-2">
-                   <Label htmlFor="players-needed">Jugadores necesarios</Label>
-                   <MobileSelect
-                     value={String(form.players_needed)}
-                     onValueChange={v => handleChange("players_needed", Number(v))}
-                     id="players-needed"
-                   >
-                     <option value="2">2 jugadores</option>
-                     <option value="4">4 jugadores</option>
-                   </MobileSelect>
-                 </div>
+                  <Label htmlFor="players-needed">Jugadores necesarios</Label>
+                  <MobileSelect
+                    value={String(form.players_needed)}
+                    onValueChange={v => handleChange("players_needed", Number(v))}
+                    id="players-needed"
+                  >
+                    <option value="2">2 jugadores</option>
+                    <option value="4">4 jugadores</option>
+                  </MobileSelect>
+                </div>
                 <div className="space-y-2 sm:col-span-2">
                   <Label>Nivel de juego</Label>
                   <div className="grid grid-cols-3 gap-2">
@@ -244,7 +249,6 @@ export default function CreateMatch() {
               </div>
             )}
 
-            {/* COMMON FIELDS */}
             <div className="space-y-2">
               <Label>Fecha y hora</Label>
               <Input
@@ -318,7 +322,6 @@ export default function CreateMatch() {
               </div>
             )}
 
-            {/* Position selectors */}
             {sportType === "futbol" && (
               <PositionSelector
                 selected={form.missing_positions}
@@ -337,7 +340,6 @@ export default function CreateMatch() {
               />
             )}
 
-            {/* Reserve field */}
             <div className="border border-border rounded-xl p-4 space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
