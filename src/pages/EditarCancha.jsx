@@ -141,6 +141,8 @@ export default function EditarCancha() {
                   <option value="futbol7">Fútbol 7</option>
                   <option value="futbol11">Fútbol 11</option>
                   <option value="padel">Pádel</option>
+                  <option value="tenis">Tenis</option>
+                  <option value="ping_pong">Ping Pong</option>
                 </MobileSelect>
               </div>
 

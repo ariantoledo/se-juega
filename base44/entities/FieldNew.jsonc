@@ -1,0 +1,136 @@
+{
+  "name": "FieldNew",
+  "type": "object",
+  "properties": {
+    "establishment_id": {
+      "type": "string",
+      "description": "ID del establecimiento al que pertenece"
+    },
+    "name": {
+      "type": "string",
+      "description": "Nombre de la cancha"
+    },
+    "field_type": {
+      "type": "string",
+      "enum": [
+        "futbol5",
+        "futbol7",
+        "futbol11",
+        "padel",
+        "tenis",
+        "ping_pong"
+      ],
+      "description": "Tipo de cancha"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descripci\u00f3n de la cancha"
+    },
+    "address": {
+      "type": "string",
+      "description": "Direcci\u00f3n"
+    },
+    "latitude": {
+      "type": "number",
+      "description": "Latitud"
+    },
+    "longitude": {
+      "type": "number",
+      "description": "Longitud"
+    },
+    "images": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uri"
+      },
+      "description": "URLs de im\u00e1genes"
+    },
+    "precio_total": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Precio total por hora"
+    },
+    "precio_sena": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Precio de la se\u00f1a"
+    },
+    "owner_email": {
+      "type": "string",
+      "format": "email",
+      "description": "Email del due\u00f1o"
+    },
+    "contact_phone": {
+      "type": "string",
+      "pattern": "^[0-9\\-\\+\\s]{7,15}$",
+      "description": "Tel\u00e9fono de contacto"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Si la cancha est\u00e1 activa"
+    }
+  },
+  "required": [
+    "establishment_id",
+    "name",
+    "field_type",
+    "owner_email"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "due\u00f1o_verificado"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "data.is_active": true
+        },
+        {
+          "data.owner_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.owner_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.owner_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
