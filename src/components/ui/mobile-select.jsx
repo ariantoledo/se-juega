@@ -50,7 +50,7 @@ export default function MobileSelect({
         </Button>
 
         <Drawer open={open} onOpenChange={setOpen}>
-          <DrawerContent>
+          <DrawerContent className="z-[110]">
             <DrawerHeader>
               <DrawerTitle>{placeholder}</DrawerTitle>
             </DrawerHeader>
