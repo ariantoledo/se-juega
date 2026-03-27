@@ -10,19 +10,23 @@ import { Label } from "@/components/ui/label";
 import MobileSelect from "@/components/ui/mobile-select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { Loader2, ArrowLeft, Building2, CheckCircle2 } from "lucide-react";
+import { Loader2, ArrowLeft, Building2, CheckCircle2, ChevronDown } from "lucide-react";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import PositionSelector from "../components/matches/PositionSelector";
 import PadelPositionSelector from "../components/matches/PadelPositionSelector";
 
-const SPORT_TABS = [
+const SPORTS = [
   { value: "futbol", label: "⚽ Fútbol" },
   { value: "padel", label: "🎾 Pádel" },
+  { value: "tenis", label: "🎾 Tenis" },
+  { value: "ping_pong", label: "🏓 Ping Pong" },
 ];
 
 export default function CreateMatch() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [sportType, setSportType] = useState("futbol");
+  const [sportMenuOpen, setSportMenuOpen] = useState(false);
   const [reserveField, setReserveField] = useState(false);
   const [selectedEstablishmentId, setSelectedEstablishmentId] = useState("");
   const [selectedFieldId, setSelectedFieldId] = useState("");
@@ -50,6 +54,8 @@ export default function CreateMatch() {
   useEffect(() => {
     if (sportType === "futbol") {
       setForm(f => ({ ...f, match_type: "hombres", players_needed: 10, missing_positions: [] }));
+    } else if (sportType === "ping_pong") {
+      setForm(f => ({ ...f, match_type: "singles", players_needed: 1, missing_positions: [] }));
     } else {
       setForm(f => ({ ...f, match_type: "dobles", players_needed: 4, missing_positions: [] }));
     }
@@ -141,7 +147,7 @@ export default function CreateMatch() {
       creator_email: user?.email,
       creator_name: user?.full_name,
       football_type: sportType === "futbol" ? form.football_type : undefined,
-      level: sportType === "padel" ? form.level : undefined,
+      level: (sportType === "padel" || sportType === "tenis" || sportType === "ping_pong") ? form.level : undefined,
       field_new_id: selectedField?.id,
       latitude: selectedField?.latitude,
       longitude: selectedField?.longitude,
@@ -165,22 +171,40 @@ export default function CreateMatch() {
           <CardTitle className="text-2xl">Crear Partido</CardTitle>
           <p className="text-muted-foreground text-sm">Completá los datos y armá tu equipo</p>
 
-          <div className="flex gap-2 mt-3">
-            {SPORT_TABS.map(tab => (
-              <button
-                key={tab.value}
-                type="button"
-                onClick={() => setSportType(tab.value)}
-                className={`flex-1 py-2.5 px-4 rounded-xl border-2 text-sm font-semibold transition-all ${
-                  sportType === tab.value
-                    ? "border-primary bg-primary/10 text-primary"
-                    : "border-border text-muted-foreground hover:border-primary/30"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
+          <div className="mt-3">
+            <button
+              type="button"
+              onClick={() => setSportMenuOpen(true)}
+              className="w-full flex items-center justify-between px-4 py-3 rounded-xl border-2 border-primary bg-primary/10 text-primary font-semibold text-sm transition-all hover:bg-primary/20"
+            >
+              <span>{SPORTS.find(s => s.value === sportType)?.label || "Elige tu deporte"}</span>
+              <ChevronDown className="w-4 h-4" />
+            </button>
           </div>
+
+          <Drawer open={sportMenuOpen} onOpenChange={setSportMenuOpen}>
+            <DrawerContent>
+              <DrawerHeader>
+                <DrawerTitle>Elige tu deporte</DrawerTitle>
+              </DrawerHeader>
+              <div className="px-4 pb-8 space-y-2">
+                {SPORTS.map(sport => (
+                  <button
+                    key={sport.value}
+                    type="button"
+                    onClick={() => { setSportType(sport.value); setSportMenuOpen(false); }}
+                    className={`w-full p-3 rounded-xl border-2 text-left font-medium transition-all ${
+                      sportType === sport.value
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-border hover:border-primary/30 text-foreground"
+                    }`}
+                  >
+                    {sport.label}
+                  </button>
+                ))}
+              </div>
+            </DrawerContent>
+          </Drawer>
         </CardHeader>
 
         <CardContent>
@@ -206,7 +230,7 @@ export default function CreateMatch() {
               </div>
             )}
 
-            {sportType === "padel" && (
+            {(sportType === "padel" || sportType === "tenis") && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="match-type-padel">Tipo de partido</Label>
@@ -233,6 +257,28 @@ export default function CreateMatch() {
                       </button>
                     ))}
                   </div>
+                </div>
+              </div>
+            )}
+
+            {sportType === "ping_pong" && (
+              <div className="space-y-2 sm:col-span-2">
+                <Label>Nivel de juego</Label>
+                <div className="grid grid-cols-3 gap-2">
+                  {[["principiante","Principiante"],["intermedio","Intermedio"],["avanzado","Avanzado"]].map(([val, label]) => (
+                    <button
+                      key={val}
+                      type="button"
+                      onClick={() => handleChange("level", val)}
+                      className={`py-2.5 rounded-xl border-2 text-sm font-medium transition-all ${
+                        form.level === val
+                          ? "border-primary bg-primary/10 text-primary"
+                          : "border-border hover:border-primary/30 text-muted-foreground"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
                 </div>
               </div>
             )}
@@ -296,7 +342,41 @@ export default function CreateMatch() {
               </div>
             )}
 
-            {sportType === "padel" && (
+            {(sportType === "padel" || sportType === "tenis") && (
+              <div className="space-y-2">
+                <Label htmlFor="players-needed-padel">Jugadores necesarios</Label>
+                <MobileSelect
+                  value={String(form.players_needed)}
+                  onValueChange={v => handleChange("players_needed", Number(v))}
+                  id="players-needed-padel"
+                  placeholder="Jugadores necesarios"
+                >
+                  <option value="1">1 jugador</option>
+                  <option value="2">2 jugadores</option>
+                  <option value="3">3 jugadores</option>
+                </MobileSelect>
+              </div>
+            )}
+
+            {sportType === "ping_pong" && (
+              <div className="space-y-2">
+                <Label>Jugadores necesarios</Label>
+                <div className="px-3 py-2 rounded-md border border-input bg-secondary/40 text-sm text-muted-foreground">
+                  1 jugador
+                </div>
+              </div>
+            )}
+
+            {(sportType === "padel" || sportType === "tenis" || sportType === "ping_pong") && (
+              <PadelPositionSelector
+                selected={form.missing_positions}
+                onChange={v => handleChange("missing_positions", v)}
+                matchType={form.match_type}
+                playersNeeded={form.players_needed}
+              />
+            )}
+
+            {(sportType === "padel" || sportType === "tenis" || sportType === "ping_pong") && (
               <div className="space-y-2">
                 <Label>Costo por jugador ($)</Label>
                 <Input
@@ -316,31 +396,6 @@ export default function CreateMatch() {
                 onChange={v => handleChange("missing_positions", v)}
                 max={6}
                 label="Posiciones que necesitás"
-              />
-            )}
-
-            {sportType === "padel" && (
-              <div className="space-y-2">
-                <Label htmlFor="players-needed-padel">Jugadores necesarios</Label>
-                <MobileSelect
-                  value={String(form.players_needed)}
-                  onValueChange={v => handleChange("players_needed", Number(v))}
-                  id="players-needed-padel"
-                  placeholder="Jugadores necesarios"
-                >
-                  <option value="1">1 jugador</option>
-                  <option value="2">2 jugadores</option>
-                  <option value="3">3 jugadores</option>
-                </MobileSelect>
-              </div>
-            )}
-
-            {sportType === "padel" && (
-              <PadelPositionSelector
-                selected={form.missing_positions}
-                onChange={v => handleChange("missing_positions", v)}
-                matchType={form.match_type}
-                playersNeeded={form.players_needed}
               />
             )}
 

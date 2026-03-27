@@ -1,0 +1,175 @@
+{
+  "name": "Match",
+  "type": "object",
+  "properties": {
+    "sport_type": {
+      "type": "string",
+      "enum": [
+        "futbol",
+        "padel",
+        "tenis",
+        "ping_pong"
+      ],
+      "default": "futbol",
+      "description": "Tipo de deporte"
+    },
+    "football_type": {
+      "type": "string",
+      "enum": [
+        "5",
+        "7",
+        "11"
+      ],
+      "description": "Tipo de f\u00fatbol (5, 7 u 11, obligatorio si sport_type = futbol)"
+    },
+    "date": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?Z$",
+      "description": "Fecha y hora del partido (ISO 8601)"
+    },
+    "cost_per_player": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Costo por jugador"
+    },
+    "field_name": {
+      "type": "string",
+      "description": "Nombre de la cancha"
+    },
+    "address": {
+      "type": "string",
+      "description": "Direcci\u00f3n de la cancha"
+    },
+    "players_needed": {
+      "type": "number",
+      "minimum": 1,
+      "description": "Cantidad total de jugadores necesarios"
+    },
+    "current_players": {
+      "type": "number",
+      "default": 0,
+      "minimum": 0,
+      "description": "Jugadores actuales confirmados"
+    },
+    "match_type": {
+      "type": "string",
+      "enum": [
+        "hombres",
+        "mixto",
+        "dobles",
+        "singles"
+      ],
+      "description": "Tipo de partido"
+    },
+    "level": {
+      "type": "string",
+      "enum": [
+        "principiante",
+        "intermedio",
+        "avanzado"
+      ],
+      "description": "Nivel de juego"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "full",
+        "in_progress",
+        "played",
+        "cancelled"
+      ],
+      "default": "open",
+      "description": "Estado del partido"
+    },
+    "missing_positions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Posiciones faltantes"
+    },
+    "creator_email": {
+      "type": "string",
+      "format": "email",
+      "description": "Email del creador del partido"
+    },
+    "creator_name": {
+      "type": "string",
+      "description": "Nombre del creador"
+    },
+    "field_new_id": {
+      "type": "string",
+      "description": "ID de la cancha (FieldNew) vinculada al partido"
+    },
+    "timeslot_id": {
+      "type": "string",
+      "description": "ID del horario vinculado (FieldNewTimeSlot)"
+    },
+    "reservation_id": {
+      "type": "string",
+      "description": "ID de la reserva vinculada (FieldNewReservation)"
+    },
+    "latitude": {
+      "type": "number",
+      "description": "Latitud de la cancha"
+    },
+    "longitude": {
+      "type": "number",
+      "description": "Longitud de la cancha"
+    }
+  },
+  "required": [
+    "sport_type",
+    "date",
+    "field_name",
+    "address",
+    "players_needed",
+    "match_type",
+    "creator_email"
+  ],
+  "rls": {
+    "create": {
+      "created_by": "{{user.email}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "data.status": "open"
+        },
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
