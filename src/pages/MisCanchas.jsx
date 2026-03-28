@@ -56,7 +56,7 @@ export default function MisCanchas() {
     .reduce((sum, r) => sum + (r.owner_amount || 0), 0);
 
   return (
-    <div className="min-h-screen bg-background p-3 md:p-6 pb-20 md:pb-6">
+    <div className="min-h-screen bg-background p-3 md:p-6 pb-24 md:pb-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col gap-3 mb-4 md:mb-6">

@@ -38,7 +38,7 @@ export default function Canchas() {
   });
 
   return (
-    <div className="min-h-screen bg-background p-4 md:p-6">
+    <div className="min-h-screen bg-background p-4 md:p-6 pb-24 md:pb-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-6">
