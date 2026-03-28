@@ -76,11 +76,18 @@ export default function CreateMatch() {
     queryFn: () => base44.entities.FieldNew.list(),
   });
 
+  const SPORT_FIELD_TYPES = {
+    futbol: ["futbol5", "futbol7", "futbol11"],
+    padel: ["padel"],
+    tenis: ["tenis"],
+    ping_pong: ["ping_pong"],
+  };
+
   const fieldsForEstablishment = allFields.filter(f => {
     if (f.establishment_id !== selectedEstablishmentId) return false;
     if (f.is_active === false) return false;
-    if (sportType === "padel") return f.field_type === "padel";
-    return f.field_type !== "padel";
+    const allowed = SPORT_FIELD_TYPES[sportType] || [];
+    return allowed.includes(f.field_type);
   });
 
   const { data: availableSlots = [] } = useQuery({
