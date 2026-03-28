@@ -20,6 +20,13 @@ import NotifyPlayersCard from "../components/matches/NotifyPlayersCard";
 
 const typeLabels = { "5": "Fútbol 5", "7": "Fútbol 7", "11": "Fútbol 11" };
 
+const POSITIONS_BY_SPORT = {
+  futbol: ["Arquero", "Defensor", "Mediocampista", "Delantero"],
+  padel: ["Lado derecho", "Lado izquierdo"],
+  tenis: ["Jugador 1", "Jugador 2"],
+  ping_pong: ["Lado A", "Lado B"],
+};
+
 export default function MatchDetail() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -381,7 +388,7 @@ export default function MatchDetail() {
             <DrawerTitle>Elegí tu posición</DrawerTitle>
           </DrawerHeader>
           <div className="px-4 pb-10 space-y-2">
-            {["Arquero", "Defensor", "Mediocampista", "Delantero"].map(pos => (
+            {(POSITIONS_BY_SPORT[match?.sport_type] || POSITIONS_BY_SPORT.futbol).map(pos => (
               <button
                 key={pos}
                 onClick={() => { setSelectedPosition(pos); setShowPositionSheet(false); }}
