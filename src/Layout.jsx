@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
+import { usePushNotifications } from "@/lib/usePushNotifications";
 import { Home, PlusCircle, CalendarDays, User, Menu, X, Sun, Moon, MapPin, ArrowLeft, HelpCircle } from "lucide-react";
 import NotificationBell from "./components/NotificationBell";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -44,6 +45,8 @@ export default function Layout({ children, currentPageName }) {
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
   }, []);
+
+  usePushNotifications(user?.email);
 
   // Push every location change onto the internal navigation stack
   useEffect(() => {
