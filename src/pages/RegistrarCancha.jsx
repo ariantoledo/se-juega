@@ -10,11 +10,13 @@ import { Label } from "@/components/ui/label";
 import MobileSelect from "@/components/ui/mobile-select";
 import { toast } from "sonner";
 import { Upload, X, MapPin } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function RegistrarCancha() {
   const urlParams = new URLSearchParams(window.location.search);
   const establishmentId = urlParams.get("establishment_id");
   const formRef = useRef(null);
+  const navigate = useNavigate();
 
   const [user, setUser] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -63,7 +65,7 @@ export default function RegistrarCancha() {
     },
     onSuccess: () => {
       toast.success("Cancha creada exitosamente");
-      window.location.href = createPageUrl("MisCanchas");
+      navigate(createPageUrl("MisCanchas"));
     }
   });
 
@@ -103,9 +105,7 @@ export default function RegistrarCancha() {
       <div className="min-h-screen bg-background p-4 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-xl font-semibold mb-2">Establecimiento no encontrado</h2>
-          <Button asChild>
-            <a href={createPageUrl("MisCanchas")}>Volver</a>
-          </Button>
+          <Button onClick={() => navigate(createPageUrl("MisCanchas"))}>Volver</Button>
         </div>
       </div>
     );
@@ -251,9 +251,7 @@ export default function RegistrarCancha() {
               </div>
 
               <div className="flex gap-3 pt-4">
-                <Button type="button" variant="outline" asChild className="flex-1">
-                  <a href={createPageUrl("MisCanchas")}>Cancelar</a>
-                </Button>
+                <Button type="button" variant="outline" onClick={() => navigate(createPageUrl("MisCanchas"))} className="flex-1">Cancelar</Button>
                 <Button type="submit" className="flex-1" disabled={createFieldMutation.isPending}>
                   {createFieldMutation.isPending ? "Creando..." : "Crear cancha"}
                 </Button>

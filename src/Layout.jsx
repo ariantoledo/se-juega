@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
 import { usePushNotifications } from "@/lib/usePushNotifications";
+import { Link } from "react-router-dom";
 import { Home, PlusCircle, CalendarDays, User, Menu, X, Sun, Moon, MapPin, ArrowLeft, HelpCircle } from "lucide-react";
 import NotificationBell from "./components/NotificationBell";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -114,18 +115,18 @@ export default function Layout({ children, currentPageName }) {
                 <ArrowLeft className="w-5 h-5" />
               </button> :
 
-            <a href="/Profile" aria-label="Mi perfil" className="p-2 rounded-lg hover:bg-secondary min-h-[44px] min-w-[44px] flex items-center justify-center">
+            <Link to="/Profile" aria-label="Mi perfil" className="p-2 rounded-lg hover:bg-secondary min-h-[44px] min-w-[44px] flex items-center justify-center">
                 <User className="w-5 h-5" />
-              </a>
+              </Link>
             }
           </div>
 
-          <a href={createPageUrl("Home")} className="flex items-center gap-2">
+          <Link to={createPageUrl("Home")} className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-black overflow-hidden flex items-center justify-center">
               <img src="https://media.base44.com/images/public/69af676714ee0899079240af/0c99155b3_VibrantLogoforSeJuegaApp512x512px.png" alt="Se Juega" className="w-full h-full object-cover" style={{mixBlendMode: 'screen'}} />
             </div>
             <span className="font-bold text-lg md:text-xl text-foreground tracking-tight">Se Juega</span>
-          </a>
+          </Link>
 
           {/* Desktop nav */}
           <nav className="hidden md:flex items-center gap-1">
@@ -133,9 +134,9 @@ export default function Layout({ children, currentPageName }) {
               const Icon = item.icon;
               const isActive = currentPageName === item.page;
               return (
-                <a
+                <Link
                   key={item.page}
-                  href={createPageUrl(item.page)}
+                  to={createPageUrl(item.page)}
                   className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                   isActive ?
                   "bg-primary text-primary-foreground" :
@@ -144,7 +145,7 @@ export default function Layout({ children, currentPageName }) {
                   
                   <Icon className="w-4 h-4" />
                   {item.name}
-                </a>);
+                </Link>);
 
             })}
           </nav>
@@ -188,9 +189,9 @@ export default function Layout({ children, currentPageName }) {
             const Icon = item.icon;
             const isActive = currentPageName === item.page;
             return (
-              <a
+              <Link
                 key={item.page}
-                href={createPageUrl(item.page)}
+                to={createPageUrl(item.page)}
                 onClick={() => setMenuOpen(false)}
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${
                 isActive ?
@@ -200,7 +201,7 @@ export default function Layout({ children, currentPageName }) {
                 
                   <Icon className="w-4 h-4" />
                   {item.name}
-                </a>);
+                </Link>);
 
           })}
           </nav>
