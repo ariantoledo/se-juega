@@ -18,7 +18,13 @@ import RequestCard from "../components/matches/RequestCard";
 import PlayerList from "../components/matches/PlayerList";
 import NotifyPlayersCard from "../components/matches/NotifyPlayersCard";
 
-const typeLabels = { "5": "Fútbol 5", "7": "Fútbol 7", "11": "Fútbol 11" };
+const SPORT_BADGE_LABEL = (match) => {
+  if (match.sport_type === "futbol") return match.football_type ? `⚽ Fútbol ${match.football_type}` : "⚽ Fútbol";
+  if (match.sport_type === "padel") return "🎾 Pádel";
+  if (match.sport_type === "tenis") return "🎾 Tenis";
+  if (match.sport_type === "ping_pong") return "🏓 Ping Pong";
+  return match.sport_type;
+};
 
 const POSITIONS_BY_SPORT = {
   futbol: ["Arquero", "Defensor", "Mediocampista", "Delantero"],
@@ -273,7 +279,7 @@ export default function MatchDetail() {
               </div>
             </div>
             <Badge className="bg-primary/10 text-primary border-0 font-semibold text-base">
-              {typeLabels[match.football_type]}
+              {SPORT_BADGE_LABEL(match)}
             </Badge>
           </div>
         </CardHeader>

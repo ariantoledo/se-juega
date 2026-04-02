@@ -7,7 +7,12 @@ import { MapPin, Clock, Users, DollarSign } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
-const typeLabels = { "5": "Fútbol 5", "7": "Fútbol 7", "11": "Fútbol 11" };
+const SPORT_LABELS = {
+  futbol: (ft) => ft ? `⚽ Fútbol ${ft}` : "⚽ Fútbol",
+  padel:    () => "🎾 Pádel",
+  tenis:    () => "🎾 Tenis",
+  ping_pong:() => "🏓 Ping Pong",
+};
 const levelLabels = { principiante: "Principiante", intermedio: "Intermedio", avanzado: "Avanzado" };
 
 const MatchCard = React.memo(function MatchCard({ match }) {
@@ -31,7 +36,7 @@ const MatchCard = React.memo(function MatchCard({ match }) {
               </div>
             </div>
             <Badge className="bg-primary/10 text-primary border-0 font-semibold">
-              {match.sport_type === "padel" ? "🎾 Pádel" : (typeLabels[match.football_type] || "⚽ Fútbol")}
+              {(SPORT_LABELS[match.sport_type] || SPORT_LABELS.futbol)(match.football_type)}
             </Badge>
           </div>
 
@@ -51,8 +56,8 @@ const MatchCard = React.memo(function MatchCard({ match }) {
             </div>
           </div>
 
-          {/* Padel level */}
-          {match.sport_type === "padel" && match.level && (
+          {/* Level badge for racket sports */}
+          {match.level && match.sport_type !== "futbol" && (
             <div className="mt-2">
               <Badge variant="outline" className="text-xs border-primary/30 text-primary bg-primary/5">
                 Nivel: {levelLabels[match.level] || match.level}
