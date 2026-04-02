@@ -52,7 +52,8 @@ Deno.serve(async (req) => {
       return Response.json({ sent: 0, message: "No hay jugadores disponibles para este horario" });
     }
 
-    const sportLabel = match.sport_type === "padel" ? "🎾 Pádel" : "⚽ Fútbol";
+    const SPORT_LABELS = { futbol: "⚽ Fútbol", padel: "🎾 Pádel", tenis: "🎾 Tenis", ping_pong: "🏓 Ping Pong" };
+    const sportLabel = SPORT_LABELS[match.sport_type] || match.sport_type;
     const matchUrl = `${req.headers.get("origin") || "https://sejuega.app"}/MatchDetail?id=${match_id}`;
     const spotsLeft = (match.players_needed || 0) - (match.current_players || 0);
 

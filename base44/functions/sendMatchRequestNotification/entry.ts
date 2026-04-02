@@ -23,9 +23,8 @@ Deno.serve(async (req) => {
     }
 
     // Determine sport type label
-    const sportLabel = matchData.sport_type === 'futbol' 
-      ? `Fútbol ${matchData.football_type}` 
-      : 'Pádel';
+    const SPORT_LABELS = { futbol: `Fútbol ${matchData.football_type || ''}`.trim(), padel: 'Pádel', tenis: 'Tenis', ping_pong: 'Ping Pong' };
+    const sportLabel = SPORT_LABELS[matchData.sport_type] || matchData.sport_type;
 
     // Create notification for match creator
     await base44.asServiceRole.entities.Notification.create({

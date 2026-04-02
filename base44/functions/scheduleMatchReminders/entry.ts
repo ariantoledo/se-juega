@@ -51,7 +51,9 @@ Deno.serve(async (req) => {
 
     const matchTime = new Date(match.date).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Buenos_Aires' });
     const sportLabel = SPORT_LABELS[match.sport_type] || match.sport_type;
-    const title = `⚽ Recordatorio: ${sportLabel} en ${REMINDER_MINUTES_BEFORE} min`;
+    const SPORT_EMOJIS = { futbol: '⚽', padel: '🎾', tenis: '🎾', ping_pong: '🏓' };
+    const sportEmoji = SPORT_EMOJIS[match.sport_type] || '🏅';
+    const title = `${sportEmoji} Recordatorio: ${sportLabel} en ${REMINDER_MINUTES_BEFORE} min`;
     const body = `${match.field_name} — ${match.address}\nHora del partido: ${matchTime}`;
 
     for (const email of emails) {
