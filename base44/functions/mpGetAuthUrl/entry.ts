@@ -10,12 +10,13 @@ Deno.serve(async (req) => {
 
   if (!clientId) return Response.json({ error: 'MP_CLIENT_ID not configured' }, { status: 500 });
 
-  const authUrl = new URL("https://auth.mercadopago.com/authorization");
+  const authUrl = new URL("https://auth.mercadopago.com.ar/authorization");
   authUrl.searchParams.set("client_id", clientId);
   authUrl.searchParams.set("response_type", "code");
   authUrl.searchParams.set("platform_id", "mp");
+  authUrl.searchParams.set("scope", "offline_access");
   authUrl.searchParams.set("state", establishment_id);
   authUrl.searchParams.set("redirect_uri", redirect_uri);
 
-  return Response.json({ auth_url: authUrl.toString() });
+  return Response.json({ auth_url: authUrl.toString(), redirect_uri });
 });
