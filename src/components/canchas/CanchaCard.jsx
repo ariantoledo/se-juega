@@ -57,13 +57,15 @@ const CanchaCard = React.memo(function CanchaCard({ field, establishmentName }) 
             <div className="flex items-center gap-1">
               <Banknote className="w-4 h-4 text-primary shrink-0" />
               <span className="font-semibold text-foreground">
-                ${field.precio_total.toLocaleString()}
+                ${(field.precio_total || 0).toLocaleString()}
               </span>
               <span className="text-muted-foreground">/hora</span>
             </div>
-            <div className="text-muted-foreground">
-              Seña: ${field.precio_sena.toLocaleString()}
-            </div>
+            {field.precio_sena > 0 && (
+              <div className="text-muted-foreground">
+                Seña: ${(field.precio_sena || 0).toLocaleString()}
+              </div>
+            )}
           </div>
 
           {/* Botón visible en pantallas grandes */}

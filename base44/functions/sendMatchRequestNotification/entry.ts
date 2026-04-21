@@ -1,4 +1,4 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.21';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 Deno.serve(async (req) => {
   try {
@@ -15,8 +15,7 @@ Deno.serve(async (req) => {
     }
 
     // Fetch match details to get creator and match info
-    const match = await base44.asServiceRole.entities.Match.list();
-    const matchData = match.find(m => m.id === matchRequest.match_id);
+    const matchData = await base44.asServiceRole.entities.Match.get(matchRequest.match_id);
 
     if (!matchData) {
       return Response.json({ error: 'Match not found' }, { status: 404 });

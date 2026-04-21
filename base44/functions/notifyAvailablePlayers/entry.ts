@@ -1,4 +1,4 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.21';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 const DAY_MAP = {
   0: "domingo", 1: "lunes", 2: "martes", 3: "miércoles",
