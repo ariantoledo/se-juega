@@ -7,14 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { CheckCircle2, AlertCircle, ExternalLink, Copy } from "lucide-react";
+import { CheckCircle2, AlertCircle, ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 
 export default function ConfigurarMercadoPago() {
   const [user, setUser] = useState(null);
   const [connecting, setConnecting] = useState(false);
-  const redirectUri = window.location.origin + "/MercadoPagoCallback";
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -64,20 +63,9 @@ export default function ConfigurarMercadoPago() {
 
         <Alert className="mb-6">
           <AlertCircle className="w-4 h-4" />
-          <AlertDescription className="space-y-2">
+          <AlertDescription>
             <p>Para recibir pagos de las reservas, necesitas vincular tu cuenta de Mercado Pago.
             Los pagos se procesan en pesos argentinos (ARS).</p>
-            <p className="text-xs font-medium">⚠️ Antes de conectar, asegurate de registrar esta URL de retorno en tu app de Mercado Pago (Mis apps → Editar → Redirect URIs):</p>
-            <div className="flex items-center gap-2 bg-muted rounded p-2">
-              <code className="text-xs flex-1 break-all">{redirectUri}</code>
-              <button
-                onClick={() => { navigator.clipboard.writeText(redirectUri); }}
-                className="shrink-0 p-1 hover:text-primary"
-                title="Copiar"
-              >
-                <Copy className="w-3.5 h-3.5" />
-              </button>
-            </div>
           </AlertDescription>
         </Alert>
 
