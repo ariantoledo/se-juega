@@ -174,13 +174,13 @@ export default function CanchaDetail() {
                 <div className="flex items-center justify-between p-3 bg-primary/10 rounded-lg">
                   <span className="font-medium">Precio Total</span>
                   <span className="text-xl font-bold text-primary">
-                    ARS ${field.precio_total.toLocaleString()}
+                    ARS ${(field.precio_total || 0).toLocaleString()}
                   </span>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-secondary rounded-lg">
                   <span className="font-medium">Seña</span>
                   <span className="text-lg font-semibold">
-                    ARS ${field.precio_sena.toLocaleString()}
+                    ARS ${(field.precio_sena || 0).toLocaleString()}
                   </span>
                 </div>
               </CardContent>
@@ -286,8 +286,8 @@ export default function CanchaDetail() {
               <Label className="mb-3 block">Tipo de pago</Label>
               <div className="space-y-2">
                 <button
-                  onClick={() => setPaymentType("sena")}
-                  aria-label={`Pagar seña: ARS ${field.precio_sena.toLocaleString()}`}
+                onClick={() => setPaymentType("sena")}
+                aria-label={`Pagar seña: ARS ${(field.precio_sena || 0).toLocaleString()}`}
                   aria-pressed={paymentType === "sena"}
                   className={`w-full p-4 rounded-lg border-2 transition-all ${
                     paymentType === "sena"
@@ -299,7 +299,7 @@ export default function CanchaDetail() {
                     <div className="text-left">
                       <div className="font-semibold">Pagar seña</div>
                       <div className="text-sm text-muted-foreground">
-                        Reserva con ARS ${field.precio_sena.toLocaleString()}
+                        Reserva con ARS ${(field.precio_sena || 0).toLocaleString()}
                       </div>
                     </div>
                     {paymentType === "sena" && <CheckCircle2 className="w-5 h-5 text-primary" />}
@@ -308,7 +308,7 @@ export default function CanchaDetail() {
 
                 <button
                   onClick={() => setPaymentType("total")}
-                  aria-label={`Pagar total: ARS ${field.precio_total.toLocaleString()}`}
+                  aria-label={`Pagar total: ARS ${(field.precio_total || 0).toLocaleString()}`}
                   aria-pressed={paymentType === "total"}
                   className={`w-full p-4 rounded-lg border-2 transition-all ${
                     paymentType === "total"
@@ -320,7 +320,7 @@ export default function CanchaDetail() {
                     <div className="text-left">
                       <div className="font-semibold">Pagar total</div>
                       <div className="text-sm text-muted-foreground">
-                        ARS ${field.precio_total.toLocaleString()} completo
+                        ARS ${(field.precio_total || 0).toLocaleString()} completo
                       </div>
                     </div>
                     {paymentType === "total" && <CheckCircle2 className="w-5 h-5 text-primary" />}
@@ -333,7 +333,7 @@ export default function CanchaDetail() {
               <div className="flex items-center justify-between text-lg font-semibold">
                 <span>Total a pagar</span>
                 <span className="text-primary">
-                  ARS ${(paymentType === "sena" ? field.precio_sena : field.precio_total).toLocaleString()}
+                  ARS ${(paymentType === "sena" ? (field.precio_sena || 0) : (field.precio_total || 0)).toLocaleString()}
                 </span>
               </div>
               <div className="bg-primary/5 border border-primary/20 p-3 rounded-lg">

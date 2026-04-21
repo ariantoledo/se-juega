@@ -285,7 +285,7 @@ Si pagaste, el reembolso será procesado en los próximos días.`
     }
   });
 
-  const pendingReservations = reservations.filter(r => r.reservation_status === "pending" && r.payment_status === "paid");
+  const pendingReservations = reservations.filter(r => r.reservation_status === "pending");
   const confirmedReservations = reservations.filter(r => r.reservation_status === "confirmed");
   const totalIncome = reservations
     .filter(r => r.payment_status === "paid")

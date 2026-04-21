@@ -1,4 +1,4 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.21';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 Deno.serve(async (req) => {
   try {
@@ -24,14 +24,14 @@ Deno.serve(async (req) => {
     }
 
     // Get owner's MP access token from establishment
-    const establishment = await base44.asServiceRole.entities.Establishment.filter({ id: field.establishment_id });
-    const ownerAccessToken = establishment[0]?.mercadopago_account_id;
+    const establishment = await base44.asServiceRole.entities.Establishment.get(field.establishment_id);
+    const ownerAccessToken = establishment?.mercadopago_account_id;
     if (!ownerAccessToken) {
       return Response.json({ error: 'El dueño no tiene Mercado Pago configurado' }, { status: 400 });
     }
 
     // Respect the commission_enabled flag set per establishment by admin
-    const commissionEnabled = establishment[0]?.commission_enabled !== false;
+    const commissionEnabled = establishment?.commission_enabled !== false;
     const COMMISSION = commissionEnabled ? 2000 : 0;
     const amount = payment_type === "sena" ? field.precio_sena : field.precio_total;
     const ownerAmount = amount - COMMISSION;

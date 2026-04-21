@@ -23,6 +23,7 @@ export default function EditarEstablecimiento() {
     images: []
   });
 
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const { data: establishment, isLoading } = useQuery({
@@ -94,8 +95,6 @@ export default function EditarEstablecimiento() {
       </div>
     );
   }
-
-  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-6">
