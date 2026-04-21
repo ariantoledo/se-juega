@@ -39,7 +39,16 @@ Deno.serve(async (req) => {
       if (user.role !== 'admin') {
         return Response.json({ error: 'No tiene permisos para realizar esta acción.' }, { status: 403 });
       }
-      await base44.auth.updateMe({ mp_admin_token: tokenData.access_token, mp_admin_user_id: String(tokenData.user_id) });
+      // Find admin user by email and update via service role
+      const allUsers = await base44.asServiceRole.entities.User.list();
+      const adminUserRecord = allUsers.find(u => u.email === user.email);
+      if (!adminUserRecord) {
+        return Response.json({ error: 'Admin user not found' }, { status: 404 });
+      }
+      await base44.asServiceRole.entities.User.update(adminUserRecord.id, {
+        mp_admin_token: tokenData.access_token,
+        mp_admin_user_id: String(tokenData.user_id)
+      });
     } else {
       // Validate the establishment belongs to the requesting user
       const estRecord = await base44.asServiceRole.entities.Establishment.get(establishment_id);
