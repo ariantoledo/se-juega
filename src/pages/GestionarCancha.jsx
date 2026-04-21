@@ -215,7 +215,7 @@ export default function GestionarCancha() {
 Cancha: ${reservation.field_name}
 Fecha: ${reservation.date}
 Horario: ${reservation.start_time} - ${reservation.end_time}
-Monto pagado: $${reservation.amount_paid.toLocaleString()}
+Monto pagado: $${(reservation.amount_paid || 0).toLocaleString()}
 
 ¡Nos vemos en la cancha!`
       });
@@ -419,7 +419,7 @@ Si pagaste, el reembolso será procesado en los próximos días.`
                               {res.start_time} - {res.end_time}
                             </p>
                             <p className="text-sm font-medium mt-1">
-                              ${res.amount_paid.toLocaleString()}
+                              ${(res.amount_paid || 0).toLocaleString()}
                             </p>
                           </div>
                           <Badge className="shrink-0">Confirmada</Badge>

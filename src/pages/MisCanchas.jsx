@@ -217,7 +217,7 @@ export default function MisCanchas() {
                                   </div>
                                   <div className="flex justify-between gap-2">
                                     <span className="text-muted-foreground shrink-0">Precio</span>
-                                    <span className="truncate">ARS ${field.precio_total.toLocaleString()}</span>
+                                    <span className="truncate">ARS ${(field.precio_total || 0).toLocaleString()}</span>
                                   </div>
                                 </div>
                                 <Button variant="outline" size="sm" className="w-full text-xs" asChild>
@@ -256,7 +256,7 @@ export default function MisCanchas() {
                           </p>
                         </div>
                         <div className="text-right shrink-0">
-                          <p className="font-semibold text-sm md:text-base">ARS ${res.amount_paid.toLocaleString()}</p>
+                          <p className="font-semibold text-sm md:text-base">ARS ${(res.amount_paid || 0).toLocaleString()}</p>
                           <p className="text-xs text-muted-foreground">{res.reservation_status}</p>
                         </div>
                       </div>
