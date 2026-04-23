@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
+import { safeArray } from "@/lib/safeArray";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createPageUrl } from "@/utils";
 import { Card, CardContent } from "@/components/ui/card";
@@ -69,14 +70,14 @@ export default function Profile() {
 
   const { data: myPlayers = [] } = useQuery({
     queryKey: ["profile_players", user?.email],
-    queryFn: () => base44.entities.MatchPlayer.filter({ player_email: user?.email }),
+    queryFn: async () => safeArray(await base44.entities.MatchPlayer.filter({ player_email: user?.email })),
     enabled: !!user?.email,
   });
 
   const { data: myCreatedMatches = [] } = useQuery({
     queryKey: ["profile_created", user?.email],
     queryFn: async () => {
-      const all = await base44.entities.Match.list();
+      const all = safeArray(await base44.entities.Match.list());
       return all.filter((m) => m.creator_email === user?.email);
     },
     enabled: !!user?.email,

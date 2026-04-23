@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
+import { safeArray } from "@/lib/safeArray";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { goBack } from "@/lib/nav-history";
@@ -50,7 +51,7 @@ export default function MatchDetail() {
   const { data: match, isLoading: matchLoading } = useQuery({
     queryKey: ["match", matchId],
     queryFn: async () => {
-      const all = await base44.entities.Match.list();
+      const all = safeArray(await base44.entities.Match.list());
       return all.find((m) => m.id === matchId);
     },
     enabled: !!matchId,
@@ -58,13 +59,13 @@ export default function MatchDetail() {
 
   const { data: players = [] } = useQuery({
     queryKey: ["match_players", matchId],
-    queryFn: () => base44.entities.MatchPlayer.filter({ match_id: matchId }),
+    queryFn: async () => safeArray(await base44.entities.MatchPlayer.filter({ match_id: matchId })),
     enabled: !!matchId,
   });
 
   const { data: requests = [] } = useQuery({
     queryKey: ["match_requests", matchId],
-    queryFn: () => base44.entities.MatchRequest.filter({ match_id: matchId }),
+    queryFn: async () => safeArray(await base44.entities.MatchRequest.filter({ match_id: matchId })),
     enabled: !!matchId,
   });
 

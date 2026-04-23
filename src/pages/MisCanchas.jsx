@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
+import { safeArray } from "@/lib/safeArray";
 import { useQuery } from "@tanstack/react-query";
 import { createPageUrl } from "@/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,7 +20,7 @@ export default function MisCanchas() {
   const { data: myEstablishments = [] } = useQuery({
     queryKey: ["my-establishments", user?.email],
     queryFn: async () => {
-      const all = await base44.entities.Establishment.list();
+      const all = safeArray(await base44.entities.Establishment.list());
       return all.filter(e => e.owner_email === user.email);
     },
     enabled: !!user?.email
@@ -28,7 +29,7 @@ export default function MisCanchas() {
   const { data: myFields = [] } = useQuery({
     queryKey: ["my-fields", user?.email],
     queryFn: async () => {
-      const all = await base44.entities.FieldNew.list();
+      const all = safeArray(await base44.entities.FieldNew.list());
       return all.filter(f => f.owner_email === user.email);
     },
     enabled: !!user?.email
@@ -37,8 +38,8 @@ export default function MisCanchas() {
   const { data: allReservations = [] } = useQuery({
     queryKey: ["owner-reservations", user?.email],
     queryFn: async () => {
-      const all = await base44.entities.FieldNewReservation.list();
-      const myFieldIds = myFields.map(f => f.id);
+      const all = safeArray(await base44.entities.FieldNewReservation.list());
+      const myFieldIds = safeArray(myFields).map(f => f.id);
       return all.filter(r => myFieldIds.includes(r.field_new_id));
     },
     enabled: myFields.length > 0

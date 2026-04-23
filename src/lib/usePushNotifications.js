@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { base44 } from "@/api/base44Client";
+import { safeArray } from "@/lib/safeArray";
 
 function urlBase64ToUint8Array(base64String) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
@@ -30,7 +31,7 @@ async function registerPush(userEmail) {
   }
 
   // Save subscription to DB
-  const existing = await base44.entities.PushSubscription.filter({ user_email: userEmail });
+  const existing = safeArray(await base44.entities.PushSubscription.filter({ user_email: userEmail }));
   const subJson = JSON.stringify(sub.toJSON());
 
   if (existing.length === 0) {

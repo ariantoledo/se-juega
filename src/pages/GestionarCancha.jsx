@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
+import { safeArray } from "@/lib/safeArray";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { goBack } from "@/lib/nav-history";
@@ -36,7 +37,7 @@ export default function GestionarCancha() {
   const { data: field } = useQuery({
     queryKey: ["fieldnew", fieldId],
     queryFn: async () => {
-      const fields = await base44.entities.FieldNew.list();
+      const fields = safeArray(await base44.entities.FieldNew.list());
       return fields.find(f => f.id === fieldId);
     },
     enabled: !!fieldId
@@ -45,7 +46,7 @@ export default function GestionarCancha() {
   const { data: establishment } = useQuery({
     queryKey: ["establishment", field?.establishment_id],
     queryFn: async () => {
-      const all = await base44.entities.Establishment.list();
+      const all = safeArray(await base44.entities.Establishment.list());
       return all.find(e => e.id === field.establishment_id);
     },
     enabled: !!field?.establishment_id
@@ -54,7 +55,7 @@ export default function GestionarCancha() {
   const { data: reservations = [] } = useQuery({
     queryKey: ["field-reservations", fieldId],
     queryFn: async () => {
-      const all = await base44.entities.FieldNewReservation.list();
+      const all = safeArray(await base44.entities.FieldNewReservation.list());
       return all.filter(r => r.field_new_id === fieldId);
     },
     enabled: !!fieldId
@@ -63,7 +64,7 @@ export default function GestionarCancha() {
   const { data: slots = [] } = useQuery({
     queryKey: ["field-slots", fieldId, selectedDate],
     queryFn: async () => {
-      const all = await base44.entities.FieldNewTimeSlot.list();
+      const all = safeArray(await base44.entities.FieldNewTimeSlot.list());
       const dateStr = format(selectedDate, "yyyy-MM-dd");
       return all.filter(s => s.field_new_id === fieldId && s.date === dateStr);
     },
@@ -151,7 +152,7 @@ export default function GestionarCancha() {
       const yesterdayStr = format(yesterday, "yyyy-MM-dd");
       const todayStr = format(selectedDate, "yyyy-MM-dd");
 
-      const all = await base44.entities.FieldNewTimeSlot.list();
+      const all = safeArray(await base44.entities.FieldNewTimeSlot.list());
       const yesterdaySlots = all.filter(
         s => s.field_new_id === fieldId && s.date === yesterdayStr && s.status !== "blocked"
       );

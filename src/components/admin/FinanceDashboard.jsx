@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { safeArray } from "@/lib/safeArray";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,7 +18,7 @@ export default function FinanceDashboard({ user }) {
 
   const { data: reservations = [] } = useQuery({
     queryKey: ["admin-reservations"],
-    queryFn: () => base44.entities.FieldNewReservation.list("-created_date"),
+    queryFn: async () => safeArray(await base44.entities.FieldNewReservation.list("-created_date")),
   });
 
   const paidReservations = reservations.filter(r => r.payment_status === "paid");

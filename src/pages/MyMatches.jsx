@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
+import { safeArray } from "@/lib/safeArray";
 import { useQuery } from "@tanstack/react-query";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { CalendarDays, Plus } from "lucide-react";
@@ -16,12 +17,12 @@ export default function MyMatches() {
 
   const { data: allMatches = [], refetch: refetchMatches } = useQuery({
     queryKey: ["all_matches"],
-    queryFn: () => base44.entities.Match.list("-date"),
+    queryFn: async () => safeArray(await base44.entities.Match.list("-date")),
   });
 
   const { data: myPlayers = [], refetch: refetchPlayers } = useQuery({
     queryKey: ["my_players", user?.email],
-    queryFn: () => base44.entities.MatchPlayer.filter({ player_email: user?.email }),
+    queryFn: async () => safeArray(await base44.entities.MatchPlayer.filter({ player_email: user?.email })),
     enabled: !!user?.email,
   });
 

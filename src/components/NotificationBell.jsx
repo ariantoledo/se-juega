@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
+import { safeArray } from "@/lib/safeArray";
 import { Bell, X, CheckCheck, ExternalLink } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
@@ -37,7 +38,7 @@ export default function NotificationBell({ userEmail }) {
   useEffect(() => {
     if (!userEmail) return;
     base44.entities.Notification.filter({ user_email: userEmail }, "-created_date", 30)
-      .then(setNotifications)
+      .then((data) => setNotifications(safeArray(data)))
       .catch(() => {});
   }, [userEmail]);
 
@@ -45,9 +46,9 @@ export default function NotificationBell({ userEmail }) {
   useEffect(() => {
     if (!userEmail) return;
     const unsub = base44.entities.Notification.subscribe((event) => {
-      if (event.data?.user_email !== userEmail) return;
+      if (!event?.data || event.data?.user_email !== userEmail) return;
       if (event.type === "create") {
-        setNotifications((prev) => [event.data, ...prev]);
+        setNotifications((prev) => [event.data, ...safeArray(prev)]);
         // Show browser push notification
         if (permissionGranted && document.hidden) {
           new Notification(event.data.title, {
@@ -58,10 +59,10 @@ export default function NotificationBell({ userEmail }) {
         }
       } else if (event.type === "update") {
         setNotifications((prev) =>
-          prev.map((n) => (n.id === event.id ? event.data : n))
+          safeArray(prev).map((n) => (n.id === event.id ? event.data : n))
         );
       } else if (event.type === "delete") {
-        setNotifications((prev) => prev.filter((n) => n.id !== event.id));
+        setNotifications((prev) => safeArray(prev).filter((n) => n.id !== event.id));
       }
     });
     return unsub;

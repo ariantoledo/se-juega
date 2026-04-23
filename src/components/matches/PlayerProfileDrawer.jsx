@@ -1,6 +1,7 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
+import { safeArray } from "@/lib/safeArray";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Badge } from "@/components/ui/badge";
 import { User, Shield, Trophy, CheckCircle2, XCircle, Mail } from "lucide-react";
@@ -8,24 +9,25 @@ import { User, Shield, Trophy, CheckCircle2, XCircle, Mail } from "lucide-react"
 export default function PlayerProfileDrawer({ playerEmail, playerName, open, onClose }) {
   const { data: players = [] } = useQuery({
     queryKey: ["player_profile", playerEmail],
-    queryFn: () => base44.entities.MatchPlayer.filter({ player_email: playerEmail }),
+    queryFn: async () => safeArray(await base44.entities.MatchPlayer.filter({ player_email: playerEmail })),
     enabled: open && !!playerEmail,
   });
 
   const { data: users = [] } = useQuery({
     queryKey: ["user_data", playerEmail],
-    queryFn: () => base44.entities.User.list(),
+    queryFn: async () => safeArray(await base44.entities.User.list()),
     enabled: open && !!playerEmail,
   });
 
   const userData = users.find(u => u.email === playerEmail);
 
-  const matchesPlayed = players.filter(p => p.attended === "yes").length;
-  const noShows = players.filter(p => p.attended === "no").length;
-  const confirmed = players.filter(p => p.attended !== undefined && p.attended !== null && p.attended !== "pending").length;
+  const safePlayers = safeArray(players);
+  const matchesPlayed = safePlayers.filter(p => p.attended === "yes").length;
+  const noShows = safePlayers.filter(p => p.attended === "no").length;
+  const confirmed = safePlayers.filter(p => p.attended !== undefined && p.attended !== null && p.attended !== "pending").length;
   const reliability = confirmed > 0 ? Math.round((matchesPlayed / confirmed) * 100) : 100;
 
-  const positions = [...new Set(players.map(p => p.position).filter(Boolean))];
+  const positions = [...new Set(safePlayers.map(p => p.position).filter(Boolean))];
 
   return (
     <Drawer open={open} onOpenChange={onClose}>
@@ -74,7 +76,7 @@ export default function PlayerProfileDrawer({ playerEmail, playerName, open, onC
             </div>
             <div className="p-3 rounded-xl bg-secondary/60 text-center">
               <CheckCircle2 className="w-4 h-4 text-primary mx-auto mb-1" />
-              <p className="text-xl font-bold">{players.length}</p>
+              <p className="text-xl font-bold">{safePlayers.length}</p>
               <p className="text-xs text-muted-foreground">Partidos</p>
             </div>
             <div className="p-3 rounded-xl bg-secondary/60 text-center">
