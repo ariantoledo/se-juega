@@ -44,7 +44,7 @@ export default function Profile() {
   const { data: myAvailability } = useQuery({
     queryKey: ["my_availability", user?.email],
     queryFn: async () => {
-      const all = await base44.entities.PlayerAvailability.list();
+      const all = safeArray(await base44.entities.PlayerAvailability.list());
       return all.find(a => a.user_email === user.email) || null;
     },
     enabled: !!user?.email,

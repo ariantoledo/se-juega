@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
+import { safeArray } from "@/lib/safeArray";
 import { useQuery } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import MobileSelect from "@/components/ui/mobile-select";
@@ -13,12 +14,12 @@ export default function Canchas() {
 
   const { data: fields = [], isLoading } = useQuery({
     queryKey: ["fieldsnew"],
-    queryFn: () => base44.entities.FieldNew.list(),
+    queryFn: async () => safeArray(await base44.entities.FieldNew.list()),
   });
 
   const { data: establishments = [] } = useQuery({
     queryKey: ["establishments"],
-    queryFn: () => base44.entities.Establishment.list(),
+    queryFn: async () => safeArray(await base44.entities.Establishment.list()),
   });
 
   const establishmentMap = Object.fromEntries(establishments.map(e => [e.id, e.name]));

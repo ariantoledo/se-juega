@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Onboarding from "../components/Onboarding";
 import { base44 } from "@/api/base44Client";
+import { safeArray } from "@/lib/safeArray";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -53,7 +54,7 @@ export default function Home() {
 
   const { data: matches = [], isLoading, refetch } = useQuery({
     queryKey: ["matches"],
-    queryFn: () => base44.entities.Match.list("-date"),
+    queryFn: async () => safeArray(await base44.entities.Match.list("-date")),
   });
 
   // Filter open matches that are in the future

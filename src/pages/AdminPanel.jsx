@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
+import { safeArray } from "@/lib/safeArray";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -29,14 +30,14 @@ export default function AdminPanel() {
 
   const { data: requests = [], isLoading } = useQuery({
     queryKey: ["owner-requests"],
-    queryFn: () => base44.entities.OwnerRequest.list("-created_date"),
+    queryFn: async () => safeArray(await base44.entities.OwnerRequest.list("-created_date")),
     enabled: user?.role === "admin"
   });
 
   const approveMutation = useMutation({
     mutationFn: async (request) => {
       await base44.entities.OwnerRequest.update(request.id, { status: "approved" });
-      const users = await base44.entities.User.list();
+      const users = safeArray(await base44.entities.User.list());
       const targetUser = users.find(u => u.email === request.user_email);
       if (targetUser) {
         await base44.entities.User.update(targetUser.id, { role: "dueño_verificado" });
@@ -75,7 +76,7 @@ export default function AdminPanel() {
   const rejectMutation = useMutation({
     mutationFn: async (request) => {
       await base44.entities.OwnerRequest.update(request.id, { status: "rejected" });
-      const users = await base44.entities.User.list();
+      const users = safeArray(await base44.entities.User.list());
       const targetUser = users.find(u => u.email === request.user_email);
       if (targetUser) {
         await base44.entities.User.update(targetUser.id, { role: "usuario_normal" });

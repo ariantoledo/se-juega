@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
+import { safeArray } from "@/lib/safeArray";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { goBack } from "@/lib/nav-history";
@@ -68,12 +69,12 @@ export default function CreateMatch() {
 
   const { data: establishments = [] } = useQuery({
     queryKey: ["establishments"],
-    queryFn: () => base44.entities.Establishment.list(),
+    queryFn: async () => safeArray(await base44.entities.Establishment.list()),
   });
 
   const { data: allFields = [] } = useQuery({
     queryKey: ["fieldsnew"],
-    queryFn: () => base44.entities.FieldNew.list(),
+    queryFn: async () => safeArray(await base44.entities.FieldNew.list()),
   });
 
   const SPORT_FIELD_TYPES = {
@@ -93,7 +94,7 @@ export default function CreateMatch() {
   const { data: availableSlots = [] } = useQuery({
     queryKey: ["slots", selectedFieldId, slotDate],
     queryFn: async () => {
-      const all = await base44.entities.FieldNewTimeSlot.list();
+      const all = safeArray(await base44.entities.FieldNewTimeSlot.list());
       return all.filter(
         s => s.field_new_id === selectedFieldId && s.date === slotDate && s.status === "available"
       );

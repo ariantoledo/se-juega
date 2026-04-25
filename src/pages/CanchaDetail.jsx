@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { safeArray } from "@/lib/safeArray";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createPageUrl } from "@/utils";
@@ -38,7 +39,7 @@ export default function CanchaDetail() {
   const { data: field, isLoading } = useQuery({
     queryKey: ["fieldnew", fieldId],
     queryFn: async () => {
-      const fields = await base44.entities.FieldNew.list();
+      const fields = safeArray(await base44.entities.FieldNew.list());
       return fields.find(f => f.id === fieldId);
     },
     enabled: !!fieldId
@@ -47,7 +48,7 @@ export default function CanchaDetail() {
   const { data: establishment } = useQuery({
     queryKey: ["establishment", field?.establishment_id],
     queryFn: async () => {
-      const establishments = await base44.entities.Establishment.list();
+      const establishments = safeArray(await base44.entities.Establishment.list());
       return establishments.find(e => e.id === field.establishment_id);
     },
     enabled: !!field?.establishment_id
@@ -56,7 +57,7 @@ export default function CanchaDetail() {
   const { data: slots = [] } = useQuery({
     queryKey: ["fieldnew-slots", fieldId, selectedDate],
     queryFn: async () => {
-      const allSlots = await base44.entities.FieldNewTimeSlot.list();
+      const allSlots = safeArray(await base44.entities.FieldNewTimeSlot.list());
       const dateStr = format(selectedDate, "yyyy-MM-dd");
       return allSlots.filter(s => s.field_new_id === fieldId && s.date === dateStr);
     },
