@@ -1,0 +1,1 @@
+import{t as a,c as e}from"./format-PQkhWFD6.js";function n(s,t){const r=a(s);return isNaN(t)?e(s,NaN):(t&&r.setDate(r.getDate()+t),r)}function u(s){const t=a(s);return t.setDate(1),t.setHours(0,0,0,0),t}function c(s,t){return n(s,-t)}export{u as a,n as b,c as s};

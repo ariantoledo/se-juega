@@ -1,0 +1,8 @@
+com.sejuega.app-pngs-0 C:\PROYECTO\se-juega\android\app\build\generated\res\pngs\debug
+com.sejuega.app-resValues-1 C:\PROYECTO\se-juega\android\app\build\generated\res\resValues\debug
+com.sejuega.app-updated_navigation_xml-2 C:\PROYECTO\se-juega\android\app\build\generated\updated_navigation_xml\debug
+com.sejuega.app-packageDebugResources-3 C:\PROYECTO\se-juega\android\app\build\intermediates\incremental\debug\packageDebugResources\merged.dir
+com.sejuega.app-packageDebugResources-4 C:\PROYECTO\se-juega\android\app\build\intermediates\incremental\debug\packageDebugResources\stripped.dir
+com.sejuega.app-debug-5 C:\PROYECTO\se-juega\android\app\build\intermediates\merged_res\debug\mergeDebugResources
+com.sejuega.app-debug-6 C:\PROYECTO\se-juega\android\app\src\debug\res
+com.sejuega.app-main-7 C:\PROYECTO\se-juega\android\app\src\main\res

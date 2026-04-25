@@ -1,0 +1,3 @@
+com.sejuega.app.test
+style WhiteBackgroundDialogTheme
+style WhiteBackgroundTheme
