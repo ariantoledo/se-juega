@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState as _useState, useEffect as _useEffect } from "react";
 
 // ─── Navigation Stack ────────────────────────────────────────────────────────
 // Module-level singleton — no Context/Provider needed.
@@ -71,8 +71,8 @@ export function goForward(navigate, path) {
 
 /** React hook — returns the current navigation direction ("forward" | "back"). */
 export function useNavDirection() {
-  const [direction, setDirection] = useState(_direction);
-  useEffect(() => {
+  const [direction, setDirection] = _useState(_direction);
+  _useEffect(() => {
     _listeners.add(setDirection);
     return () => _listeners.delete(setDirection);
   }, []);
@@ -94,7 +94,7 @@ export function useNavDirection() {
  * Call once in the root Layout component.
  */
 export function useAndroidBackHandler(navigate) {
-  useEffect(() => {
+  _useEffect(() => {
     // Detect if we're returning from an external redirect (e.g. payment gateway).
     // External pages won't have our __sejuega state marker, so we restore gracefully.
     const currentState = window.history.state;
