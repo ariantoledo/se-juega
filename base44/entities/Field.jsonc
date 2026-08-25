@@ -1,0 +1,61 @@
+{
+  "name": "Field",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nombre de la cancha"
+    },
+    "address": {
+      "type": "string",
+      "description": "Direcci\u00f3n"
+    },
+    "latitude": {
+      "type": "number",
+      "description": "Latitud"
+    },
+    "longitude": {
+      "type": "number",
+      "description": "Longitud"
+    },
+    "field_types": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tipos de f\u00fatbol soportados (5, 7, 11)"
+    },
+    "price_per_hour": {
+      "type": "number",
+      "description": "Precio por hora"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descripci\u00f3n de la cancha"
+    },
+    "images": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "URLs de im\u00e1genes"
+    },
+    "owner_email": {
+      "type": "string",
+      "description": "Email del due\u00f1o"
+    },
+    "contact_phone": {
+      "type": "string",
+      "description": "Tel\u00e9fono de contacto"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Si la cancha est\u00e1 activa"
+    }
+  },
+  "required": [
+    "name",
+    "address"
+  ]
+}

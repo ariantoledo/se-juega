@@ -1,0 +1,122 @@
+{
+  "name": "Establishment",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nombre del establecimiento"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descripci\u00f3n del establecimiento"
+    },
+    "address": {
+      "type": "string",
+      "description": "Direcci\u00f3n completa"
+    },
+    "latitude": {
+      "type": "number",
+      "description": "Latitud"
+    },
+    "longitude": {
+      "type": "number",
+      "description": "Longitud"
+    },
+    "phone": {
+      "type": "string",
+      "pattern": "^[0-9\\-\\+\\s]{7,15}$",
+      "description": "Tel\u00e9fono de contacto"
+    },
+    "images": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "uri"
+      },
+      "description": "URLs de im\u00e1genes del establecimiento"
+    },
+    "owner_email": {
+      "type": "string",
+      "format": "email",
+      "description": "Email del due\u00f1o"
+    },
+    "mercadopago_account_id": {
+      "type": "string",
+      "description": "Access token de la cuenta Mercado Pago del due\u00f1o (OAuth)"
+    },
+    "mercadopago_user_id": {
+      "type": "string",
+      "description": "User ID de la cuenta Mercado Pago del due\u00f1o"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Si el establecimiento est\u00e1 activo"
+    },
+    "commission_enabled": {
+      "type": "boolean",
+      "default": true,
+      "description": "Si se cobra comisi\u00f3n a este establecimiento"
+    }
+  },
+  "required": [
+    "name",
+    "address",
+    "owner_email"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "due\u00f1o_verificado"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "data.owner_email": "{{user.email}}"
+        },
+        {
+          "data.is_active": true
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.owner_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.owner_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

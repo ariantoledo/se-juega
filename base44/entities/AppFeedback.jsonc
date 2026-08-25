@@ -1,0 +1,67 @@
+{
+  "name": "AppFeedback",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "format": "email",
+      "description": "Email del usuario"
+    },
+    "user_name": {
+      "type": "string",
+      "description": "Nombre del usuario"
+    },
+    "rating": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 5,
+      "description": "Valoraci\u00f3n del 1 al 5"
+    },
+    "comment": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "Comentario u opini\u00f3n"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "rating",
+        "suggestion",
+        "bug",
+        "other"
+      ],
+      "description": "Tipo de feedback"
+    }
+  },
+  "required": [
+    "user_email",
+    "type"
+  ],
+  "rls": {
+    "create": {
+      "data.user_email": "{{user.email}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "data.user_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

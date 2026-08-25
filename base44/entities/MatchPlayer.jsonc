@@ -1,0 +1,47 @@
+{
+  "name": "MatchPlayer",
+  "type": "object",
+  "properties": {
+    "match_id": {
+      "type": "string",
+      "description": "ID del partido vinculado"
+    },
+    "player_email": {
+      "type": "string",
+      "format": "email",
+      "description": "Email del jugador"
+    },
+    "player_name": {
+      "type": "string",
+      "description": "Nombre del jugador"
+    },
+    "position": {
+      "type": "string",
+      "enum": [
+        "arquero",
+        "defensor",
+        "mediocampista",
+        "delantero",
+        "dobles",
+        "singles"
+      ],
+      "description": "Posici\u00f3n que jugar\u00e1"
+    },
+    "attendance_status": {
+      "type": "string",
+      "enum": [
+        "invited",
+        "confirmed",
+        "declined",
+        "attended"
+      ],
+      "default": "invited",
+      "description": "Estado de participaci\u00f3n/asistencia del jugador"
+    }
+  },
+  "required": [
+    "match_id",
+    "player_email",
+    "player_name"
+  ]
+}

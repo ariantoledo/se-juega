@@ -1,0 +1,102 @@
+{
+  "name": "FieldNewTimeSlot",
+  "type": "object",
+  "properties": {
+    "field_new_id": {
+      "type": "string",
+      "description": "ID de la cancha"
+    },
+    "date": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "description": "Fecha (YYYY-MM-DD)"
+    },
+    "start_time": {
+      "type": "string",
+      "pattern": "^\\d{2}:\\d{2}$",
+      "description": "Hora de inicio (HH:mm)"
+    },
+    "end_time": {
+      "type": "string",
+      "pattern": "^\\d{2}:\\d{2}$",
+      "description": "Hora de fin (HH:mm)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "available",
+        "reserved",
+        "blocked"
+      ],
+      "default": "available",
+      "description": "Estado del horario"
+    }
+  },
+  "required": [
+    "field_new_id",
+    "date",
+    "start_time",
+    "end_time"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "due\u00f1o_verificado"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "data.status": "available"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "due\u00f1o_verificado"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "due\u00f1o_verificado"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "due\u00f1o_verificado"
+          }
+        }
+      ]
+    }
+  }
+}

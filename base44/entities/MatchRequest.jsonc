@@ -1,0 +1,89 @@
+{
+  "name": "MatchRequest",
+  "type": "object",
+  "properties": {
+    "match_id": {
+      "type": "string",
+      "description": "ID del partido"
+    },
+    "player_email": {
+      "type": "string",
+      "format": "email",
+      "description": "Email del jugador que solicita"
+    },
+    "player_name": {
+      "type": "string",
+      "description": "Nombre del jugador"
+    },
+    "position": {
+      "type": "string",
+      "enum": [
+        "arquero",
+        "defensor",
+        "mediocampista",
+        "delantero",
+        "dobles",
+        "singles"
+      ],
+      "description": "Posici\u00f3n que quiere jugar"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "accepted",
+        "rejected",
+        "cancelled"
+      ],
+      "default": "pending",
+      "description": "Estado de la solicitud"
+    }
+  },
+  "required": [
+    "match_id",
+    "player_email",
+    "player_name",
+    "position"
+  ],
+  "rls": {
+    "create": {
+      "data.player_email": "{{user.email}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "data.player_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "created_by": "{{user.email}}"
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.player_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

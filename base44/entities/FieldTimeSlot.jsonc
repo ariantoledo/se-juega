@@ -1,0 +1,7 @@
+{
+  "name": "FieldTimeSlot",
+  "type": "object",
+  "description": "Entidad obsoleta. Migrada a FieldNewTimeSlot. No usar.",
+  "properties": {},
+  "required": []
+}

@@ -1,0 +1,7 @@
+{
+  "name": "FieldReservation",
+  "type": "object",
+  "description": "Entidad obsoleta. Migrada a FieldNewReservation. No usar.",
+  "properties": {},
+  "required": []
+}

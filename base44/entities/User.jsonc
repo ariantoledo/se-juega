@@ -1,0 +1,38 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "role": {
+      "type": "string",
+      "enum": [
+        "admin",
+        "usuario_normal",
+        "due\u00f1o_pendiente",
+        "due\u00f1o_verificado"
+      ],
+      "default": "usuario_normal",
+      "description": "Rol del usuario"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Tel\u00e9fono de contacto"
+    },
+    "position": {
+      "type": "string",
+      "description": "Posici\u00f3n preferida"
+    },
+    "avatar_url": {
+      "type": "string",
+      "description": "URL del avatar"
+    },
+    "mp_admin_token": {
+      "type": "string",
+      "description": "Access token MP del admin para recibir comisiones"
+    },
+    "mp_admin_user_id": {
+      "type": "string",
+      "description": "User ID de la cuenta MP del admin"
+    }
+  },
+  "required": []
+}
